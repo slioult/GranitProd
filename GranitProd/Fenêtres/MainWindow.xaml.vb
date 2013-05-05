@@ -28,9 +28,6 @@ Class MainWindow
 
         ' Ajoutez une initialisation quelconque après l'appel InitializeComponent().
 
-        ' Initialise le calendrier à la date actuelle.
-        cal.SelectedDate = Date.Now
-
         ' Renseigne le titre de la fenêtre en fonction de la session active.
         Me.Title = "GranitProd - " + Me.Session.Login
 
@@ -61,20 +58,9 @@ Class MainWindow
             Directory.CreateDirectory(My.Settings.ExportFile)
         End If
 
-    End Sub
+        Me.planning.Session = Me.Session
+        Me.planning.Search = SearchCommande
 
-#End Region
-
-#Region "SelectionChanged"
-
-    ''' <summary>
-    ''' Action se produisant lorsque la date sélectionnée dans le calendrier change
-    ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
-    ''' <remarks></remarks>
-    Private Sub cal_SelectedDatesChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
-        planning.SelectDate = cal.SelectedDate
     End Sub
 
 #End Region

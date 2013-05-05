@@ -80,8 +80,8 @@ Public Class Mesure
     ''' <summary>
     ''' Surcharge de la méthode Equals permettant de comparer deux Mesures
     ''' </summary>
-    ''' <param name="obj"></param>
-    ''' <returns></returns>
+    ''' <param name="obj">Mesure à comparer</param>
+    ''' <returns>Retourne un booléen indiquant si les deux mesures sont identiques</returns>
     ''' <remarks></remarks>
     Public Overrides Function Equals(ByVal obj As Object) As Boolean
         If (Me IsNot Nothing And obj IsNot Nothing) Then
@@ -105,9 +105,9 @@ Public Class Mesure
 #Region "DataAccess"
 
     ''' <summary>
-    ''' Permet de récupérer les informations d'une mesure dans la base de données
+    ''' Permet de récupérer les informations d'une mesure dans la base de données à partir de son identifier
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un objet de la classe Mesure</returns>
     ''' <remarks></remarks>
     Public Function GetMesure() As Mesure
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -152,7 +152,7 @@ Public Class Mesure
     ''' <summary>
     ''' Permet de récupérer tous les type de mesure dans la base de données
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Mesure</returns>
     ''' <remarks></remarks>
     Public Shared Function GetMesures() As List(Of Mesure)
         Dim mesures As New List(Of Mesure)
@@ -189,7 +189,7 @@ Public Class Mesure
     ''' <summary>
     ''' Permet de récupérer tous les type de mesure devant être affichés dans le planning dans la base de données
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Mesure</returns>
     ''' <remarks></remarks>
     Public Shared Function GetLegendMesures() As List(Of Mesure)
         Dim mesures As New List(Of Mesure)
@@ -226,6 +226,7 @@ Public Class Mesure
     ''' <summary>
     ''' Permet d'insérer une Mesure en base de données
     ''' </summary>
+    ''' <returns>Retourne l'identifier du type de relevé définit par la BDD</returns>
     ''' <remarks></remarks>
     Public Function Insert() As Long
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -352,7 +353,7 @@ Public Class Mesure
     ''' <summary>
     ''' Permet de récupérer les couleurs utilisées dans las table Mesure
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste de string correspondantes aux couleurs utilisées</returns>
     ''' <remarks></remarks>
     Public Function GetColorsReleves() As List(Of String)
         Dim listColorsReleves As New List(Of String)
@@ -383,9 +384,9 @@ Public Class Mesure
     End Function
 
     ''' <summary>
-    ''' Permet de savoir si une mesure est utiliser dans une commande
+    ''' Permet de savoir si une mesure est utilisée dans une commande
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un booléen indiquant si une commande fait référence au type de relevé</returns>
     ''' <remarks></remarks>
     Public Function IsUsed() As Boolean
         Dim bool As Boolean = False

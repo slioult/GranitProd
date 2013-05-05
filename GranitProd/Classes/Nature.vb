@@ -54,8 +54,8 @@ Public Class Nature
     ''' <summary>
     ''' Surcharge de la méthode Equals permettant de comparer deux natures
     ''' </summary>
-    ''' <param name="obj"></param>
-    ''' <returns></returns>
+    ''' <param name="obj">Nature à comparer</param>
+    ''' <returns>Retourne un booléen indiquant si les deux natures sont identiques</returns>
     ''' <remarks></remarks>
     Public Overrides Function Equals(ByVal obj As Object) As Boolean
         If (Me IsNot Nothing And obj IsNot Nothing) Then
@@ -79,9 +79,9 @@ Public Class Nature
 #Region "DataAccess"
 
     ''' <summary>
-    ''' Permet de récupérer les informations de la nature
+    ''' Permet de récupérer les informations de la nature à partir de son identifier
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un objet de la classe Nature</returns>
     ''' <remarks></remarks>
     Public Function GetNature() As Nature
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -124,7 +124,7 @@ Public Class Nature
     ''' <summary>
     ''' Permet de récupérer les natures dans la base de données
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Nature</returns>
     ''' <remarks></remarks>
     Public Shared Function GetNatures() As List(Of Nature)
         Dim natures As New List(Of Nature)
@@ -162,6 +162,7 @@ Public Class Nature
     ''' <summary>
     ''' Permet d'insérer une nature en base de données
     ''' </summary>
+    ''' <returns>Retourne l'identifier de la nature définit par la BDD</returns>
     ''' <remarks></remarks>
     Public Function Insert() As Long
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -279,9 +280,9 @@ Public Class Nature
     End Sub
 
     ''' <summary>
-    ''' Permet de savoir si une nature est utiliser dans une commande
+    ''' Permet de savoir si une nature est utilisée dans une commande
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un booléen indiquant si une commande fait référence à la nature</returns>
     ''' <remarks></remarks>
     Public Function IsUsed() As Boolean
         Dim bool As Boolean = False

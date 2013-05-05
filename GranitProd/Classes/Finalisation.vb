@@ -81,8 +81,8 @@ Public Class Finalisation
     ''' <summary>
     ''' Surcharge de la méthode Equals permettant de comparer deux finalisations
     ''' </summary>
-    ''' <param name="obj"></param>
-    ''' <returns></returns>
+    ''' <param name="obj">Finalisation à comparer</param>
+    ''' <returns>Retourne un booléen indiquant si les deux finalisations sont identiques</returns>
     ''' <remarks></remarks>
     Public Overrides Function Equals(ByVal obj As Object) As Boolean
         If (Me IsNot Nothing And obj IsNot Nothing) Then
@@ -106,9 +106,9 @@ Public Class Finalisation
 #Region "DataAccess"
 
     ''' <summary>
-    ''' Permet de récupérer les informations de la finalisation
+    ''' Permet de récupérer les informations de la finalisation à partir de son identifier
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un objet de la classe Finalisation</returns>
     ''' <remarks></remarks>
     Public Function GetFinalisation() As Finalisation
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -190,7 +190,7 @@ Public Class Finalisation
     ''' <summary>
     ''' Permet de récupérer toutes les finalisations devant être affichées dans le planning dans la base de données
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Finalisation</returns>
     ''' <remarks></remarks>
     Public Shared Function GetLegendFinalisations() As List(Of Finalisation)
         Dim finalisations As New List(Of Finalisation)
@@ -227,6 +227,7 @@ Public Class Finalisation
     ''' <summary>
     ''' Permet d'insérer une finalisation en base de données
     ''' </summary>
+    ''' <returns>Retourne l'identifier de la finalisation définit par la BDD</returns>
     ''' <remarks></remarks>
     Public Function Insert() As Long
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -353,7 +354,7 @@ Public Class Finalisation
     ''' <summary>
     ''' Récupère les couleurs utilisées dans la table Finalisation
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste de string correspondantes aux couleurs utilisées</returns>
     ''' <remarks></remarks>
     Public Function GetColorsFinalisation() As List(Of String)
         Dim listColorsFinalisation As New List(Of String)
@@ -384,9 +385,9 @@ Public Class Finalisation
     End Function
 
     ''' <summary>
-    ''' Permet de savoir si une finalisation est utiliser dans une commande
+    ''' Permet de savoir si une finalisation est utilisée dans une commande
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un booléen indiquant si une commande fait référence à la finalisation</returns>
     ''' <remarks></remarks>
     Public Function IsUsed() As Boolean
         Dim bool As Boolean = False

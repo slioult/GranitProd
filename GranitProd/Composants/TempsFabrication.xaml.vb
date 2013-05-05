@@ -228,25 +228,17 @@ Public Class TempsFabrication
                     Objects = connection.ExecuteQuery("SELECT NumCmd, TpsDebit + TpsCmdNumerique + TpsFinition + TpsAutres FROM Commande WHERE DelaiPrevu=@Date", parameters)
 
                     'Ajoute un item par semaine en additionnant les temps de production
-                    'If i = days Then
-                    '    Dim tpsFabItem As New TempsFabrication(tempSem, tps, listCmd)
-                    '    DgTpsFab.Items.Add(tpsFabItem)
-                    '    total += tps
-                    '    tps = 0
-                    '    listCmd = New List(Of Commande)
-                    If sem = tempSem And tempSem <> 0 Then
+                    If i = days Then
+                        Dim tpsFabItem As New TempsFabrication(tempSem, tps, listCmd)
+                        DgTpsFab.Items.Add(tpsFabItem)
+                        total += tps
+                        tps = 0
+                        listCmd = New List(Of Commande)
+                    ElseIf sem = tempSem And tempSem <> 0 Then
                         For Each obj In Objects
                             tps += Integer.Parse(obj(1))
                             listCmd.Add(New Commande(Integer.Parse(obj(0))))
                         Next
-
-                        If i = days Then
-                            Dim tpsFabItem As New TempsFabrication(tempSem, tps, listCmd)
-                            DgTpsFab.Items.Add(tpsFabItem)
-                            total += tps
-                            tps = 0
-                            listCmd = New List(Of Commande)
-                        End If
                     ElseIf tempSem <> 0 Then
                         Dim tpsFabItem As New TempsFabrication(tempSem, tps, listCmd)
                         DgTpsFab.Items.Add(tpsFabItem)

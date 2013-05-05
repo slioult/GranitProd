@@ -159,10 +159,10 @@ Public Class Session
 #Region "DataAccess"
 
     ''' <summary>
-    ''' Permet de récupérer les informations d'une session dans la base de données
+    ''' Permet de récupérer les informations d'une session dans la base de données à partir de son identifier
     ''' </summary>
     ''' <param name="isAllRights">Permet de ne pas modifier les droit de la session Administrateur</param>
-    ''' <returns></returns>
+    ''' <returns>Retourne un objet de la classe Session</returns>
     ''' <remarks></remarks>
     Public Function GetSession(Optional ByVal isAllRights As Boolean = False) As Session
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -216,7 +216,7 @@ Public Class Session
     ''' Permet de récupérer toutes les sessions dans la base de données
     ''' </summary>
     ''' <param name="isAllRights">Permet de ne pas modifier les droit de la session Administrateur</param>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Session</returns>
     ''' <remarks></remarks>
     Public Shared Function GetSessions(Optional ByVal isAllRights As Boolean = False) As List(Of Session)
         Dim sessions As New List(Of Session)
@@ -256,6 +256,7 @@ Public Class Session
     ''' <summary>
     ''' Permet d'insérer une session en base de données
     ''' </summary>
+    ''' <returns>Retourne l'identifier de la session définit par la BDD</returns>
     ''' <remarks></remarks>
     Public Function Insert() As Long
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)

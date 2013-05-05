@@ -8,7 +8,7 @@ Module Crypt
     ''' Convertit une chaîne en MD5
     ''' </summary>
     ''' <param name="input">Chaîne à convertir</param>
-    ''' <returns></returns>
+    ''' <returns>Retourne la chaîne convertie</returns>
     ''' <remarks></remarks>
     Function getMd5Hash(ByVal input As String) As String
         ' Create a new instance of the MD5 object.
@@ -36,9 +36,9 @@ Module Crypt
     ''' <summary>
     ''' Compare une chaîne MD5 à une chaîne simple
     ''' </summary>
-    ''' <param name="input">Chaîne simple</param>
+    ''' <param name="input">Chaîne simple saisie par l'utilisateur</param>
     ''' <param name="hash">Chaîne MD5</param>
-    ''' <returns></returns>
+    ''' <returns>Retourne un booléen indiquant si les deux chaînes sont identiques</returns>
     ''' <remarks></remarks>
     Function verifyMd5Hash(ByVal input As String, ByVal hash As String) As Boolean
         ' Hash the input.

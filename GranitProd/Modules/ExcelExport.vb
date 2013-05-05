@@ -10,7 +10,7 @@ Public Module ExcelExport
     ''' <param name="cmds">Liste des commandes à exporter</param>
     ''' <param name="search">Différents critères de la recherches ayant abouti à ces résultats</param>
     ''' <param name="etatCmd">État des commandes (Terminée, Rendue ou en cours)</param>
-    ''' <param name="format"></param>
+    ''' <param name="format">Format de l'export (PDF ou EXCEL)</param>
     ''' <remarks></remarks>
     Public Sub ExportCommande(ByVal cmds As List(Of Commande), ByVal search As String, ByVal etatCmd As String, ByVal format As String)
         'Instancie une nouvelle application EXCEL
@@ -237,7 +237,7 @@ Public Module ExcelExport
     ''' </summary>
     ''' <param name="Process1">Liste des processus avant la création du processus Excel</param>
     ''' <param name="Process2">Liste des processus après la création du processus Excel</param>
-    ''' <returns></returns>
+    ''' <returns>Retourne l'id du processus Excel créé</returns>
     ''' <remarks></remarks>
     Public Function GetProcId(ByVal Process1 As Process(), ByVal Process2 As Process()) As Integer
         Dim ProcId% = 0

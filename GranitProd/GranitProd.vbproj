@@ -143,6 +143,9 @@
     <Compile Include="Fenêtres\Panel.xaml.vb">
       <DependentUpon>Panel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Fenêtres\PlanningView.xaml.vb">
+      <DependentUpon>PlanningView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Fenêtres\Version.xaml.vb">
       <DependentUpon>Version.xaml</DependentUpon>
     </Compile>
@@ -292,6 +295,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Fenêtres\Panel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Fenêtres\PlanningView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -448,6 +455,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\sablier.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\zoom.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

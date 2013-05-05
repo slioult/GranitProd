@@ -189,25 +189,17 @@ Public Class CA
                     Objects = connection.ExecuteQuery("SELECT NumCmd, Montant FROM Commande WHERE DelaiPrevu=@Date", parameters)
 
                     'Ajoute un item par semaine en calculant le chiffre d'affaire de chaque semaine et les n° de commandes correspondant à cette semaine. Ajoute également le CA au CA total du mois
-                    'If i = days Then
-                    '    Dim caItem As New CaItem(tempSem, chiffre, listCmd)
-                    '    DgCa.Items.Add(caItem)
-                    '    total += chiffre
-                    '    chiffre = 0
-                    '    listCmd = New List(Of Commande)
-                    If sem = tempSem And tempSem <> 0 Then
+                    If i = days Then
+                        Dim caItem As New CaItem(tempSem, chiffre, listCmd)
+                        DgCa.Items.Add(caItem)
+                        total += chiffre
+                        chiffre = 0
+                        listCmd = New List(Of Commande)
+                    ElseIf sem = tempSem And tempSem <> 0 Then
                         For Each obj In Objects
                             chiffre += Decimal.Parse(obj(1))
                             listCmd.Add(New Commande(Integer.Parse(obj(0))))
                         Next
-
-                        If i = days Then
-                            Dim caItem As New CaItem(tempSem, chiffre, listCmd)
-                            DgCa.Items.Add(caItem)
-                            total += chiffre
-                            chiffre = 0
-                            listCmd = New List(Of Commande)
-                        End If
                     ElseIf tempSem <> 0 Then
                         Dim caItem As New CaItem(tempSem, chiffre, listCmd)
                         DgCa.Items.Add(caItem)
