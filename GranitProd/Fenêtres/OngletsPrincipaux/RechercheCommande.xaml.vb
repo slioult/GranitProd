@@ -269,12 +269,24 @@ Public Class RechercheCommande
         Dim whereEtat As String = String.Empty
         Dim param As String = String.Empty
 
+        Dim month As Integer = Date.Now.Month
+        Dim year As Integer = Date.Now.Year
+        If month < 2 Then
+            month = 12
+            year -= 1
+        Else
+            month -= 1
+        End If
+        Dim minDate As New DateTime(year, month, 1)
+
         If Me.CbxEtat.SelectedIndex = 0 Then
             whereEtat = " WHERE c.IdentifierEtat = e.Identifier AND e.Label <> 'Terminée' AND e.Label <> 'Rendue' AND "
         ElseIf Me.CbxEtat.SelectedIndex = 1 Then
             whereEtat = " WHERE c.IdentifierEtat = e.Identifier AND e.Label = 'Terminée' AND "
         ElseIf Me.CbxEtat.SelectedIndex = 2 Then
             whereEtat = " WHERE c.IdentifierEtat = e.Identifier AND e.Label = 'Rendue' AND "
+        ElseIf Me.CbxEtat.SelectedIndex = 3 Then
+            whereEtat = " WHERE c.DelaiPrevu >= '" + year.ToString() + "-" + month.ToString() + "-1' AND "
         End If
 
         If CbxTri.SelectedIndex = 0 Then
@@ -358,6 +370,10 @@ Public Class RechercheCommande
                         End If
                     ElseIf Me.CbxEtat.SelectedIndex = 2 Then
                         If cmd.Etat.Label = "Rendue" Then
+                            LbxSearchCmd.Items.Add(cmd)
+                        End If
+                    ElseIf Me.CbxEtat.SelectedIndex = 3 Then
+                        If cmd.DelaiPrevu >= minDate Then
                             LbxSearchCmd.Items.Add(cmd)
                         End If
                     End If
@@ -449,6 +465,10 @@ Public Class RechercheCommande
                         If cmd.Etat.Label = "Rendue" Then
                             LbxSearchCmd.Items.Add(cmd)
                         End If
+                    ElseIf Me.CbxEtat.SelectedIndex = 3 Then
+                        If cmd.DelaiPrevu >= minDate Then
+                            LbxSearchCmd.Items.Add(cmd)
+                        End If
                     End If
                 Next
             Catch ex As Exception
@@ -513,6 +533,10 @@ Public Class RechercheCommande
                         End If
                     ElseIf Me.CbxEtat.SelectedIndex = 2 Then
                         If cmd.Etat.Label = "Rendue" Then
+                            LbxSearchCmd.Items.Add(cmd)
+                        End If
+                    ElseIf Me.CbxEtat.SelectedIndex = 3 Then
+                        If cmd.DelaiPrevu >= minDate Then
                             LbxSearchCmd.Items.Add(cmd)
                         End If
                     End If

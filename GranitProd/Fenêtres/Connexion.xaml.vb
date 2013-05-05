@@ -51,12 +51,12 @@ Public Class Connexion
     ''' <remarks></remarks>
     Private Sub BtnConnexion_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
 
-        If (TxtLogin.Text <> "") Then
-            If (PsxPassword.Password <> "") Then
-                Dim login As String = TxtLogin.Text
-                Dim password As String = PsxPassword.Password
+        Try
+            If (TxtLogin.Text <> "") Then
+                If (PsxPassword.Password <> "") Then
+                    Dim login As String = TxtLogin.Text
+                    Dim password As String = PsxPassword.Password
 
-                Try
                     Dim Sessions As List(Of Session) = Session.GetSessions(True)
 
                     Dim isExists As Boolean = False
@@ -80,32 +80,33 @@ Public Class Connexion
                         isOk = False
                     End If
 
-                Catch ex As Exception
-                    MessageBox.Show(ex.Message)
-                    Dim sw As New StreamWriter(My.Settings.ConfigFiles + "\log.txt")
-
-                    Dim content As String = "BTNCONNEXION" + vbCrLf + ex.StackTrace.ToString() + vbCrLf + vbCrLf + ex.Source.ToString()
-                    If ex.InnerException IsNot Nothing Then
-                        content = content + vbCrLf + vbCrLf + ex.InnerException.ToString()
-                    End If
-
-                    content = content + vbCrLf + "/BTNCONNEXION"
-
-                    sw.Write(content)
-
-                    sw.Close()
-                End Try
-
+                Else
+                    MessageBox.Show("Veuillez entrer mot de passe.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
+                    PsxPassword.Focus()
+                    isOk = False
+                End If
             Else
-                MessageBox.Show("Veuillez entrer mot de passe.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
-                PsxPassword.Focus()
+                MessageBox.Show("Veuillez entrer un identifiant.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
                 isOk = False
+                TxtLogin.Focus()
             End If
-        Else
-            MessageBox.Show("Veuillez entrer un identifiant.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
-            isOk = False
-            TxtLogin.Focus()
-        End If
+
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+            Dim sw As New StreamWriter(My.Settings.ConfigFiles + "\log.txt")
+
+            Dim content As String = "BTNCONNEXION" + vbCrLf + ex.StackTrace.ToString() + vbCrLf + vbCrLf + ex.Source.ToString()
+            If ex.InnerException IsNot Nothing Then
+                content = content + vbCrLf + vbCrLf + ex.InnerException.ToString()
+            End If
+
+            content = content + vbCrLf + "/BTNCONNEXION"
+
+            sw.Write(content)
+
+            sw.Close()
+        End Try
     End Sub
 
 #End Region

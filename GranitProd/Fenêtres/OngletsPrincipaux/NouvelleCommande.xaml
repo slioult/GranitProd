@@ -55,7 +55,7 @@
                     <TextBlock Text="Date :" FontFamily="Calibri" FontSize="15" />
                     <DatePicker x:Name="DpkDateCommande" SelectedDateChanged="DpkDateCommande_SelectedDateChanged" />
                     <StackPanel Orientation="Horizontal" Margin="0,2,0,0" >
-                        <ComboBox x:Name="CbxSemaineCommande" FontFamily="Calibri" FontSize="13" Margin="5,0,0,0" SelectionChanged="ManuelleDateCommande_SelectionChanged" Width="50"/>
+                        <ComboBox x:Name="CbxSemaineCommande" FontFamily="Calibri" FontSize="13" Margin="5,0,0,0" SelectionChanged="ManuelleDateCommande_SelectionChanged" Width="50" />
                         <ComboBox x:Name="CbxCommandeYear" FontFamily="Calibri" FontSize="13" Margin="5,0,0,0" Width="100"
                               SelectionChanged="ManuelleDateCommande_SelectionChanged" />
                     </StackPanel>

@@ -125,6 +125,18 @@ Public Class ConfNature
                 Me.CbxConfNature.Items.RemoveAt(index)
                 Me.CbxConfNature.Items.Insert(index, nature)
 
+                Dim natT As New List(Of NatureTemplate)
+                For Each item In Me.NouvelleCommande.LbxNatures.Items
+                    Dim nt As NatureTemplate = item
+                    If nt.Identifier = nature.Identifier Then nt.Label = nature.Label
+                    natT.Add(nt)
+                Next
+                Me.NouvelleCommande.LbxNatures.Items.Clear()
+
+                For Each n In natT
+                    Me.NouvelleCommande.LbxNatures.Items.Add(n)
+                Next
+
                 Me.CbxConfNature.SelectedIndex = index
                 MessageBox.Show("La nature a été modifié")
             Else

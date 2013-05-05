@@ -98,6 +98,9 @@
                 <ComboBoxItem>
                     Rendues
                 </ComboBoxItem>
+                <ComboBoxItem>
+                    Toutes
+                </ComboBoxItem>
             </ComboBox>
         </StackPanel>
 

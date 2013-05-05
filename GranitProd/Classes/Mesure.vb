@@ -8,6 +8,7 @@ Public Class Mesure
     Private _Identifier As Long
     Private _Label As String
     Private _Color As String
+    Private _Display As Boolean
 
 #End Region
 
@@ -42,6 +43,15 @@ Public Class Mesure
         End Set
     End Property
 
+    Public Property Display As Boolean
+        Get
+            Return Me._Display
+        End Get
+        Set(ByVal value As Boolean)
+            Me._Display = value
+        End Set
+    End Property
+
 #End Region
 
 #Region "Constructor"
@@ -55,9 +65,10 @@ Public Class Mesure
         Me.Identifier = identifier
     End Sub
 
-    Public Sub New(ByVal label As String, Optional ByVal color As String = "", Optional ByVal identifier As Long = 0)
+    Public Sub New(ByVal label As String, Optional ByVal color As String = "", Optional ByVal display As Boolean = False, Optional ByVal identifier As Long = 0)
         Me.Label = label
         Me.Color = color
+        Me.Display = display
         Me.Identifier = identifier
     End Sub
 
@@ -109,7 +120,7 @@ Public Class Mesure
             Dim parIdentifierMesure As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdentifierMesure)
 
-            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur FROM Mesure WHERE Identifier=@Identifier", parameters)
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur, Display FROM Mesure WHERE Identifier=@Identifier", parameters)
 
             parameters = Nothing
 
@@ -118,6 +129,7 @@ Public Class Mesure
             For Each obj In Objects
                 Me.Label = obj(1).ToString()
                 Me.Color = obj(2).ToString()
+                Me.Display = Boolean.Parse(obj(3))
             Next
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -144,12 +156,12 @@ Public Class Mesure
         Try
             connection.Open()
 
-            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur FROM Mesure Order By Label")
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur, Display FROM Mesure Order By Label")
 
             connection.Close()
 
             For Each obj In Objects
-                mesures.Add(New Mesure(obj(1).ToString(), obj(2).ToString(), Long.Parse(obj(0))))
+                mesures.Add(New Mesure(obj(1).ToString(), obj(2).ToString(), Boolean.Parse(obj(3)), Long.Parse(obj(0))))
             Next
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -179,8 +191,10 @@ Public Class Mesure
             parameters.Add(parLabel)
             Dim parCouleur As MySqlParameter = connection.Create("@Couleur", DbType.String, Me.Color)
             parameters.Add(parCouleur)
+            Dim parDisplay As MySqlParameter = connection.Create("@Display", DbType.Boolean, Me.Display)
+            parameters.Add(parDisplay)
 
-            Dim query As String = "INSERT INTO Mesure (Label, Couleur) VALUES (@Label, @Couleur)"
+            Dim query As String = "INSERT INTO Mesure (Label, Couleur, Display) VALUES (@Label, @Couleur, @Display)"
 
             connection.ExecuteNonQuery(query, parameters)
 
@@ -221,8 +235,10 @@ Public Class Mesure
             parameters.Add(parLabel)
             Dim parCouleur As MySqlParameter = connection.Create("@Couleur", DbType.String, Me.Color)
             parameters.Add(parCouleur)
+            Dim parDisplay As MySqlParameter = connection.Create("@Display", DbType.Boolean, Me.Display)
+            parameters.Add(parDisplay)
 
-            Dim query As String = "UPDATE Mesure SET Label=@Label, Couleur=@Couleur WHERE Identifier=@Identifier"
+            Dim query As String = "UPDATE Mesure SET Label=@Label, Couleur=@Couleur, Display=@Display WHERE Identifier=@Identifier"
 
             connection.ExecuteNonQuery(query, parameters)
 

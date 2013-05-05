@@ -130,6 +130,14 @@ Public Class ConfQualite
                 Me.CbxConfQualite.Items.RemoveAt(index)
                 Me.CbxConfQualite.Items.Insert(index, qualite)
 
+                Dim selected As Integer = Me.NouvelleCommande.CbxQualite.SelectedIndex
+                Dim qualites As New List(Of Qualite)
+                For Each q In CbxConfQualite.Items
+                    qualites.Add(q)
+                Next
+                Me.NouvelleCommande.CbxQualite.ItemsSource = qualites
+                Me.NouvelleCommande.CbxQualite.SelectedIndex = selected
+
                 Me.CbxConfQualite.SelectedIndex = index
                 MessageBox.Show("La qualité a été modifiée avec succès.", "Qualité modifiée", MessageBoxButton.OK, MessageBoxImage.Information)
             Else

@@ -8,6 +8,7 @@ Public Class Finalisation
     Private _Identifier As Long
     Private _Label As String
     Private _Color As String
+    Private _Display As Boolean
 
 #End Region
 
@@ -42,6 +43,15 @@ Public Class Finalisation
         End Set
     End Property
 
+    Public Property Display As Boolean
+        Get
+            Return Me._Display
+        End Get
+        Set(ByVal value As Boolean)
+            Me._Display = value
+        End Set
+    End Property
+
 #End Region
 
 #Region "Constructor"
@@ -56,7 +66,7 @@ Public Class Finalisation
         Me.Identifier = identifier
     End Sub
 
-    Public Sub New(ByVal label As String, Optional ByVal color As String = "", Optional ByVal identifier As Long = 0)
+    Public Sub New(ByVal label As String, Optional ByVal color As String = "", Optional ByVal display As Boolean = False, Optional ByVal identifier As Long = 0)
         Me.Label = label
         Me.Color = color
         Me.Identifier = identifier
@@ -110,7 +120,7 @@ Public Class Finalisation
             Dim parIdentifier As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdentifier)
 
-            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur FROM Finalisation WHERE Identifier=@Identifier", parameters)
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur, Display FROM Finalisation WHERE Identifier=@Identifier", parameters)
 
             connection.Close()
             parameters = Nothing
@@ -118,6 +128,7 @@ Public Class Finalisation
             For Each obj In Objects
                 Me.Label = obj(1).ToString()
                 Me.Color = obj(2).ToString()
+                Me.Display = Boolean.Parse(obj(3))
             Next
 
         Catch ex As Exception
@@ -145,12 +156,12 @@ Public Class Finalisation
         Try
             connection.Open()
 
-            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur FROM Finalisation")
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur, Display FROM Finalisation")
 
             connection.Close()
 
             For Each obj In Objects
-                finalisations.Add(New Finalisation(obj(1).ToString(), obj(2).ToString(), Long.Parse(obj(0))))
+                finalisations.Add(New Finalisation(obj(1).ToString(), obj(2).ToString(), Boolean.Parse(obj(3)), Long.Parse(obj(0))))
             Next
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -180,8 +191,10 @@ Public Class Finalisation
             parameters.Add(parLabel)
             Dim parCouleur As MySqlParameter = connection.Create("@Couleur", DbType.String, Me.Color)
             parameters.Add(parCouleur)
+            Dim parDisplay As MySqlParameter = connection.Create("@Display", DbType.Boolean, Me.Display)
+            parameters.Add(parDisplay)
 
-            Dim query As String = "INSERT INTO Finalisation (Label, Couleur) VALUES (@Label, @Couleur)"
+            Dim query As String = "INSERT INTO Finalisation (Label, Couleur, Display) VALUES (@Label, @Couleur, @Display)"
 
             connection.ExecuteNonQuery(query, parameters)
 
@@ -222,8 +235,10 @@ Public Class Finalisation
             parameters.Add(parLabel)
             Dim parCouleur As MySqlParameter = connection.Create("@Couleur", DbType.String, Me.Color)
             parameters.Add(parCouleur)
+            Dim parDisplay As MySqlParameter = connection.Create("@Display", DbType.Boolean, Me.Display)
+            parameters.Add(parDisplay)
 
-            Dim query As String = "UPDATE Finalisation SET Label=@Label, Couleur=@Couleur WHERE Identifier=@Identifier"
+            Dim query As String = "UPDATE Finalisation SET Label=@Label, Couleur=@Couleur, Display=@Display WHERE Identifier=@Identifier"
 
             connection.ExecuteNonQuery(query, parameters)
 
