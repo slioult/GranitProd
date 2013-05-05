@@ -109,8 +109,10 @@ Public Class Remarque
             Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
 
             Try
+                'Ouvre la connection
                 connection.Open()
 
+                'Défini les paramètres de la requête
                 Dim parIdentifierCommande As MySqlParameter = connection.Create("@IdentifierCommande", DbType.Int32, idCmd)
                 parameters.Add(parIdentifierCommande)
 
@@ -123,9 +125,11 @@ Public Class Remarque
                 Dim parDate As MySqlParameter = connection.Create("@Date", DbType.String, Me.DatePost)
                 parameters.Add(parDate)
 
+                'Requête
                 Dim query As String = "INSERT INTO Remarque (Commentaire, Source, Date, IdentifierCommande)" +
                                         " VALUES (@Comment, @Source, @Date, @IdentifierCommande)"
 
+                'Exécute la requête
                 connection.ExecuteNonQuery(query, parameters)
 
                 parameters = Nothing
@@ -134,12 +138,49 @@ Public Class Remarque
                 MessageBox.Show(ex.Message)
             Finally
                 Try
+                    'Ferme la connection
                     connection.Close()
                 Catch ex As Exception
                 End Try
             End Try
 
         End If
+
+    End Sub
+
+    ''' <summary>
+    ''' Permet de supprimer une remarque de la base de données
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Sub Delete()
+            Dim parameters As New List(Of MySqlParameter)
+            Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
+
+            Try
+                'Ouvre la connection
+                connection.Open()
+
+            'Défini les paramètres de la requête
+            Dim parIdentifierRemarque As MySqlParameter = connection.Create("@Identifier", DbType.Int64, Me.Identifier)
+            parameters.Add(parIdentifierRemarque)
+
+                'Requête
+            Dim query As String = "DELETE FROM Remarque WHERE Identifier=@Identifier"
+
+                'Exécute la requête
+                connection.ExecuteNonQuery(query, parameters)
+
+                parameters = Nothing
+
+            Catch ex As Exception
+                MessageBox.Show(ex.Message)
+            Finally
+                Try
+                    'Ferme la connection
+                    connection.Close()
+                Catch ex As Exception
+                End Try
+            End Try
 
     End Sub
 
@@ -156,19 +197,25 @@ Public Class Remarque
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdentifierCommande As MySqlParameter = connection.Create("@IdentifierCommande", DbType.Int32, idCmd)
             parameters.Add(parIdentifierCommande)
 
+            'Requête
             Dim query As String = "SELECT Identifier, Commentaire, Source, Date, IdentifierCommande FROM Remarque WHERE IdentifierCommande=@IdentifierCommande"
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery(query, parameters)
 
+            'Ferme la connection
             connection.Close()
 
             parameters = Nothing
 
+            'Traite les résultats
             For Each obj In Objects
                 remarques.Add(New Remarque(obj(1).ToString(), obj(2).ToString, obj(3).ToString, Long.Parse(obj(0))))
             Next
@@ -178,6 +225,7 @@ Public Class Remarque
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try

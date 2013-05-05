@@ -101,17 +101,22 @@ Public Class Etat
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdentifierEtat As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdentifierEtat)
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Label FROM Etat WHERE Identifier=@Identifier", parameters)
 
             parameters = Nothing
 
+            'Ferme la connection
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Label = obj(1).ToString()
             Next
@@ -119,6 +124,7 @@ Public Class Etat
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -138,12 +144,16 @@ Public Class Etat
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Label, Position FROM Etat")
 
+            'Ferme la conection
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
                 etats.Add(New Etat(obj(1).ToString(), Integer.Parse(obj(2)), Long.Parse(obj(0))))
             Next
@@ -151,6 +161,7 @@ Public Class Etat
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -169,17 +180,23 @@ Public Class Etat
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
 
+            'Requête
             Dim query As String = "INSERT INTO Etat (Label) VALUES (@Label)"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
+            'Récupère l'identifier du dernier enregistrement
             Objects = connection.ExecuteQuery("SELECT Max(Identifier) FROM Etat")
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Identifier = Long.Parse(obj(0))
             Next
@@ -190,6 +207,7 @@ Public Class Etat
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -207,8 +225,10 @@ Public Class Etat
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdEtat As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdEtat)
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
@@ -216,8 +236,10 @@ Public Class Etat
             Dim parPosition As MySqlParameter = connection.Create("@Position", DbType.Int64, Me.Position)
             parameters.Add(parPosition)
 
+            'Requête
             Dim query As String = "UPDATE Etat SET Label=@Label, Position=@Position WHERE Identifier=@Identifier"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
             parameters = Nothing
@@ -226,6 +248,7 @@ Public Class Etat
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -242,20 +265,25 @@ Public Class Etat
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdEtat As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdEtat)
 
+            'Exécute la requête
             connection.ExecuteNonQuery("DELETE FROM Etat WHERE Identifier=@Identifier", parameters)
 
             parameters.Clear()
 
+            'Ferme la connection
             connection.Close()
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error")
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try

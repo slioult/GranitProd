@@ -85,17 +85,23 @@ Public Class Client
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            ' Création des paramètres de la requête
             Dim parNom As MySqlParameter = connection.Create("@Nom", DbType.String, Me.Nom)
             parameters.Add(parNom)
 
+            'Requête
             Dim query As String = "INSERT INTO Client (Nom) VALUES (@Nom)"
 
+            'Exécution de la requête
             connection.ExecuteNonQuery(query, parameters)
 
+            'Exécution de la requête récupérant l'identifier du dernier enregistrement
             Objects = connection.ExecuteQuery("SELECT Max(Identifier) FROM Client")
 
+            ' Récupère le résultat
             For Each obj In Objects
                 Me.Identifier = Long.Parse(obj(0))
             Next
@@ -106,6 +112,7 @@ Public Class Client
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -123,15 +130,19 @@ Public Class Client
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdClient As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdClient)
 
+            'Exécute la requête
             connection.ExecuteNonQuery("DELETE FROM Client WHERE Identifier=@Identifier", parameters)
 
             parameters.Clear()
 
+            'Ferme la connection
             connection.Close()
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error")
@@ -154,17 +165,22 @@ Public Class Client
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdentifierClient As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdentifierClient)
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Nom FROM Client WHERE Identifier=@Identifier", parameters)
 
             parameters = Nothing
 
+            'Ferme la connection
             connection.Close()
 
+            'Traite les résultats de la requête
             For Each obj In Objects
                 Me.Nom = obj(1).ToString()
             Next
@@ -172,6 +188,7 @@ Public Class Client
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -192,12 +209,16 @@ Public Class Client
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Nom FROM Client")
 
+            'Ferme la connection
             connection.Close()
 
+            'Traite les résultats de la requête
             For Each obj In Objects
                 clients.Add(New Client(Me.Nom = obj(1).ToString(), Long.Parse(obj(0))))
             Next
@@ -205,6 +226,7 @@ Public Class Client
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try

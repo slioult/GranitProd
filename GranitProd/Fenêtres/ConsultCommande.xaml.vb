@@ -43,7 +43,8 @@ Public Class ConsultCommande
         Me.NewCmd.IsUpdate = True
         Me.NewCmd.UC = search
         Me.NewCmd.Planning = planning
-        Me.NewCmd.Commande = commande
+        If commande IsNot Nothing Then Me.Commande = commande.GetCommande()
+        Me.NewCmd.Commande = Me.Commande
         Me.NewCmd.Window = Me
 
     End Sub

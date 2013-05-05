@@ -57,6 +57,7 @@ Public Class Connexion
                     Dim login As String = TxtLogin.Text
                     Dim password As String = PsxPassword.Password
 
+                    'Récupère les différentes sessions existantes.
                     Dim Sessions As List(Of Session) = Session.GetSessions(True)
 
                     Dim isExists As Boolean = False

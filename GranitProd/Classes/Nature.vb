@@ -89,16 +89,21 @@ Public Class Nature
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdentifier As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdentifier)
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Label FROM Nature WHERE Identifier=@Identifier", parameters)
 
+            'Ferme la connection
             connection.Close()
             parameters = Nothing
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Label = obj(1).ToString()
             Next
@@ -107,6 +112,7 @@ Public Class Nature
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -126,12 +132,16 @@ Public Class Nature
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Label FROM Nature Order By Label")
 
+            'Ferme la connection
             connection.Close()
 
+            'Traite la requête
             For Each obj In Objects
                 natures.Add(New Nature(obj(1).ToString(), Long.Parse(obj(0))))
             Next
@@ -140,6 +150,7 @@ Public Class Nature
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -158,17 +169,23 @@ Public Class Nature
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
 
+            'Requête
             Dim query As String = "INSERT INTO Nature (Label) VALUES (@Label)"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
+            'Récupère l'identifier du dernier enregistrement
             Objects = connection.ExecuteQuery("SELECT Max(Identifier) FROM Nature")
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Identifier = Long.Parse(obj(0))
             Next
@@ -179,6 +196,7 @@ Public Class Nature
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -196,16 +214,20 @@ Public Class Nature
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdNature As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdNature)
 
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
 
+            'Requête
             Dim query As String = "UPDATE Nature SET Label=@Label WHERE Identifier=@Identifier"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
             parameters = Nothing
@@ -214,6 +236,7 @@ Public Class Nature
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -230,20 +253,25 @@ Public Class Nature
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdNature As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdNature)
 
+            'Exécute la requête
             connection.ExecuteNonQuery("DELETE FROM Nature WHERE Identifier=@Identifier", parameters)
 
             parameters.Clear()
 
+            'Ferme la connection
             connection.Close()
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error")
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try

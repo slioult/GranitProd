@@ -60,12 +60,16 @@ Public Class Epaisseur
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Value FROM Epaisseur")
 
+            'Ferme la connection
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
                 epaisseurs.Add(New Epaisseur(Integer.Parse(obj(1)), Long.Parse(obj(0))))
             Next
@@ -74,6 +78,7 @@ Public Class Epaisseur
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -92,17 +97,23 @@ Public Class Epaisseur
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parValue As MySqlParameter = connection.Create("@Value", DbType.Int32, Me.Value)
             parameters.Add(parValue)
 
+            'Requête
             Dim query As String = "INSERT INTO Epaisseur (Value) VALUES (@Value)"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
+            'Récupre l'identifier du dernier enregistrement
             Objects = connection.ExecuteQuery("SELECT Max(Identifier) FROM Epaisseur")
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Identifier = Long.Parse(obj(0))
             Next
@@ -113,6 +124,7 @@ Public Class Epaisseur
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -130,20 +142,25 @@ Public Class Epaisseur
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdEpaisseur As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdEpaisseur)
 
+            'Exécute la requête
             connection.ExecuteNonQuery("DELETE FROM Epaisseur WHERE Identifier=@Identifier", parameters)
 
             parameters.Clear()
 
+            'Ferme la connection
             connection.Close()
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error")
         Finally
             Try
+                'Assure la fermeture de la connction
                 connection.Close()
             Catch ex As Exception
             End Try

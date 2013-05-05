@@ -167,17 +167,22 @@ Public Class Session
         If Not isAllRights Then rights = " AND Login <> 'Administrateur'"
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdentifierSession As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdentifierSession)
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Login, Password, IsAddCmd, IsUpdCmd, IsDelCmd, IsDispCA, IsDispPanel, IsUpdConfig, IsUpdSession FROM Session WHERE Identifier=@Identifier" + rights, parameters)
 
             parameters = Nothing
 
+            'Ferme la connection
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Login = obj(1).ToString()
                 Me.Password = obj(2).ToString()
@@ -193,6 +198,7 @@ Public Class Session
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -215,12 +221,16 @@ Public Class Session
         If Not isAllRights Then rights = " WHERE Login <> 'Administrateur'"
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Login, Password, IsAddCmd, IsUpdCmd, IsDelCmd, IsDispCA, IsDispPanel, IsUpdConfig, IsUpdSession FROM Session" + rights)
 
+            'Ferme la connection
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
                 sessions.Add(New Session(obj(1).ToString(), obj(2).ToString(), Boolean.Parse(obj(3)), Boolean.Parse(obj(4)), Boolean.Parse(obj(5)), Boolean.Parse(obj(6)), Boolean.Parse(obj(7)), Boolean.Parse(obj(8)), Boolean.Parse(obj(9)),
                                          Long.Parse(obj(0))))
@@ -229,6 +239,7 @@ Public Class Session
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -247,8 +258,10 @@ Public Class Session
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parLogin As MySqlParameter = connection.Create("@Login", DbType.String, Me.Login)
             parameters.Add(parLogin)
             Dim parPassword As MySqlParameter = connection.Create("@Password", DbType.String, Me.Password)
@@ -268,12 +281,17 @@ Public Class Session
             Dim parIsUpdSession As MySqlParameter = connection.Create("@IsUpdSession", DbType.Boolean, Me.IsUpdSession)
             parameters.Add(parIsUpdSession)
 
-            Dim query As String = "INSERT INTO Session (Login, Password, IsAddCmd, IsUpdCmd, IsDelCmd, IsDispCA, IsDispPanel, IsUpdConfig, IsUpdSession) VALUES (@Login, MD5(@Password), @IsAddCmd, @IsUpdCmd, @IsDelCmd, @IsDispCA, @IsDispPanel, @IsUpdConfig, @IsUpdSession)"
+            'Requête
+            Dim query As String = "INSERT INTO Session (Login, Password, IsAddCmd, IsUpdCmd, IsDelCmd, IsDispCA, IsDispPanel, IsUpdConfig, IsUpdSession) VALUES (@Login, MD5(@Password), @IsAddCmd, @IsUpdCmd, @IsDelCmd, " +
+                "@IsDispCA, @IsDispPanel, @IsUpdConfig, @IsUpdSession)"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
+            'Récupère l'identifier de dernier enregistrement
             Objects = connection.ExecuteQuery("SELECT Max(Identifier) FROM Session")
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Identifier = Long.Parse(obj(0))
             Next
@@ -284,6 +302,7 @@ Public Class Session
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -301,8 +320,10 @@ Public Class Session
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdSession As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdSession)
             Dim parLogin As MySqlParameter = connection.Create("@Login", DbType.String, Me.Login)
@@ -324,8 +345,11 @@ Public Class Session
             Dim parIsUpdSession As MySqlParameter = connection.Create("@IsUpdSession", DbType.Boolean, Me.IsUpdSession)
             parameters.Add(parIsUpdSession)
 
-            Dim query As String = "UPDATE Session SET Login = @Login, IsAddCmd = @IsAddCmd, IsUpdCmd = @IsUpdCmd, IsDelCmd = @IsDelCmd, IsDispCA = @IsDispCA, IsDispPanel = @IsDispPanel, IsUpdConfig = @IsUpdConfig, IsUpdSession = @IsUpdSession WHERE Identifier = @Identifier"
+            'Requête
+            Dim query As String = "UPDATE Session SET Login = @Login, IsAddCmd = @IsAddCmd, IsUpdCmd = @IsUpdCmd, IsDelCmd = @IsDelCmd, IsDispCA = @IsDispCA, IsDispPanel = @IsDispPanel, IsUpdConfig = @IsUpdConfig, " +
+                "IsUpdSession = @IsUpdSession WHERE Identifier = @Identifier"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
             parameters = Nothing
@@ -334,6 +358,7 @@ Public Class Session
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -350,20 +375,25 @@ Public Class Session
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdSession As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdSession)
 
+            'Exécute la requête
             connection.ExecuteNonQuery("DELETE FROM Session WHERE Identifier=@Identifier", parameters)
 
             parameters.Clear()
 
+            'Ferme la connection
             connection.Close()
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error")
         Finally
             Try
+                'Assure la fermeture de la requête
                 connection.Close()
             Catch ex As Exception
             End Try

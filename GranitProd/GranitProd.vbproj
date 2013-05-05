@@ -156,9 +156,6 @@
     <Compile Include="BindingConverter\BackgroundRemarquesConverter.vb" />
     <Compile Include="BindingConverter\WarningRemarquesConverter.vb" />
     <Compile Include="BindingConverter\WorkBackgroundConverter.vb" />
-    <Compile Include="Composants\NumericUpDown.xaml.vb">
-      <DependentUpon>NumericUpDown.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Fenêtres\ConsultCommande.xaml.vb">
       <DependentUpon>ConsultCommande.xaml</DependentUpon>
     </Compile>
@@ -207,10 +204,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Composants\Enlevement.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Composants\NumericUpDown.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -422,19 +415,10 @@
     <Resource Include="Images\up.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="gprod.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="granit.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="prod.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Images\prod.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="icone.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">

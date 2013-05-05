@@ -203,6 +203,7 @@ Public Class NouvelleCommande
     ''' </summary>
     ''' <remarks></remarks>
     Public Sub InitDefault()
+        'Initialise les différentes combobox et autres valeurs fixes de la fenêtre
         CbxSemaineCommande.Items.Add("Sem")
         CbxSemaineCommande.SelectedIndex = 0
         CbxCommandeYear.Items.Add("Année")
@@ -239,36 +240,30 @@ Public Class NouvelleCommande
             CbxMesureYear.Items.Add(i)
         Next
 
-        Dim Objects As New List(Of List(Of Object))
-        Dim connection As New MGConnection(My.Settings.DBSource)
-
         Try
-            connection.Open()
-
+            'Charge la liste des états
             ListEtats = Etat.GetEtats()
 
+            'Charge la liste des types de relevés
             ListMesures = Mesure.GetMesures()
 
+            'Charge la liste des matériaux
             ListMateriaux = Materiau.GetMateriaux()
 
+            'Charge la liste des natures
             ListNatures = Nature.GetNatures()
 
+            'Charge la liste des prestations
             ListFinalisations = Finalisation.GetFinalisations()
 
+            'Charge la liste des épaisseurs
             ListEpaisseurs = Epaisseur.GetEpaisseurs()
 
+            'Charge la liste des qualités
             ListQualites = Qualite.GetQualites()
-
-            connection.Close()
 
         Catch ex As Exception
             MessageBox.Show(ex.Message)
-        Finally
-            Try
-                connection.Close()
-            Catch ex As Exception
-
-            End Try
         End Try
 
         TxtNumCmd.Focus()
@@ -283,19 +278,25 @@ Public Class NouvelleCommande
         Me.LbxNatures.Items.Clear()
         Me.LbxFinalisations.Items.Clear()
 
+        'Instancie une connection à la base de données
         Dim Objects As New List(Of List(Of Object))
         Dim connection As New MGConnection(My.Settings.DBSource)
 
+        'Rempli la combobox des états grâce à la liste des états chargés
         Me.CbxEtat.ItemsSource = ListEtats
         Me.CbxEtat.SelectedIndex = 0
 
+        'Rempli la combobox des qualités grâce à la liste des qualités chargées
         Me.CbxQualite.ItemsSource = ListQualites
 
+        'Rempli la combobox des types de mesure grâce à la liste des types de mesure chargés
         Me.CbxMesure.ItemsSource = ListMesures
 
+        'Rempli la fenêtre avec les données de la commande passée en paramètre, le cas échéant
         If (Me.Commande IsNot Nothing AndAlso Me.Commande.Client IsNot Nothing) Then
             Me.TxtNumCmd.Text = Me.Commande.NoCommande
 
+            'Ajoute le client à l'AutocompleteBox
             Dim cli As New List(Of Client)
             cli.Add(Me.Commande.Client)
             Me.AutoCompNClient.ItemsSource = cli
@@ -304,6 +305,7 @@ Public Class NouvelleCommande
             Me.AutoCompNClient.Tag = Me.Commande.Client
             Me.AutoCompNClient.Text = Me.Commande.Client.Nom
 
+            'Ajoute la contremarque à l'AutocompleteBox
             Me.AutoCompNContremarque.Tag = New Contremarque()
             If Me.Commande.Contremarque IsNot Nothing Then
                 Me.AutoCompNContremarque.ItemsSource = Nothing
@@ -315,8 +317,10 @@ Public Class NouvelleCommande
                 Me.AutoCompNContremarque.Text = Me.Commande.Contremarque.Nom
             End If
 
+            'Sélectionne la date de la commande
             Me.DpkDateCommande.SelectedDate = Me.Commande.DateCommande
 
+            'Rempli la liste des matériaux avec les informations concernant les matériaux faisant parti de la commande
             For Each m In ListMateriaux
                 Dim isExists As Boolean = False
 
@@ -332,6 +336,7 @@ Public Class NouvelleCommande
                 Me.LbxMateriaux.Items.Add(mt)
             Next
 
+            'Rempli la liste des natures avec les informartions concernant les natures faisant parti de la commande
             For Each n In ListNatures
                 Dim isExists As Boolean = False
 
@@ -346,6 +351,7 @@ Public Class NouvelleCommande
                 Me.LbxNatures.Items.Add(nt)
             Next
 
+            'Sélectionne l'état de la commande
             For Each item In CbxEtat.Items
                 If (Me.Commande.Etat.Equals(item)) Then
                     CbxEtat.SelectedItem = item
@@ -356,6 +362,7 @@ Public Class NouvelleCommande
             Dim heure As Integer
             Dim minute As Integer
 
+            'Rempli les temps de production
             Dim temp() As String = convertMinuteToHourMinute(Me.Commande.TpsDebit).Split(";")
             heure = temp(0)
             minute = temp(1)
@@ -380,8 +387,10 @@ Public Class NouvelleCommande
             Me.TxtTpsAutresH.Text = heure
             Me.TxtTpsAutresM.Text = minute
 
+            'Sélectionne la date prévue
             Me.DpkDelaiPrevu.SelectedDate = Me.Commande.DelaiPrevu
 
+            'Rempli la liste des prestations avec les informations concernant les prestations faisant parti de la commande
             For Each f In ListFinalisations
                 Dim isExists As Boolean = False
 
@@ -396,6 +405,7 @@ Public Class NouvelleCommande
                 Me.LbxFinalisations.Items.Add(ft)
             Next
 
+            'Sélectionne la date et l'heure des prestations
             Me.DpkFinalisation.SelectedDate = Me.Commande.DateFinalisations
             heure = Me.Commande.DateFinalisations.Hour
             minute = Me.Commande.DateFinalisations.Minute
@@ -406,6 +416,7 @@ Public Class NouvelleCommande
 
             Me.TxtRdvFinalisation.Text = hour + "h" + min
 
+            'Met en forme le montant afin de faire les bons espaces. (le booléen sert de flague afin de "désactiver" temporairement le TextChange des TextBox pour le montant et les arrhes versées
             Me._IsTextChangeMontant = False
             Dim cc As New ChiffreConverter
             Dim tempMontant As String = cc.Convert(Me.Commande.MontantHT, Nothing, Nothing, Nothing)
@@ -413,6 +424,7 @@ Public Class NouvelleCommande
 
             Me.TxtArrhes.Text = Me.Commande.Arrhes
 
+            'Sélectionne le type de relevé de la commande
             For Each item In CbxMesure.Items
                 If (Me.Commande.Mesure.Equals(item)) Then
                     CbxMesure.SelectedItem = item
@@ -420,6 +432,7 @@ Public Class NouvelleCommande
                 End If
             Next
 
+            'Sélectionne la date et l'heure des relevés pour la commande affichée
             If Not Me.Commande.DateMesure = DateTime.MinValue Then
                 Me.DpkMesure.SelectedDate = Me.Commande.DateMesure
             Else
@@ -433,37 +446,45 @@ Public Class NouvelleCommande
 
             Me.TxtRdvMesure.Text = hour + "h" + min
 
+            'Met en forme l'adresse du chantier
             temp = Me.Commande.AdresseChantier.Split(";")
             Me.TxtAdresse.Text = temp(0)
             Me.TxtCodePostal.Text = temp(1)
             Me.TxtVille.Text = temp(2)
 
+            'Rempli le DataGrid des remarques de la commande
             For Each rm In Me.Commande.Remarques
                 DgRemarques.Items.Add(rm)
             Next
 
+            'Rempli le DataGrid des problèmes de qualité de la commande
             For Each q In Me.Commande.Qualites
                 DgQualites.Items.Add(q)
             Next
 
         Else
+            'Rempli la liste des matériaux
             For Each m In ListMateriaux
                 Dim mt As New MateriauTemplate(m)
                 Me.LbxMateriaux.Items.Add(mt)
             Next
 
+            'Rempli la liste des natures
             For Each n In ListNatures
                 Dim nt As New NatureTemplate(n)
                 Me.LbxNatures.Items.Add(nt)
             Next
 
+            'Rempli la liste des prestations
             For Each f In ListFinalisations
                 Dim ft As New FinalisationTemplate(f)
                 Me.LbxFinalisations.Items.Add(ft)
             Next
         End If
 
+        'Vérifie les droits de la session en cours
         If (Me.Session IsNot Nothing AndAlso Not Me.Session.IsAddCmd And Me.Session.IsUpdCmd) Then
+            'Si la session a peu de droits (seulement mise à jour) alors beaucoup de choses ne sont pas modifiable, et les informations comme le montant de la commande ne sont pas visibles
             Me.StDateCommande.IsEnabled = False
             Me.TxtNumCmd.IsEnabled = False
             Me.AutoCompNClient.IsEnabled = False
@@ -522,6 +543,7 @@ Public Class NouvelleCommande
                 End If
             Next
 
+            'Booléen qui permettra de savoir, lors de la sauvegarde, qu'il ne faut pas sauvegarder les données non modifiables
             Me._IsRestrictUpdate = True
         ElseIf Me.Session IsNot Nothing AndAlso Me.Session.IsDelCmd Then
             If Me.Session.IsDelCmd Then
@@ -807,6 +829,7 @@ Public Class NouvelleCommande
             End If
         Next
 
+        'Permet de scroller automatiquement jusqu'à l'item recherché
         Me.LbxMateriaux.ScrollIntoView(LbxMateriaux.Items.GetItemAt(mat))
     End Sub
 
@@ -995,6 +1018,7 @@ Public Class NouvelleCommande
     ''' <remarks></remarks>
     Private Sub BtnAddRemarque_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
         If (TxtNewRemarque.Text <> "") Then
+            'Récupère la session si celle ci n'est pas connue
             If (Me.Session.Login = "") Then
                 If (TypeOf (Parent) Is TabItem) Then
                     Dim ti As TabItem = Parent
@@ -1011,11 +1035,9 @@ Public Class NouvelleCommande
                 Dim culture As New CultureInfo("fr-FR")
                 Dim dates As DateTime = Date.Now
 
-
+                'Ajoute la ramarque avec la date/heure et la source (session)
                 Dim remark As New Remarque(TxtNewRemarque.Text, Me.Session.Login, dates.ToString("g", culture.DateTimeFormat))
                 DgRemarques.Items.Add(remark)
-
-                If Me.Planning IsNot Nothing Then Me.Planning.Fill()
             End If
 
             Me.TxtNewRemarque.Text = String.Empty
@@ -1030,6 +1052,7 @@ Public Class NouvelleCommande
     ''' <remarks></remarks>
     Private Sub BtnAddQualite_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
         If (CbxQualite.SelectedIndex >= 0) Then
+            'Récupère la session si celle ci n'est pas connue
             If (Me.Session.Login = "") Then
                 If (TypeOf (Parent) Is TabItem) Then
                     Dim ti As TabItem = Parent
@@ -1040,18 +1063,13 @@ Public Class NouvelleCommande
                     Me.Session = main.Session
                 End If
             End If
-
+            'Ajoute le problème de qualité
             If (Me.Session.Login <> "") Then
                 Dim dates As DateTime = Date.Now
 
-                Dim qualite As Qualite = CbxQualite.SelectedItem
-                qualite.DatePost = dates
-                qualite.Source = Me.Session.Login
-                qualite.Remarque = Me.TxtCommentaire.Text
+                Dim qualite As New Qualite(Me.CbxQualite.SelectedItem.Type, Me.CbxQualite.SelectedItem.Identifier, Me.Session.Login, dates, Me.TxtCommentaire.Text)
 
                 Me.DgQualites.Items.Add(qualite)
-
-                If Me.Planning IsNot Nothing Then Me.Planning.Fill()
             End If
 
             Me.CbxQualite.SelectedItem = Nothing
@@ -1381,49 +1399,20 @@ Public Class NouvelleCommande
                                                          MessageBoxImage.Warning)
 
         If result = MessageBoxResult.Yes Then
-            Dim parameters As New List(Of MySqlParameter)
-            Dim connection As New MGConnection(My.Settings.DBSource)
 
-            Try
-                connection.Open()
+            Me.Commande.Delete()
 
-                Dim parIdCommande As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Commande.Identifier)
-                parameters.Add(parIdCommande)
+            MessageBox.Show("La commande n° " + Me.Commande.NoCommande.ToString() + " a été supprimée avec succès.", "Commande supprimée", MessageBoxButton.OK,
+                            MessageBoxImage.Information)
 
-                Dim query As String = "DELETE FROM Commande_Materiau WHERE Identifier_Commande = @Identifier;" +
-                                      "DELETE FROM Commande_Finalisation WHERE Identifier_Commande = @Identifier;" +
-                                      "DELETE FROM Commande_Nature WHERE Identifier_Commande = @Identifier;" +
-                                      "DELETE FROM Remarque WHERE IdentifierCommande=@Identifier;" +
-                                      "DELETE FROM Commande_Qualite WHERE Identifier_Commande=@Identifier;" +
-                                      "DELETE FROM Commande WHERE Identifier=@Identifier;" +
-                                      "DELETE FROM Client WHERE (SELECT count(c.Identifier) FROM Commande as c WHERE IdentifierClient=Client.Identifier) = 0;" +
-                                      "DELETE FROM Contremarque WHERE (SELECT count(c.Identifier) FROM Commande as c WHERE IdentifierContremarque=Contremarque.Identifier) = 0"
-
-                connection.ExecuteNonQuery(query, parameters)
-
-                parameters.Clear()
-
-                connection.Close()
-
-                MessageBox.Show("La commande n° " + Me.Commande.NoCommande.ToString() + " a été supprimée avec succès.", "Commande supprimée", MessageBoxButton.OK,
-                                MessageBoxImage.Information)
-
-                If Me.UC IsNot Nothing Then
-                    Dim search As RechercheCommande = Me.UC
-                    search.Reinitialize()
-                End If
-                If Me.Planning IsNot Nothing Then Me.Planning.Fill()
-                Me.Window.Close()
-
-
-            Catch ex As Exception
-                MessageBox.Show(ex.Message, "Error")
-            Finally
-                Try
-                    connection.Close()
-                Catch
-                End Try
-            End Try
+            'Actualise la recherche de commande
+            If Me.UC IsNot Nothing Then
+                Dim search As RechercheCommande = Me.UC
+                search.Reinitialize()
+            End If
+            'Actualise les commandes affichées dans le planning
+            If Me.Planning IsNot Nothing Then Me.Planning.Fill()
+            Me.Window.Close()
         End If
     End Sub
 
@@ -1467,6 +1456,7 @@ Public Class NouvelleCommande
     ''' <remarks></remarks>
     Private Sub TxtNewRemarque_KeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Input.KeyEventArgs)
 
+        'lie l'action de la touche entrée avec le bouton d'ajout d'une remarque
         If (e.Key = Key.Enter) Then
             BtnAddRemarque_Click(Nothing, Nothing)
         End If
@@ -1480,6 +1470,7 @@ Public Class NouvelleCommande
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub ListBox_MouseClick(ByVal sender As System.Object, ByVal e As System.Windows.Input.MouseButtonEventArgs)
+        'Bloque la modification des données contenues dans les listbox pour les utilisateurs ayant seulement le droit de mise à jour d'une commande
         If _IsRestrictUpdate Then
             e.Handled = True
         End If
@@ -1506,6 +1497,7 @@ Public Class NouvelleCommande
     ''' <remarks></remarks>
     Private Sub TxtCommentaire_KeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Input.KeyEventArgs)
 
+        'Lie l'action de la toucher Enter sur le textbox d'ajout d'un commentaire avec le bouton correspondant
         If (e.Key = Key.Enter) Then
             BtnAddQualite_Click(Nothing, Nothing)
         End If
@@ -1617,25 +1609,31 @@ Public Class NouvelleCommande
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
         Dim objects As New List(Of List(Of Object))
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Élargit la recherche
             Dim text As String = Me.AutoCompNClient.Text.Replace("'", "\'")
             text = text.Replace("""", "\""")
 
+            'Exécute la requête
             objects = connection.ExecuteQuery("SELECT Identifier, Nom FROM Client WHERE Nom Like '%" + text.ToUpper() + "%' Order By Nom")
 
             Dim clients As New List(Of Client)
 
+            'Traite les résultats
             For Each obj In objects
                 clients.Add(New Client(obj(1).ToString(), Long.Parse(obj(0))))
             Next
 
+            'Modifie la source de l'AutocompleteBox avec les résultats obtenus
             Me.AutoCompNClient.ItemsSource = clients
             Me.AutoCompNClient.PopulateComplete()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -1656,25 +1654,31 @@ Public Class NouvelleCommande
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
         Dim objects As New List(Of List(Of Object))
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Élargit la recherche
             Dim text As String = Me.AutoCompNClient.Text.Replace("'", "\'")
             text = text.Replace("""", "\""")
 
+            'Exécute la requête
             objects = connection.ExecuteQuery("SELECT Identifier, Nom FROM Contremarque WHERE Nom Like '%" + text.ToUpper() + "%' Order By Nom")
 
             Dim contremarques = New List(Of Contremarque)
 
+            'Traite les résultats
             For Each obj In objects
                 contremarques.Add(New Contremarque(obj(1).ToString(), Long.Parse(obj(0))))
             Next
 
+            'Modifie la source de l'AutocompleteBox avec les résultats obtenus
             Me.AutoCompNContremarque.ItemsSource = contremarques
             Me.AutoCompNContremarque.PopulateComplete()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try

@@ -13,7 +13,7 @@ Public Module ExcelExport
     ''' <param name="format"></param>
     ''' <remarks></remarks>
     Public Sub ExportCommande(ByVal cmds As List(Of Commande), ByVal search As String, ByVal etatCmd As String, ByVal format As String)
-
+        'Instancie une nouvelle application EXCEL
         Dim xlApp As Excel.Application
         Dim xlWorkBook As Excel.Workbook
         Dim xlWorkSheet As Excel.Worksheet
@@ -27,12 +27,17 @@ Public Module ExcelExport
             Dim jour As String
             Dim mois As String
 
+            'Récupère la liste des processus à l'instant
             Dim p() As Process = Process.GetProcesses()
+            'Crée un processus Excel
             xlApp = New Excel.Application
+            'Récupère la nouvelle liste des processus
             Dim p2() As Process = Process.GetProcesses()
 
+            'En déduit l'id du processus créé
             procId = GetProcId(p, p2)
 
+            'Paramètre la feuille Excel
             xlWorkBook = xlApp.Workbooks.Add(misValue)
             xlWorkSheet = xlWorkBook.Sheets("Feuil1")
             xlWorkSheet.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape
@@ -41,6 +46,7 @@ Public Module ExcelExport
             Dim l As Integer = 3
             Dim c As Integer = 0
 
+            'Parcours la liste de commandes passée en paramètre et rempli une colonne par commande
             For Each cmd In cmds
                 l += 1
                 xlWorkSheet.Cells(l, 1) = cmd.NoCommande
@@ -108,6 +114,7 @@ Public Module ExcelExport
                     " sem " + New PlanningControl().GetWeekOfDate(cmd.DateFinalisations).ToString()
             Next
 
+            'Renseigne les noms de colonne
             xlWorkSheet.Cells(3, 1) = "N°"
             xlWorkSheet.Cells(3, 2) = "Date cmd"
             xlWorkSheet.Cells(3, 3) = "Client"
@@ -120,6 +127,7 @@ Public Module ExcelExport
             xlWorkSheet.Cells(3, 10) = "Prestations"
             xlWorkSheet.Cells(3, 11) = "Date Prest°"
 
+            ' Formate les cellules
             chartRange = xlWorkSheet.Range("a1", "k" + l.ToString())
             chartRange.HorizontalAlignment = 3
             chartRange.VerticalAlignment = 2
@@ -142,6 +150,7 @@ Public Module ExcelExport
             chartRange.Merge()
             chartRange.FormulaR1C1 = etatCmd
 
+            'Ajoute le logo de l'entreprise en haut à gauche
             xlWorkSheet.Shapes.AddPicture(System.IO.Path.GetFullPath(My.Settings.Logo), Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, 10, 5, 100, 20)
 
             chartRange = xlWorkSheet.Range("i2", "k2")
@@ -160,6 +169,7 @@ Public Module ExcelExport
             chartRange = xlWorkSheet.Range("a3", "k3")
             chartRange.BorderAround(Excel.XlLineStyle.xlDouble, Excel.XlBorderWeight.xlMedium, Excel.XlColorIndex.xlColorIndexAutomatic, Excel.XlColorIndex.xlColorIndexAutomatic)
 
+            'Exporte au format XLSX
             If format = "XLSX" Then
                 If System.IO.File.Exists(System.IO.Path.GetFullPath(My.Settings.ExportFile + "\m-granit.xlsx")) Then
                     System.IO.File.Delete(System.IO.Path.GetFullPath(My.Settings.ExportFile + "\m-granit.xlsx"))
@@ -167,10 +177,8 @@ Public Module ExcelExport
                 xlWorkSheet.SaveAs(System.IO.Path.GetFullPath(My.Settings.ExportFile + "\m-granit.xlsx"))
 
                 xlApp.Visible = True
-                'xlWorkBook.Close()
-                'xlApp.Quit()
-                '
-                'Process.Start(System.IO.Path.GetFullPath(My.Settings.ExportFile + "\m-granit.xlsx"))
+
+                'Exporte au format PDF
             ElseIf format = "PDF" Then
                 Dim paramExportFilePath As String = System.IO.Path.GetFullPath(My.Settings.ExportFile + "\m-granit.pdf")
                 Dim paramExportFormat As XlFixedFormatType = _
@@ -203,6 +211,7 @@ Public Module ExcelExport
                 procId = 0
             End If
 
+            'Catch l'erreur dans un fichier LOG
             Dim content As String = "ExportExcel" + vbCrLf + ex.StackTrace.ToString() + vbCrLf + vbCrLf + ex.Source.ToString()
             If ex.InnerException IsNot Nothing Then
                 content = content + vbCrLf + vbCrLf + ex.InnerException.ToString()
@@ -214,8 +223,10 @@ Public Module ExcelExport
 
             sw.Close()
         Finally
+            'Libère les ressources
             xlWorkBook = Nothing
             xlApp = Nothing
+            'Appelle le Garbage Collector afin de libérer plus rapidement les ressources
             GC.Collect()
             GC.WaitForPendingFinalizers()
         End Try

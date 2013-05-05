@@ -69,6 +69,7 @@ Public Class CA
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub CbxChoix_SelectionChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
+        'Met à jour l'interface graphique en fonction du choix d'affichage de l'utilisateur
         If (CbxChoix.SelectedIndex = 0) Then
             CbxChoixWeek.Visibility = Windows.Visibility.Visible
             CbxChoixMonth.Visibility = Windows.Visibility.Collapsed
@@ -94,6 +95,7 @@ Public Class CA
             DgCa.Columns(0).Header = "Mois"
         End If
 
+        'Met à jour les données contenues dans le DataGrid
         Me.CbxParam_SelectionChanged(Nothing, Nothing)
     End Sub
 
@@ -110,28 +112,38 @@ Public Class CA
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Choix par semaine
             If CbxChoix.SelectedIndex = 0 Then
                 Dim pl As New PlanningControl()
                 Dim total As Decimal = 0
 
+                'Récupère les jours de la semaine sélectionnée
                 Dim semaine As List(Of Date) = pl.GetDaysOfWeek(CbxChoixWeek.SelectedItem, CbxChoixYear.SelectedItem)
+
+                'Parcours les jours de la semaine
                 For Each d In semaine
+                    'Défini les paramètres de la requête
                     Dim parDate As MySqlParameter = connection.Create("@Date", DbType.DateTime, d)
                     parameters.Add(parDate)
 
+                    'Exécute la requête
                     Objects = connection.ExecuteQuery("SELECT NumCmd, Montant FROM Commande WHERE DelaiPrevu=@Date", parameters)
 
+                    'Vérifie que la requête a retrourné au moins 1 résultat
                     If Objects.Count > 0 Then
                         Dim chiffre As Decimal
                         Dim listCmd As New List(Of Commande)
 
+                        'Traite les résultats puis ajoute le montant de chaque commande au chiffre d'affaire de chaque journée. ainsi que les n° des commandes concernées
                         For Each obj In Objects
                             chiffre += Decimal.Parse(obj(1))
                             listCmd.Add(New Commande(Integer.Parse(obj(0))))
                         Next
 
+                        'Ajoute un item par jour correspondant au délai prévu d'au moins une commande, puis ajoute son montant au CA total de la semaine
                         Dim caItem As New CaItem(d.ToString("dddd dd MMMM", New CultureInfo("fr-FR")), chiffre, listCmd)
                         DgCa.Items.Add(caItem)
                         total += caItem.Chiffre
@@ -142,6 +154,7 @@ Public Class CA
                     parameters.Clear()
                 Next
 
+                'Affiche le CA total de la semaine
                 If total > 0 Then
                     Dim cc As New ChiffreConverter
                     TxtTotal.Text = cc.Convert(total.ToString(), Nothing, Nothing, Nothing)
@@ -149,9 +162,11 @@ Public Class CA
                     TxtTotal.Text = "0,00 €"
                 End If
 
+                'Choix d'affichage par mois
             ElseIf CbxChoix.SelectedIndex = 1 And CbxChoixYear.SelectedItem IsNot Nothing Then
                 Dim cal As New GregorianCalendar
                 Dim pl As New PlanningControl
+                'Récupère le nombre du jours dans le mois sélectionné
                 Dim days As Integer = cal.GetDaysInMonth(CbxChoixYear.SelectedItem, CbxChoixMonth.SelectedIndex + 1)
                 Dim month As Integer = CbxChoixMonth.SelectedIndex + 1
                 Dim year As Integer = CbxChoixYear.SelectedItem
@@ -160,14 +175,20 @@ Public Class CA
                 Dim total As Decimal = 0
                 Dim listCmd As New List(Of Commande)
 
+                'Parcours tous les jours du mois
                 For i = 1 To days
                     Dim d As New DateTime(year, month, i)
+                    'Récupère le numéro de semaine d'une date
                     Dim sem As Integer = pl.GetWeekOfDate(d)
+
+                    'Défini les paramètres de la requête
                     Dim parDate As MySqlParameter = connection.Create("@Date", DbType.DateTime, d)
                     parameters.Add(parDate)
 
+                    'Exécute la requête
                     Objects = connection.ExecuteQuery("SELECT NumCmd, Montant FROM Commande WHERE DelaiPrevu=@Date", parameters)
 
+                    'Ajoute un item par semaine en calculant le chiffre d'affaire de chaque semaine et les n° de commandes correspondant à cette semaine. Ajoute également le CA au CA total du mois
                     If i = days Then
                         Dim caItem As New CaItem(tempSem, chiffre, listCmd)
                         DgCa.Items.Add(caItem)
@@ -202,25 +223,33 @@ Public Class CA
                     parameters.Clear()
                 Next
 
+                'Affiche le CA du mois
                 If total > 0 Then
                     Dim cc As New ChiffreConverter
                     TxtTotal.Text = cc.Convert(total.ToString(), Nothing, Nothing, Nothing)
                 Else
                     TxtTotal.Text = "0,00 €"
                 End If
+
+                'Choix par année
             ElseIf CbxChoix.SelectedIndex = 2 Then
                 Dim year = CbxChoixYear.SelectedItem
                 Dim total As Decimal = 0
                 Dim chiffre As Decimal = 0
                 Dim listCmd As New List(Of Commande)
 
+                'Parcours la liste des mois de l'année
                 For i = 1 To 12
                     Dim d As New DateTime(year, i, 1)
+
+                    'Défini les paramètres de la requête
                     Dim parDate As MySqlParameter = connection.Create("@Date", DbType.DateTime, d)
                     parameters.Add(parDate)
 
+                    'Exécute la requête
                     Objects = connection.ExecuteQuery("SELECT NumCmd, Montant FROM Commande WHERE YEAR(DelaiPrevu)=YEAR(@Date) And MONTH(DelaiPrevu)=MONTH(@Date)", parameters)
 
+                    'Traite les résultats, ajoute un item par mois avec le CA correspondant et les n° des commandes correspondantes. Puis ajoute le CA du mois au CA total de l'année
                     For Each obj In Objects
                         chiffre += Decimal.Parse(obj(1))
                         listCmd.Add(New Commande(Integer.Parse(obj(0))))
@@ -235,6 +264,7 @@ Public Class CA
                     parameters.Clear()
                 Next
 
+                'Affiche le CA total de l'année
                 If total > 0 Then
                     Dim cc As New ChiffreConverter
                     TxtTotal.Text = cc.Convert(total.ToString(), Nothing, Nothing, Nothing)
@@ -248,6 +278,7 @@ Public Class CA
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -267,10 +298,12 @@ Public Class CA
     Private Sub DgCa_MouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Input.MouseButtonEventArgs)
         If Me.ListCommandes IsNot Nothing Then
             If DgCa.SelectedItem IsNot Nothing Then
+                'Récupère l'item sélectionné
                 Dim caItem As CaItem = DgCa.SelectedItem
 
                 Me.ListCommandes.Items.Clear()
 
+                'Ajoute toutes les commandes correspondantes à la liste du tableau de bord
                 For Each ca In caItem.NumCmds
                     Me.ListCommandes.Items.Add(ca.GetCommande())
                 Next

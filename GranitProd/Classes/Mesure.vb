@@ -115,17 +115,22 @@ Public Class Mesure
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'ouvre la requête
             connection.Open()
 
+            'Défini les paramètres de la requêtes
             Dim parIdentifierMesure As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdentifierMesure)
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur, Display FROM Mesure WHERE Identifier=@Identifier", parameters)
 
             parameters = Nothing
 
+            'Ferme la requête
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Label = obj(1).ToString()
                 Me.Color = obj(2).ToString()
@@ -135,6 +140,7 @@ Public Class Mesure
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la requête
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -154,12 +160,16 @@ Public Class Mesure
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur, Display FROM Mesure Order By Label")
 
+            'Ferme la connection
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
                 mesures.Add(New Mesure(obj(1).ToString(), obj(2).ToString(), Boolean.Parse(obj(3)), Long.Parse(obj(0))))
             Next
@@ -167,6 +177,44 @@ Public Class Mesure
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la requête
+                connection.Close()
+            Catch ex As Exception
+            End Try
+        End Try
+
+        Return mesures
+    End Function
+
+    ''' <summary>
+    ''' Permet de récupérer tous les type de mesure devant être affichés dans le planning dans la base de données
+    ''' </summary>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Public Shared Function GetLegendMesures() As List(Of Mesure)
+        Dim mesures As New List(Of Mesure)
+        Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
+        Dim Objects As New List(Of List(Of Object))
+
+        Try
+            'Ouvre la connection
+            connection.Open()
+
+            'Exécute la requête
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur, Display FROM Mesure WHERE Display=1 Order By Label")
+
+            'Ferme la connection
+            connection.Close()
+
+            'Traite les résultats
+            For Each obj In Objects
+                mesures.Add(New Mesure(obj(1).ToString(), obj(2).ToString(), Boolean.Parse(obj(3)), Long.Parse(obj(0))))
+            Next
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        Finally
+            Try
+                'Assure la fermeture de la requête
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -185,8 +233,10 @@ Public Class Mesure
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
             Dim parCouleur As MySqlParameter = connection.Create("@Couleur", DbType.String, Me.Color)
@@ -194,12 +244,16 @@ Public Class Mesure
             Dim parDisplay As MySqlParameter = connection.Create("@Display", DbType.Boolean, Me.Display)
             parameters.Add(parDisplay)
 
+            'Requête
             Dim query As String = "INSERT INTO Mesure (Label, Couleur, Display) VALUES (@Label, @Couleur, @Display)"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
+            'Récupère l'identifier du dernier enregistrement
             Objects = connection.ExecuteQuery("SELECT Max(Identifier) FROM Mesure")
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Identifier = Long.Parse(obj(0))
             Next
@@ -210,6 +264,7 @@ Public Class Mesure
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -227,8 +282,10 @@ Public Class Mesure
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdMesure As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdMesure)
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
@@ -238,8 +295,10 @@ Public Class Mesure
             Dim parDisplay As MySqlParameter = connection.Create("@Display", DbType.Boolean, Me.Display)
             parameters.Add(parDisplay)
 
+            'Requête
             Dim query As String = "UPDATE Mesure SET Label=@Label, Couleur=@Couleur, Display=@Display WHERE Identifier=@Identifier"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
             parameters = Nothing
@@ -248,6 +307,7 @@ Public Class Mesure
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -264,20 +324,25 @@ Public Class Mesure
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la requête
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdMesure As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdMesure)
 
+            'Exécute la requête
             connection.ExecuteNonQuery("DELETE FROM Mesure WHERE Identifier=@Identifier", parameters)
 
-            parameters.Clear()
+            parameters = Nothing
 
+            'Ferme la requête
             connection.Close()
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error")
         Finally
             Try
+                'Ferme la requête
                 connection.Close()
             Catch ex As Exception
             End Try

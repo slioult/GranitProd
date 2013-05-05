@@ -122,33 +122,43 @@ Public Class Enlevement
 
         If Me.CbxAnnee.SelectedItem IsNot Nothing And Me.CbxSemaine.SelectedItem IsNot Nothing Then
             Try
+                'Ouvre la connection
                 connection.Open()
 
                 Dim pl As New PlanningControl
+
+                'Récupère la liste des jours de la semaine sélectionnée
                 Dim dates As List(Of Date) = pl.GetDaysOfWeek(Me.CbxSemaine.SelectedItem, Me.CbxAnnee.SelectedItem)
 
+                'Parcours cette liste
                 For Each d In dates
+                    'Défini le paramètre date de la requête
                     Dim parDate As MySqlParameter = connection.Create("@Date", DbType.DateTime, d)
                     parameters.Add(parDate)
 
+                    'Requête
                     Dim query As String = "SELECT NumCmd FROM Commande " +
                         "WHERE DAY(DateFinalisations)=DAY(@Date) And MONTH(DateFinalisations)=MONTH(@Date) And YEAR(DateFinalisations)=YEAR(@Date)"
 
+                    'Exécute la requête
                     Objects = connection.ExecuteQuery(query, parameters)
 
                     parameters.Clear()
 
+                    'Traite les résultats
                     For Each obj In Objects
                         Dim enlv As New Enlevement(New Commande(Integer.Parse(obj(0))).GetCommande())
                         Me.DgEnlevement.Items.Add(enlv)
                     Next
                 Next
 
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
                 MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
             Finally
                 Try
+                    'Assure la fermeture de la connection
                     connection.Close()
                 Catch
                 End Try
@@ -169,6 +179,8 @@ Public Class Enlevement
     Private Sub DgEnlevement_PreviewMouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Input.MouseButtonEventArgs)
         Dim comEnlevement As Enlevement = DgEnlevement.SelectedItem
         Dim cmd As New Commande(comEnlevement.NumCmd)
+
+        'Ouvre une consultation de commande
         Dim consult As New ConsultCommande(Me.Session, cmd.GetCommande(), Nothing, Me.Planning)
         consult.Show()
         e.Handled = True

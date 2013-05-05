@@ -124,6 +124,8 @@
         Dim comItem As Commentaires = DgCommentaires.SelectedItem
         If comItem IsNot Nothing Then
             Dim cmd As New Commande(comItem.NumCmd)
+
+            'Ouvre la consultation de commande
             Dim consult As New ConsultCommande(Me.Session, cmd.GetCommande(), Nothing, Me.Planning)
             consult.Show()
         End If
@@ -144,14 +146,18 @@
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT r.Identifier, r.Commentaire, r.Source, r.Date, r.IdentifierCommande, c.NumCmd " +
                                               "FROM Remarque as r, Commande as c " +
                                               "WHERE r.IdentifierCommande = c.Identifier " +
                                               "Order By r.Identifier DESC LIMIT 0, 10;")
+            'Ferme la connection
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
                 Dim comItem As New Commentaires(Integer.Parse(obj(5)), obj(2).ToString(), obj(3).ToString(), obj(1).ToString(), Long.Parse(obj(0)))
                 Me.DgCommentaires.Items.Add(comItem)
@@ -160,6 +166,7 @@
             MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try

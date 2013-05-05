@@ -378,7 +378,7 @@
                         </Button.Content>
                     </Button>
                 </Grid>
-                <DataGrid x:Name="DgQualites" CanUserAddRows="True" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Disabled" IsReadOnly="True" Style="{StaticResource DataGridItemStyle}" >
+                <DataGrid x:Name="DgQualites" CanUserAddRows="True" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Disabled" IsReadOnly="True" Style="{StaticResource DataGridItemStyle}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Source" Width="Auto" Binding="{Binding Source}" />
                         <DataGridTextColumn Header="Date/Heure" Width="Auto" Binding="{Binding DatePost, StringFormat=dd/MM/yyyy HH:mm}" />
