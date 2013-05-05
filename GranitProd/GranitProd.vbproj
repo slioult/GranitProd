@@ -428,9 +428,6 @@
     <Resource Include="granit.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\granit.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="prod.ico" />
   </ItemGroup>
   <ItemGroup>

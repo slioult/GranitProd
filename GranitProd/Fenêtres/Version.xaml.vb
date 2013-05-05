@@ -8,7 +8,7 @@
         InitializeComponent()
 
         ' Ajoutez une initialisation quelconque après l'appel InitializeComponent().
-        Me.TxtVersion.Text = My.Application.Info.Version.ToString()
+        Me.TxtVersion.Text = My.Application.Info.Version.ToString().Substring(0, My.Application.Info.Version.ToString().Length - 2)
 
     End Sub
 

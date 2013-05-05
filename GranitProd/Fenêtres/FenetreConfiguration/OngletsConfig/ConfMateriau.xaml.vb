@@ -48,6 +48,7 @@ Public Class ConfMateriau
     End Sub
 #End Region
 
+
 #Region "Button"
 
     ''' <summary>
@@ -137,5 +138,4 @@ Public Class ConfMateriau
     End Sub
 
 #End Region
-
 End Class

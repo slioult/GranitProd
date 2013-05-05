@@ -59,7 +59,7 @@ Public Class ConsultCommande
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub BtnConfig_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
-        Dim conf As New ConfigurationWindow(Me.Session)
+        Dim conf As New ConfigurationWindow(Me.Session, Me.NewCmd)
         conf.ShowDialog()
     End Sub
 

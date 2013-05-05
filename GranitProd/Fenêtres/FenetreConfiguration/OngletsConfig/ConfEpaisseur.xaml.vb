@@ -112,7 +112,6 @@ Public Class ConfEpaisseur
                 Me.CbxConfEpaisseur.SelectedItem = epaisseur
                 TxtNomEpaisseur.Clear()
                 Me.NouvelleCommande.ListMateriaux = Materiau.GetMateriaux()
-                Me.NouvelleCommande.LbxMateriaux.Items.Clear()
                 For Each m In Me.NouvelleCommande.ListMateriaux
                     Dim isExist As Boolean = False
 
@@ -123,6 +122,11 @@ Public Class ConfEpaisseur
                                 m = Mat
                                 Exit For
                             End If
+                        Next
+                    Else
+                        For Each mat In Me.NouvelleCommande.ListMateriaux
+                            Dim matT As New MateriauTemplate(mat)
+                            Me.NouvelleCommande.LbxMateriaux.Items.Add(matT)
                         Next
                     End If
 

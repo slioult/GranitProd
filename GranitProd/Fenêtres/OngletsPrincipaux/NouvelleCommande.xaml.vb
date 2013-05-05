@@ -419,7 +419,12 @@ Public Class NouvelleCommande
                     Exit For
                 End If
             Next
-            Me.DpkMesure.SelectedDate = Me.Commande.DateMesure
+
+            If Not Me.Commande.DateMesure = DateTime.MinValue Then
+                Me.DpkMesure.SelectedDate = Me.Commande.DateMesure
+            Else
+                Me.DpkMesure.SelectedDate = Nothing
+            End If
 
             heure = Me.Commande.DateMesure.Hour
             minute = Me.Commande.DateMesure.Minute
@@ -1126,6 +1131,19 @@ Public Class NouvelleCommande
                 arrhes = 0
             End If
 
+            'Récupère la date des relevés
+            If (Me.DpkMesure.SelectedDate IsNot Nothing) Then
+                Dim heure As Integer
+                Dim minute As Integer
+                heure = Integer.Parse(TxtRdvMesure.Text.Substring(0, 2))
+                Minute = Integer.Parse(TxtRdvMesure.Text.Substring(3, 2))
+
+                dateReleve = Me.DpkMesure.SelectedDate
+                If (heure <> 0 Or minute <> 0) Then
+                    dateReleve = New DateTime(dateReleve.Year, dateReleve.Month, dateReleve.Day, heure, minute, 0)
+                End If
+            End If
+
             'Récupère l'adresse du chantier
             Dim adresse As String = Me.TxtAdresse.Text + ";" + Me.TxtCodePostal.Text + ";" + Me.TxtVille.Text
 
@@ -1221,44 +1239,31 @@ Public Class NouvelleCommande
                                             If (Me.CbxMesure.SelectedItem IsNot Nothing) Then
                                                 releve = Me.CbxMesure.SelectedItem
 
-                                                'Récupère la date des relevés
-                                                If (Me.DpkMesure.SelectedDate IsNot Nothing) Then
-                                                    heure = Integer.Parse(TxtRdvMesure.Text.Substring(0, 2))
-                                                    minute = Integer.Parse(TxtRdvMesure.Text.Substring(3, 2))
+                                                'Vérifie l'unicité du numéro de commande
+                                                If Not Me.IsUpdate Then
+                                                    Dim connection As New MGConnection(My.Settings.DBSource)
+                                                    Dim Objects As New List(Of List(Of Object))
+                                                    Dim numResult As Integer
+                                                    Try
+                                                        connection.Open()
 
-                                                    dateReleve = Me.DpkMesure.SelectedDate
-                                                    If (heure <> 0 Or minute <> 0) Then
-                                                        dateReleve = New DateTime(dateReleve.Year, dateReleve.Month, dateReleve.Day, heure, minute, 0)
-                                                    End If
+                                                        Objects = connection.ExecuteQuery("SELECT count(NumCmd) FROM Commande WHERE NumCmd=" + numCmd.ToString())
+                                                        For Each obj In Objects
+                                                            numResult = Integer.Parse(obj(0))
+                                                        Next
 
-                                                    'Vérifie l'unicité du numéro de commande
-                                                    If Not Me.IsUpdate Then
-                                                        Dim connection As New MGConnection(My.Settings.DBSource)
-                                                        Dim Objects As New List(Of List(Of Object))
-                                                        Dim numResult As Integer
+                                                        connection.Close()
+                                                    Catch ex As Exception
+                                                        MessageBox.Show(ex.Message)
+                                                    Finally
                                                         Try
-                                                            connection.Open()
-
-                                                            Objects = connection.ExecuteQuery("SELECT count(NumCmd) FROM Commande WHERE NumCmd=" + numCmd.ToString())
-                                                            For Each obj In Objects
-                                                                numResult = Integer.Parse(obj(0))
-                                                            Next
-
                                                             connection.Close()
                                                         Catch ex As Exception
-                                                            MessageBox.Show(ex.Message)
-                                                        Finally
-                                                            Try
-                                                                connection.Close()
-                                                            Catch ex As Exception
-                                                            End Try
                                                         End Try
-                                                        If (numResult <> 0) Then
-                                                            messageError = "Le numéro de commande existe déjà."
-                                                        End If
+                                                    End Try
+                                                    If (numResult <> 0) Then
+                                                        messageError = "Le numéro de commande existe déjà."
                                                     End If
-                                                Else
-                                                    messageError = "Veuillez saisir la date de relevés."
                                                 End If
 
                                             Else
@@ -1318,6 +1323,7 @@ Public Class NouvelleCommande
                     If (result = MessageBoxResult.Yes) Then
                         'Construit la commande
                         If contremarque Is Nothing Then contremarque = New Contremarque()
+
 
                         Dim newCommande As New Commande(numCmd, montant, arrhes, dateCommande, adresse, etat, client, tpsDebit, tpsCmdNumerique, tpsFinition, tpsAutres, delaiPrevu,
                                                                 releve, dateReleve, contremarque, materiaux, natures, dateFinalisation, finalisations, remarques, qualites,

@@ -409,7 +409,12 @@ Public Class Commande
             Dim parIdentifierMesure As MySqlParameter = connection.Create("@IdentifierMesure", DbType.Int32, Me.Mesure.Identifier)
             parameters.Add(parIdentifierMesure)
 
-            Dim parDateMesure As MySqlParameter = connection.Create("@DateMesure", DbType.DateTime, Me.DateMesure)
+            Dim parDateMesure As MySqlParameter
+            If Me.DateMesure <> DateTime.MinValue Then
+                parDateMesure = connection.Create("@DateMesure", DbType.DateTime, Me.DateMesure)
+            Else
+                parDateMesure = connection.Create("@DateMesure", DbType.DateTime, Nothing)
+            End If
             parameters.Add(parDateMesure)
 
             Dim parDateFinalisations As MySqlParameter = connection.Create("@DateFinalisations", DbType.DateTime, Me.DateFinalisations)
@@ -526,7 +531,12 @@ Public Class Commande
                 Me.TpsFinition = Integer.Parse(obj(8))
                 Me.TpsAutres = Integer.Parse(obj(9))
                 Me.DelaiPrevu = DateTime.Parse(obj(10))
-                Me.DateMesure = DateTime.Parse(obj(15))
+                Dim ob As Object = obj(15)
+                If Not TypeOf (obj(15)) Is System.DBNull Then
+                    Me.DateMesure = DateTime.Parse(obj(15))
+                Else
+                    Me.DateMesure = Nothing
+                End If
                 Me.DateFinalisations = DateTime.Parse(obj(16))
 
                 Dim parIdentifierEtat As MySqlParameter = connection.Create("@IdentifierEtat", DbType.Int32, Long.Parse(obj(11)))
@@ -801,7 +811,12 @@ Public Class Commande
                 Dim parIdentifierMesure As MySqlParameter = connection.Create("@IdentifierMesure", DbType.Int32, Me.Mesure.Identifier)
                 parameters.Add(parIdentifierMesure)
 
-                Dim parDateMesure As MySqlParameter = connection.Create("@DateMesure", DbType.DateTime, Me.DateMesure)
+                Dim parDateMesure As MySqlParameter
+                If Me.DateMesure <> DateTime.MinValue Then
+                    parDateMesure = connection.Create("@DateMesure", DbType.DateTime, Me.DateMesure)
+                Else
+                    parDateMesure = connection.Create("@DateMesure", DbType.DateTime, Nothing)
+                End If
                 parameters.Add(parDateMesure)
 
                 Dim parDateFinalisations As MySqlParameter = connection.Create("@DateFinalisations", DbType.DateTime, Me.DateFinalisations)
@@ -817,369 +832,369 @@ Public Class Commande
                         "WHERE Identifier=@Identifier"
             End If
 
-            connection.ExecuteNonQuery(query, parameters)
+                connection.ExecuteNonQuery(query, parameters)
 
-            parameters.Clear()
+                parameters.Clear()
 
-            Dim Objects As New List(Of List(Of Object))
+                Dim Objects As New List(Of List(Of Object))
 
-            If Not IsRestrictUpdate Then
+                If Not IsRestrictUpdate Then
 
-                Dim actualMateriaux As New List(Of Materiau)
+                    Dim actualMateriaux As New List(Of Materiau)
 
-                parameters.Add(parIdentifierCommande)
-                query = "SELECT Identifier_Materiau, Epaisseur FROM Commande_Materiau WHERE Identifier_Commande=@Identifier"
+                    parameters.Add(parIdentifierCommande)
+                    query = "SELECT Identifier_Materiau, Epaisseur FROM Commande_Materiau WHERE Identifier_Commande=@Identifier"
 
-                Objects = connection.ExecuteQuery(query, parameters)
+                    Objects = connection.ExecuteQuery(query, parameters)
 
-                For Each obj In Objects
-                    actualMateriaux.Add(New Materiau("", Long.Parse(obj(0)), Integer.Parse(obj(1))).GetMateriau())
-                Next
+                    For Each obj In Objects
+                        actualMateriaux.Add(New Materiau("", Long.Parse(obj(0)), Integer.Parse(obj(1))).GetMateriau())
+                    Next
 
-                For Each mat In Me.Materiaux
-                    Dim isUpdated As Boolean = False
+                    For Each mat In Me.Materiaux
+                        Dim isUpdated As Boolean = False
 
-                    For Each actMat In actualMateriaux
-                        If (mat.Equals(actMat)) Then
-                            isUpdated = True
+                        For Each actMat In actualMateriaux
+                            If (mat.Equals(actMat)) Then
+                                isUpdated = True
 
-                            Exit For
-                        ElseIf (mat.Identifier = actMat.Identifier And mat.Epaisseur <> actMat.Epaisseur) Then
+                                Exit For
+                            ElseIf (mat.Identifier = actMat.Identifier And mat.Epaisseur <> actMat.Epaisseur) Then
+                                Dim parEpaisseur As MySqlParameter = connection.Create("@Epaisseur", DbType.Int32, mat.Epaisseur)
+                                parameters.Add(parEpaisseur)
+
+                                query = "UPDATE Commande_Materiau SET Epaisseur=@Epaisseur"
+                                connection.ExecuteNonQuery(query, parameters)
+
+                                parameters.Clear()
+                                parameters.Add(parIdentifierCommande)
+
+                                isUpdated = True
+
+                                Exit For
+                            End If
+                        Next
+
+                        parameters.Clear()
+
+                        If (Not isUpdated) Then
+                            Dim parIdentifierMateriau As MySqlParameter = connection.Create("@IdMateriau", DbType.Int32, mat.Identifier)
+                            parameters.Add(parIdentifierMateriau)
                             Dim parEpaisseur As MySqlParameter = connection.Create("@Epaisseur", DbType.Int32, mat.Epaisseur)
                             parameters.Add(parEpaisseur)
 
-                            query = "UPDATE Commande_Materiau SET Epaisseur=@Epaisseur"
+                            parameters.Add(parIdentifierCommande)
+
+                            query = "INSERT INTO Commande_Materiau (Identifier_Commande, Identifier_Materiau, Epaisseur)" +
+                                    " VALUES (@Identifier, @IdMateriau, @Epaisseur)"
+
+                            connection.ExecuteNonQuery(query, parameters)
+
+                            actualMateriaux.Add(mat)
+
+                            parameters.Clear()
+                        End If
+
+                        parameters.Clear()
+                    Next
+
+                    parameters.Clear()
+
+                    If actualMateriaux.Count > Me.Materiaux.Count Then
+                        For Each m In actualMateriaux
+                            Dim isExists As Boolean = False
+                            For Each mat In Me.Materiaux
+                                If (m.Equals(mat)) Then
+                                    isExists = True
+                                End If
+                            Next
+
+                            Dim parIdMateriau As MySqlParameter = connection.Create("@IdMateriau", DbType.Int32, m.Identifier)
+                            parameters.Add(parIdMateriau)
+                            parameters.Add(parIdentifierCommande)
+
+                            If (Not isExists) Then
+                                query = "DELETE FROM Commande_Materiau WHERE Identifier_Commande=@Identifier And Identifier_Materiau=@IdMateriau"
+                                connection.ExecuteNonQuery(query, parameters)
+                            End If
+
+                            parameters.Clear()
+                        Next
+                    End If
+
+                    parameters.Clear()
+
+                    Dim actualNatures As New List(Of Nature)
+
+                    parameters.Add(parIdentifierCommande)
+                    query = "SELECT Identifier_Nature FROM Commande_Nature WHERE Identifier_Commande=@Identifier"
+
+                    Objects = connection.ExecuteQuery(query, parameters)
+
+                    For Each obj In Objects
+                        actualNatures.Add(New Nature("", Long.Parse(obj(0))).GetNature())
+                    Next
+
+                    For Each nat In Me.Natures
+                        Dim isUpdated As Boolean = False
+
+                        For Each actNat In actualNatures
+                            If (nat.Equals(actNat)) Then
+                                isUpdated = True
+
+                                Exit For
+                            End If
+                        Next
+
+                        parameters.Clear()
+
+                        If (Not isUpdated) Then
+                            Dim parIdentifierNature As MySqlParameter = connection.Create("@IdNature", DbType.Int32, nat.Identifier)
+                            parameters.Add(parIdentifierNature)
+
+                            parameters.Add(parIdentifierCommande)
+
+                            query = "INSERT INTO Commande_Nature (Identifier_Commande, Identifier_Nature)" +
+                                    " VALUES (@Identifier, @IdNature)"
+
                             connection.ExecuteNonQuery(query, parameters)
 
                             parameters.Clear()
+                        End If
+
+                        parameters.Clear()
+                    Next
+
+                    parameters.Clear()
+
+                    If actualNatures.Count > Me.Natures.Count Then
+                        For Each n In actualNatures
+                            Dim isExists As Boolean = False
+                            For Each nat In Me.Natures
+                                If (n.Equals(nat)) Then
+                                    isExists = True
+                                End If
+                            Next
+
+                            Dim parIdNature As MySqlParameter = connection.Create("@IdNature", DbType.Int32, n.Identifier)
+                            parameters.Add(parIdNature)
                             parameters.Add(parIdentifierCommande)
 
-                            isUpdated = True
+                            If (Not isExists) Then
+                                query = "DELETE FROM Commande_Nature WHERE Identifier_Commande=@Identifier And Identifier_Nature=@IdNature"
+                                connection.ExecuteNonQuery(query, parameters)
+                            End If
 
-                            Exit For
-                        End If
-                    Next
-
-                    parameters.Clear()
-
-                    If (Not isUpdated) Then
-                        Dim parIdentifierMateriau As MySqlParameter = connection.Create("@IdMateriau", DbType.Int32, mat.Identifier)
-                        parameters.Add(parIdentifierMateriau)
-                        Dim parEpaisseur As MySqlParameter = connection.Create("@Epaisseur", DbType.Int32, mat.Epaisseur)
-                        parameters.Add(parEpaisseur)
-
-                        parameters.Add(parIdentifierCommande)
-
-                        query = "INSERT INTO Commande_Materiau (Identifier_Commande, Identifier_Materiau, Epaisseur)" +
-                                " VALUES (@Identifier, @IdMateriau, @Epaisseur)"
-
-                        connection.ExecuteNonQuery(query, parameters)
-
-                        actualMateriaux.Add(mat)
-
-                        parameters.Clear()
+                            parameters.Clear()
+                        Next
                     End If
 
                     parameters.Clear()
-                Next
 
-                parameters.Clear()
+                    Dim actualFinalisations As New List(Of Finalisation)
 
-                If actualMateriaux.Count > Me.Materiaux.Count Then
-                    For Each m In actualMateriaux
-                        Dim isExists As Boolean = False
-                        For Each mat In Me.Materiaux
-                            If (m.Equals(mat)) Then
-                                isExists = True
+                    parameters.Add(parIdentifierCommande)
+                    query = "SELECT Identifier_Finalisation FROM Commande_Finalisation WHERE Identifier_Commande=@Identifier"
+
+                    Objects = connection.ExecuteQuery(query, parameters)
+
+                    For Each obj In Objects
+                        actualFinalisations.Add(New Finalisation(Long.Parse(obj(0))).GetFinalisation())
+                    Next
+
+                    For Each fin In Me.Finalisations
+                        Dim isUpdated As Boolean = False
+
+                        For Each actFin In actualFinalisations
+                            If (fin.Equals(actFin)) Then
+                                isUpdated = True
+
+                                Exit For
                             End If
                         Next
 
-                        Dim parIdMateriau As MySqlParameter = connection.Create("@IdMateriau", DbType.Int32, m.Identifier)
-                        parameters.Add(parIdMateriau)
-                        parameters.Add(parIdentifierCommande)
+                        parameters.Clear()
 
-                        If (Not isExists) Then
-                            query = "DELETE FROM Commande_Materiau WHERE Identifier_Commande=@Identifier And Identifier_Materiau=@IdMateriau"
+                        If (Not isUpdated) Then
+                            Dim parIdentifierFinalisation As MySqlParameter = connection.Create("@IdFinalisation", DbType.Int32, fin.Identifier)
+                            parameters.Add(parIdentifierFinalisation)
+
+                            parameters.Add(parIdentifierCommande)
+
+                            query = "INSERT INTO Commande_Finalisation (Identifier_Commande, Identifier_Finalisation)" +
+                                    " VALUES (@Identifier, @IdFinalisation)"
+
                             connection.ExecuteNonQuery(query, parameters)
+
+                            parameters.Clear()
                         End If
 
                         parameters.Clear()
                     Next
+
+                    parameters.Clear()
+
+                    If actualFinalisations.Count > Me.Finalisations.Count Then
+                        For Each f In actualFinalisations
+                            Dim isExists As Boolean = False
+                            For Each fin In Me.Finalisations
+                                If (f.Equals(fin)) Then
+                                    isExists = True
+                                End If
+                            Next
+
+                            Dim parIdFinalisation As MySqlParameter = connection.Create("@IdFinalisation", DbType.Int32, f.Identifier)
+                            parameters.Add(parIdFinalisation)
+                            parameters.Add(parIdentifierCommande)
+
+                            If (Not isExists) Then
+                                query = "DELETE FROM Commande_Finalisation WHERE Identifier_Commande=@Identifier And Identifier_Finalisation=@IdFinalisation"
+                                connection.ExecuteNonQuery(query, parameters)
+                            End If
+
+                            parameters.Clear()
+                        Next
+                    End If
+
                 End If
 
-                parameters.Clear()
-
-                Dim actualNatures As New List(Of Nature)
-
+                Dim actualRemarques As New List(Of Remarque)
                 parameters.Add(parIdentifierCommande)
-                query = "SELECT Identifier_Nature FROM Commande_Nature WHERE Identifier_Commande=@Identifier"
 
-                Objects = connection.ExecuteQuery(query, parameters)
+                Objects = connection.ExecuteQuery("SELECT Identifier, Commentaire, Source, Date FROM Remarque WHERE IdentifierCommande=@Identifier", parameters)
+
+                parameters.Clear()
 
                 For Each obj In Objects
-                    actualNatures.Add(New Nature("", Long.Parse(obj(0))).GetNature())
+                    actualRemarques.Add(New Remarque(obj(1).ToString(), obj(2).ToString(), obj(3).ToString(), Long.Parse(obj(0))))
                 Next
 
-                For Each nat In Me.Natures
-                    Dim isUpdated As Boolean = False
-
-                    For Each actNat In actualNatures
-                        If (nat.Equals(actNat)) Then
-                            isUpdated = True
-
-                            Exit For
-                        End If
-                    Next
-
-                    parameters.Clear()
-
-                    If (Not isUpdated) Then
-                        Dim parIdentifierNature As MySqlParameter = connection.Create("@IdNature", DbType.Int32, nat.Identifier)
-                        parameters.Add(parIdentifierNature)
-
-                        parameters.Add(parIdentifierCommande)
-
-                        query = "INSERT INTO Commande_Nature (Identifier_Commande, Identifier_Nature)" +
-                                " VALUES (@Identifier, @IdNature)"
-
-                        connection.ExecuteNonQuery(query, parameters)
-
-                        parameters.Clear()
-                    End If
-
-                    parameters.Clear()
-                Next
-
-                parameters.Clear()
-
-                If actualNatures.Count > Me.Natures.Count Then
-                    For Each n In actualNatures
+                If Me.Remarques.Count > actualRemarques.Count Then
+                    For Each remarque In Me.Remarques
                         Dim isExists As Boolean = False
-                        For Each nat In Me.Natures
-                            If (n.Equals(nat)) Then
+                        For Each r In actualRemarques
+                            If remarque.Equals(r) Then
                                 isExists = True
+                                Exit For
                             End If
                         Next
 
-                        Dim parIdNature As MySqlParameter = connection.Create("@IdNature", DbType.Int32, n.Identifier)
-                        parameters.Add(parIdNature)
-                        parameters.Add(parIdentifierCommande)
+                        If Not isExists Then
+                            parameters.Add(parIdentifierCommande)
 
-                        If (Not isExists) Then
-                            query = "DELETE FROM Commande_Nature WHERE Identifier_Commande=@Identifier And Identifier_Nature=@IdNature"
-                            connection.ExecuteNonQuery(query, parameters)
+                            Dim parComment As MySqlParameter = connection.Create("@Comment", DbType.String, remarque.Comment)
+                            parameters.Add(parComment)
+
+                            Dim parSource As MySqlParameter = connection.Create("@Source", DbType.String, remarque.Source)
+                            parameters.Add(parSource)
+
+                            Dim parDate As MySqlParameter = connection.Create("@Date", DbType.String, remarque.DatePost)
+                            parameters.Add(parDate)
+
+                            query = "INSERT INTO Remarque (Commentaire, Source, Date, IdentifierCommande) VALUES (@Comment, @Source, @Date, @Identifier)"
+                            connection.ExecuteQuery(query, parameters)
+
+                            parameters.Clear()
                         End If
+                    Next
 
-                        parameters.Clear()
+                ElseIf Me.Remarques.Count < actualRemarques.Count Then
+                    For Each remarque In actualRemarques
+                        Dim isExists As Boolean = False
+                        For Each r In Me.Remarques
+                            If remarque.Equals(r) Then
+                                isExists = True
+                                Exit For
+                            End If
+                        Next
+
+                        If Not isExists Then
+                            Dim parIdRem As MySqlParameter = connection.Create("@IdRem", DbType.Int32, remarque.Identifier)
+                            parameters.Add(parIdRem)
+
+                            query = "DELETE FROM Remarque WHERE Identifier=@IdRem"
+                            connection.ExecuteQuery(query, parameters)
+
+                            parameters.Clear()
+                        End If
                     Next
                 End If
 
-                parameters.Clear()
+                'For Each q In Me.Qualites
+                '    q.UpdateQualitiesProblems(Me.Identifier)
+                'Next
 
-                Dim actualFinalisations As New List(Of Finalisation)
-
+                Dim actualQualitiesPb As New List(Of Qualite)
                 parameters.Add(parIdentifierCommande)
-                query = "SELECT Identifier_Finalisation FROM Commande_Finalisation WHERE Identifier_Commande=@Identifier"
 
-                Objects = connection.ExecuteQuery(query, parameters)
+                Objects = connection.ExecuteQuery("SELECT q.Type, pq.Identifier_Qualite, pq.DateProbleme, pq.Source, pq.Remarque " +
+                                                  "FROM Qualite as q " +
+                                                  "INNER JOIN Commande_Qualite as pq ON q.Identifier=pq.Identifier_Qualite AND pq.Identifier_Commande=@Identifier", parameters)
+
+                parameters.Clear()
 
                 For Each obj In Objects
-                    actualFinalisations.Add(New Finalisation(Long.Parse(obj(0))).GetFinalisation())
+                    actualQualitiesPb.Add(New Qualite(obj(0).ToString(), Long.Parse(obj(1)), obj(3).ToString(), DateTime.Parse(obj(2)), obj(4).ToString()))
                 Next
 
-                For Each fin In Me.Finalisations
-                    Dim isUpdated As Boolean = False
-
-                    For Each actFin In actualFinalisations
-                        If (fin.Equals(actFin)) Then
-                            isUpdated = True
-
-                            Exit For
-                        End If
-                    Next
-
-                    parameters.Clear()
-
-                    If (Not isUpdated) Then
-                        Dim parIdentifierFinalisation As MySqlParameter = connection.Create("@IdFinalisation", DbType.Int32, fin.Identifier)
-                        parameters.Add(parIdentifierFinalisation)
-
-                        parameters.Add(parIdentifierCommande)
-
-                        query = "INSERT INTO Commande_Finalisation (Identifier_Commande, Identifier_Finalisation)" +
-                                " VALUES (@Identifier, @IdFinalisation)"
-
-                        connection.ExecuteNonQuery(query, parameters)
-
-                        parameters.Clear()
-                    End If
-
-                    parameters.Clear()
-                Next
-
-                parameters.Clear()
-
-                If actualFinalisations.Count > Me.Finalisations.Count Then
-                    For Each f In actualFinalisations
+                If Me.Qualites.Count > actualQualitiesPb.Count Then
+                    For Each qualite In Me.Qualites
                         Dim isExists As Boolean = False
-                        For Each fin In Me.Finalisations
-                            If (f.Equals(fin)) Then
+                        For Each q In actualQualitiesPb
+                            If qualite.Equals(q) Then
                                 isExists = True
+                                Exit For
                             End If
                         Next
 
-                        Dim parIdFinalisation As MySqlParameter = connection.Create("@IdFinalisation", DbType.Int32, f.Identifier)
-                        parameters.Add(parIdFinalisation)
-                        parameters.Add(parIdentifierCommande)
+                        If Not isExists Then
+                            parameters.Add(parIdentifierCommande)
 
-                        If (Not isExists) Then
-                            query = "DELETE FROM Commande_Finalisation WHERE Identifier_Commande=@Identifier And Identifier_Finalisation=@IdFinalisation"
-                            connection.ExecuteNonQuery(query, parameters)
+                            Dim parRemarque As MySqlParameter = connection.Create("@Remarque", DbType.String, qualite.Remarque)
+                            parameters.Add(parRemarque)
+
+                            Dim parSource As MySqlParameter = connection.Create("@Source", DbType.String, qualite.Source)
+                            parameters.Add(parSource)
+
+                            Dim parDate As MySqlParameter = connection.Create("@Date", DbType.DateTime, qualite.DatePost)
+                            parameters.Add(parDate)
+
+                            Dim parIdentifierQualite As MySqlParameter = connection.Create("@IdQualite", DbType.Int64, qualite.Identifier)
+                            parameters.Add(parIdentifierQualite)
+
+                            query = "INSERT INTO Commande_Qualite (Identifier_Commande, Identifier_Qualite, DateProbleme, Source, Remarque) VALUES (@Identifier, @IdQualite, @Date, @Source, @Remarque)"
+                            connection.ExecuteQuery(query, parameters)
+
+                            parameters.Clear()
                         End If
+                    Next
 
-                        parameters.Clear()
+                ElseIf Me.Qualites.Count < actualQualitiesPb.Count Then
+                    For Each qualite In actualQualitiesPb
+                        Dim isExists As Boolean = False
+                        For Each q In Me.Qualites
+                            If qualite.Equals(q) Then
+                                isExists = True
+                                Exit For
+                            End If
+                        Next
+
+                        If Not isExists Then
+                            parameters.Add(parIdentifierCommande)
+
+                            Dim parIdQual As MySqlParameter = connection.Create("@IdQual", DbType.Int32, qualite.Identifier)
+                            parameters.Add(parIdQual)
+
+                            Dim parDate As MySqlParameter = connection.Create("@Date", DbType.DateTime, qualite.DatePost)
+                            parameters.Add(parDate)
+
+                            query = "DELETE FROM Commande_Qualite WHERE Identifier_Commande=@Identifier AND Identifier_Qualite=@IdQual AND DateProbleme=@Date"
+                            connection.ExecuteQuery(query, parameters)
+
+                            parameters.Clear()
+                        End If
                     Next
                 End If
-
-            End If
-
-            Dim actualRemarques As New List(Of Remarque)
-            parameters.Add(parIdentifierCommande)
-
-            Objects = connection.ExecuteQuery("SELECT Identifier, Commentaire, Source, Date FROM Remarque WHERE IdentifierCommande=@Identifier", parameters)
-
-            parameters.Clear()
-
-            For Each obj In Objects
-                actualRemarques.Add(New Remarque(obj(1).ToString(), obj(2).ToString(), obj(3).ToString(), Long.Parse(obj(0))))
-            Next
-
-            If Me.Remarques.Count > actualRemarques.Count Then
-                For Each remarque In Me.Remarques
-                    Dim isExists As Boolean = False
-                    For Each r In actualRemarques
-                        If remarque.Equals(r) Then
-                            isExists = True
-                            Exit For
-                        End If
-                    Next
-
-                    If Not isExists Then
-                        parameters.Add(parIdentifierCommande)
-
-                        Dim parComment As MySqlParameter = connection.Create("@Comment", DbType.String, remarque.Comment)
-                        parameters.Add(parComment)
-
-                        Dim parSource As MySqlParameter = connection.Create("@Source", DbType.String, remarque.Source)
-                        parameters.Add(parSource)
-
-                        Dim parDate As MySqlParameter = connection.Create("@Date", DbType.String, remarque.DatePost)
-                        parameters.Add(parDate)
-
-                        query = "INSERT INTO Remarque (Commentaire, Source, Date, IdentifierCommande) VALUES (@Comment, @Source, @Date, @Identifier)"
-                        connection.ExecuteQuery(query, parameters)
-
-                        parameters.Clear()
-                    End If
-                Next
-
-            ElseIf Me.Remarques.Count < actualRemarques.Count Then
-                For Each remarque In actualRemarques
-                    Dim isExists As Boolean = False
-                    For Each r In Me.Remarques
-                        If remarque.Equals(r) Then
-                            isExists = True
-                            Exit For
-                        End If
-                    Next
-
-                    If Not isExists Then
-                        Dim parIdRem As MySqlParameter = connection.Create("@IdRem", DbType.Int32, remarque.Identifier)
-                        parameters.Add(parIdRem)
-
-                        query = "DELETE FROM Remarque WHERE Identifier=@IdRem"
-                        connection.ExecuteQuery(query, parameters)
-
-                        parameters.Clear()
-                    End If
-                Next
-            End If
-
-            'For Each q In Me.Qualites
-            '    q.UpdateQualitiesProblems(Me.Identifier)
-            'Next
-
-            Dim actualQualitiesPb As New List(Of Qualite)
-            parameters.Add(parIdentifierCommande)
-
-            Objects = connection.ExecuteQuery("SELECT q.Type, pq.Identifier_Qualite, pq.DateProbleme, pq.Source, pq.Remarque " +
-                                              "FROM Qualite as q " +
-                                              "INNER JOIN Commande_Qualite as pq ON q.Identifier=pq.Identifier_Qualite AND pq.Identifier_Commande=@Identifier", parameters)
-
-            parameters.Clear()
-
-            For Each obj In Objects
-                actualQualitiesPb.Add(New Qualite(obj(0).ToString(), Long.Parse(obj(1)), obj(3).ToString(), DateTime.Parse(obj(2)), obj(4).ToString()))
-            Next
-
-            If Me.Qualites.Count > actualQualitiesPb.Count Then
-                For Each qualite In Me.Qualites
-                    Dim isExists As Boolean = False
-                    For Each q In actualQualitiesPb
-                        If qualite.Equals(q) Then
-                            isExists = True
-                            Exit For
-                        End If
-                    Next
-
-                    If Not isExists Then
-                        parameters.Add(parIdentifierCommande)
-
-                        Dim parRemarque As MySqlParameter = connection.Create("@Remarque", DbType.String, qualite.Remarque)
-                        parameters.Add(parRemarque)
-
-                        Dim parSource As MySqlParameter = connection.Create("@Source", DbType.String, qualite.Source)
-                        parameters.Add(parSource)
-
-                        Dim parDate As MySqlParameter = connection.Create("@Date", DbType.DateTime, qualite.DatePost)
-                        parameters.Add(parDate)
-
-                        Dim parIdentifierQualite As MySqlParameter = connection.Create("@IdQualite", DbType.Int64, qualite.Identifier)
-                        parameters.Add(parIdentifierQualite)
-
-                        query = "INSERT INTO Commande_Qualite (Identifier_Commande, Identifier_Qualite, DateProbleme, Source, Remarque) VALUES (@Identifier, @IdQualite, @Date, @Source, @Remarque)"
-                        connection.ExecuteQuery(query, parameters)
-
-                        parameters.Clear()
-                    End If
-                Next
-
-            ElseIf Me.Qualites.Count < actualQualitiesPb.Count Then
-                For Each qualite In actualQualitiesPb
-                    Dim isExists As Boolean = False
-                    For Each q In Me.Qualites
-                        If qualite.Equals(q) Then
-                            isExists = True
-                            Exit For
-                        End If
-                    Next
-
-                    If Not isExists Then
-                        parameters.Add(parIdentifierCommande)
-
-                        Dim parIdQual As MySqlParameter = connection.Create("@IdQual", DbType.Int32, qualite.Identifier)
-                        parameters.Add(parIdQual)
-
-                        Dim parDate As MySqlParameter = connection.Create("@Date", DbType.DateTime, qualite.DatePost)
-                        parameters.Add(parDate)
-
-                        query = "DELETE FROM Commande_Qualite WHERE Identifier_Commande=@Identifier AND Identifier_Qualite=@IdQual AND DateProbleme=@Date"
-                        connection.ExecuteQuery(query, parameters)
-
-                        parameters.Clear()
-                    End If
-                Next
-            End If
 
         Catch ex As Exception
             MessageBox.Show(ex.Message)

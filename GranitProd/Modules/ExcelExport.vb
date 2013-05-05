@@ -3,21 +3,36 @@ Imports Microsoft.Office.Interop.Excel
 Imports System.IO
 
 Public Module ExcelExport
+
+    ''' <summary>
+    ''' Réalise l'export des commande grâce à une application Excel
+    ''' </summary>
+    ''' <param name="cmds">Liste des commandes à exporter</param>
+    ''' <param name="search">Différents critères de la recherches ayant abouti à ces résultats</param>
+    ''' <param name="etatCmd">État des commandes (Terminée, Rendue ou en cours)</param>
+    ''' <param name="format"></param>
+    ''' <remarks></remarks>
     Public Sub ExportCommande(ByVal cmds As List(Of Commande), ByVal search As String, ByVal etatCmd As String, ByVal format As String)
 
-        Try
-            Dim xlApp As Excel.Application
-            Dim xlWorkBook As Excel.Workbook
-            Dim xlWorkSheet As Excel.Worksheet
-            Dim misValue As Object = System.Reflection.Missing.Value
-            Dim chartRange As Excel.Range
+        Dim xlApp As Excel.Application
+        Dim xlWorkBook As Excel.Workbook
+        Dim xlWorkSheet As Excel.Worksheet
+        Dim misValue As Object = System.Reflection.Missing.Value
+        Dim chartRange As Excel.Range
+        Dim procId As Integer = 0
 
+        Try
             Dim minute As String
             Dim heure As String
             Dim jour As String
             Dim mois As String
 
+            Dim p() As Process = Process.GetProcesses()
             xlApp = New Excel.Application
+            Dim p2() As Process = Process.GetProcesses()
+
+            procId = GetProcId(p, p2)
+
             xlWorkBook = xlApp.Workbooks.Add(misValue)
             xlWorkSheet = xlWorkBook.Sheets("Feuil1")
             xlWorkSheet.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape
@@ -151,10 +166,11 @@ Public Module ExcelExport
                 End If
                 xlWorkSheet.SaveAs(System.IO.Path.GetFullPath(My.Settings.ExportFile + "\m-granit.xlsx"))
 
-                xlWorkBook.Close()
-                xlApp.Quit()
-
-                Process.Start(System.IO.Path.GetFullPath(My.Settings.ExportFile + "\m-granit.xlsx"))
+                xlApp.Visible = True
+                'xlWorkBook.Close()
+                'xlApp.Quit()
+                '
+                'Process.Start(System.IO.Path.GetFullPath(My.Settings.ExportFile + "\m-granit.xlsx"))
             ElseIf format = "PDF" Then
                 Dim paramExportFilePath As String = System.IO.Path.GetFullPath(My.Settings.ExportFile + "\m-granit.pdf")
                 Dim paramExportFormat As XlFixedFormatType = _
@@ -178,10 +194,14 @@ Public Module ExcelExport
                 System.IO.File.Delete(System.IO.Path.GetFullPath(My.Settings.ExportFile + "\tempPdf.pdf"))
             End If
 
-
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
             Dim sw As New StreamWriter(My.Settings.ConfigFiles + "\log.txt")
+
+            If procId <> 0 Then
+                Process.GetProcessById(procId).Kill()
+                procId = 0
+            End If
 
             Dim content As String = "ExportExcel" + vbCrLf + ex.StackTrace.ToString() + vbCrLf + vbCrLf + ex.Source.ToString()
             If ex.InnerException IsNot Nothing Then
@@ -193,7 +213,52 @@ Public Module ExcelExport
             sw.Write(content)
 
             sw.Close()
+        Finally
+            xlWorkBook = Nothing
+            xlApp = Nothing
+            GC.Collect()
+            GC.WaitForPendingFinalizers()
         End Try
     End Sub
+
+    ''' <summary>
+    ''' Permet de récupérer l'id du processus Excel créé
+    ''' </summary>
+    ''' <param name="Process1">Liste des processus avant la création du processus Excel</param>
+    ''' <param name="Process2">Liste des processus après la création du processus Excel</param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Public Function GetProcId(ByVal Process1 As Process(), ByVal Process2 As Process()) As Integer
+        Dim ProcId% = 0
+
+        Dim i%, j%
+        Dim bMonProcessXL As Boolean
+
+        For j = 0 To Process2.GetUpperBound(0)
+            If Process2(j).ProcessName = "EXCEL" Then
+                bMonProcessXL = True
+
+                'Listing des processus avant la création Excel®
+                For i = 0 To Process1.GetUpperBound(0)
+                    If Process1(i).ProcessName = "EXCEL" Then
+                        If Process2(j).Id = Process1(i).Id Then
+
+                            ' S'il existait avant, ce n'est pas celui recherché
+                            bMonProcessXL = False
+                            Exit For
+                        End If
+                    End If
+                Next i
+
+                If bMonProcessXL = True Then
+                    'Recopie de l’identifiant du processus créé
+                    ProcId = Process2(j).Id
+                    Exit For
+                End If
+            End If
+        Next j
+
+        Return ProcId
+    End Function
 
 End Module
