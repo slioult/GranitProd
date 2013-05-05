@@ -90,11 +90,7 @@ Public Class RechercheCommande
             Dim cbxi As ComboBoxItem = CbxTri.SelectedItem
             Dim tri As String = cbxi.Content
             Dim etatCmd As String
-            If ChkEndCmd.IsChecked Then
-                etatCmd = "Commandes terminées triées par " + tri.ToLower()
-            Else
-                etatCmd = "Commandes en cours triées par " + tri.ToLower()
-            End If
+            etatCmd = "Commandes " + Me.CbxEtat.SelectedItem.ToString().ToLower() + " triées par " + tri.ToLower()
 
             If Me.AutoCompNClient.SelectedItem IsNot Nothing Then
                 Dim cl As Client = AutoCompNClient.SelectedItem
@@ -172,11 +168,7 @@ Public Class RechercheCommande
                 Dim search As String = String.Empty
 
                 Dim etatCmd As String
-                If ChkEndCmd.IsChecked Then
-                    etatCmd = "Commandes terminées"
-                Else
-                    etatCmd = "Commandes en cours"
-                End If
+                etatCmd = "Commandes " + Me.CbxEtat.SelectedItem.ToString().ToLower()
 
                 If Me.AutoCompNClient.SelectedItem IsNot Nothing Then
                     Dim cl As Client = AutoCompNClient.SelectedItem
@@ -274,18 +266,15 @@ Public Class RechercheCommande
     ''' <remarks></remarks>
     Public Sub BtnSearch_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
         Me.LbxSearchCmd.Items.Clear()
-        Dim whereEndOk As String = String.Empty
-        Dim whereEndNotOk As String = String.Empty
-        Dim whereLivrOk As String = String.Empty
-        Dim whereLivrNotOk As String = String.Empty
+        Dim whereEtat As String = String.Empty
         Dim param As String = String.Empty
 
-        If Me.ChkEndCmd.IsChecked Then
-            whereEndOk = " WHERE c.IdentifierEtat = e.Identifier AND e.Label = 'Terminée' AND "
-            whereLivrOk = " OR c.IdentifierEtat = e.Identifier AND e.Label = 'Rendue' AND "
-        Else
-            whereEndNotOk = " WHERE c.IdentifierEtat <> e.Identifier AND e.Label <> 'Terminée' AND "
-            whereLivrNotOk = " OR c.IdentifierEtat <> e.Identifier AND e.Label <> 'Rendue' AND "
+        If Me.CbxEtat.SelectedIndex = 0 Then
+            whereEtat = " WHERE c.IdentifierEtat = e.Identifier AND e.Label <> 'Terminée' AND e.Label <> 'Rendue' AND "
+        ElseIf Me.CbxEtat.SelectedIndex = 1 Then
+            whereEtat = " WHERE c.IdentifierEtat = e.Identifier AND e.Label = 'Terminée' AND "
+        ElseIf Me.CbxEtat.SelectedIndex = 2 Then
+            whereEtat = " WHERE c.IdentifierEtat = e.Identifier AND e.Label = 'Rendue' AND "
         End If
 
         If CbxTri.SelectedIndex = 0 Then
@@ -318,17 +307,8 @@ Public Class RechercheCommande
                     Dim parIdContremarque As MySqlParameter = connection.Create("@IdContremarque", DbType.Int32, cm.Identifier)
                     parameters.Add(parIdContremarque)
 
-                    If ChkEndCmd.IsChecked Then
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndOk + "cm.identifier_commande = c.identifier and " +
-                         "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau " + whereLivrOk +
-                         "cm.identifier_commande = c.identifier and " + "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and c.IdentifierContremarque = @IdContremarque and " +
-                          "m.identifier = @IdMateriau Order By" + param
-                    Else
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndNotOk + "cm.identifier_commande = c.identifier and " +
-                         "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau " + whereLivrNotOk +
-                         "cm.identifier_commande = c.identifier and " + "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and c.IdentifierContremarque = @IdContremarque and " +
-                          "m.identifier = @IdMateriau Order By" + param
-                    End If
+                    query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEtat + "cm.identifier_commande = c.identifier and " +
+                     "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau Order By" + param
 
                 ElseIf (AutoCompNClient.SelectedItem IsNot Nothing) Then
                     Dim client As Client = AutoCompNClient.SelectedItem
@@ -338,15 +318,8 @@ Public Class RechercheCommande
                     Dim parIdClient As MySqlParameter = connection.Create("@IdClient", DbType.Int32, client.Identifier)
                     parameters.Add(parIdClient)
 
-                    If ChkEndCmd.IsChecked Then
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and m.identifier = @IdMateriau" + whereLivrOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and m.identifier = @IdMateriau Order By" + param
-                    Else
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndNotOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and m.identifier = @IdMateriau" + whereLivrNotOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and m.identifier = @IdMateriau Order By" + param
-                    End If
+                    query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEtat + "cm.identifier_commande = c.identifier and " +
+                       "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and m.identifier = @IdMateriau Order By" + param
 
                 ElseIf (AutoCompNContremarque.SelectedItem IsNot Nothing) Then
                     Dim cm As Contremarque = AutoCompNContremarque.SelectedItem
@@ -356,27 +329,13 @@ Public Class RechercheCommande
                     Dim parIdContremarque As MySqlParameter = connection.Create("@IdContremarque", DbType.Int32, cm.Identifier)
                     parameters.Add(parIdContremarque)
 
-                    If ChkEndCmd.IsChecked Then
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau" + whereLivrOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau Order By" + param
-                    Else
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndNotOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau" + whereLivrNotOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau Order By" + param
-                    End If
+                    query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEtat + "cm.identifier_commande = c.identifier and " +
+                       "cm.identifier_materiau = m.identifier and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau Order By" + param
                 Else
                     parameters.Add(parIdMateriau)
 
-                    If ChkEndCmd.IsChecked Then
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndOk + "cm.identifier_commande = c.identifier and " +
-                                               "cm.identifier_materiau = m.identifier and m.identifier = @IdMateriau" + whereLivrOk + "cm.identifier_commande = c.identifier and " +
-                                               "cm.identifier_materiau = m.identifier and m.identifier = @IdMateriau Order By" + param
-                    Else
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndNotOk + "cm.identifier_commande = c.identifier and " +
-                                               "cm.identifier_materiau = m.identifier and m.identifier = @IdMateriau" + whereLivrNotOk + "cm.identifier_commande = c.identifier and " +
-                                               "cm.identifier_materiau = m.identifier and m.identifier = @IdMateriau Order By" + param
-                    End If
+                    query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEtat + "cm.identifier_commande = c.identifier and " +
+                                           "cm.identifier_materiau = m.identifier and m.identifier = @IdMateriau Order By" + param
                 End If
 
                 Objects = connection.ExecuteQuery(query, parameters)
@@ -389,12 +348,16 @@ Public Class RechercheCommande
                     Dim cmd As New Commande(Integer.Parse(obj(0)))
                     cmd = cmd.GetCommande()
 
-                    If ChkEndCmd.IsChecked Then
-                        If cmd.Etat.Label = "Terminée" Or cmd.Etat.Label = "Rendue" Then
+                    If Me.CbxEtat.SelectedIndex = 0 Then
+                        If cmd.Etat.Label <> "Terminée" And cmd.Etat.Label <> "Rendue" Then
                             LbxSearchCmd.Items.Add(cmd)
                         End If
-                    Else
-                        If cmd.Etat.Label <> "Terminée" Or cmd.Etat.Label <> "Rendue" Then
+                    ElseIf Me.CbxEtat.SelectedIndex = 1 Then
+                        If cmd.Etat.Label = "Terminée" Then
+                            LbxSearchCmd.Items.Add(cmd)
+                        End If
+                    ElseIf Me.CbxEtat.SelectedIndex = 2 Then
+                        If cmd.Etat.Label = "Rendue" Then
                             LbxSearchCmd.Items.Add(cmd)
                         End If
                     End If
@@ -410,14 +373,13 @@ Public Class RechercheCommande
         ElseIf (Me.AutoCompNumCmd.SelectedItem IsNot Nothing) Then
             Dim cmd As New Commande(Integer.Parse(AutoCompNumCmd.SelectedItem))
             cmd = cmd.GetCommande()
-            If Me.ChkEndCmd.IsChecked Then
-                If cmd.Etat.Label = "Terminée" Or cmd.Etat.Label = "Rendue" Then
-                    LbxSearchCmd.Items.Add(cmd)
-                End If
+            LbxSearchCmd.Items.Add(cmd)
+            If cmd.Etat.Label = "Terminée" Then
+                Me.CbxEtat.SelectedIndex = 1
+            ElseIf cmd.Etat.Label = "Rendue" Then
+                Me.CbxEtat.SelectedIndex = 2
             Else
-                If cmd.Etat.Label <> "Terminée" Or cmd.Etat.Label <> "Rendue" Then
-                    LbxSearchCmd.Items.Add(cmd)
-                End If
+                Me.CbxEtat.SelectedIndex = 0
             End If
         ElseIf Me.AutoCompNClient.SelectedItem IsNot Nothing Or Me.AutoCompNClient.Text <> "" Then
             Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -434,7 +396,20 @@ Public Class RechercheCommande
                     Dim m As Client = Me.AutoCompNClient.SelectedItem
                     cli = "IdentifierClient=" + m.Identifier.ToString() + " "
                 Else
-                    cli = String.Empty
+                    Dim cl As Client = Nothing
+
+                    For Each item In Me.AutoCompNClient.ItemsSource
+                        Dim c As Client = item
+                        If c.Nom = Me.AutoCompNClient.Text.ToUpper() Then
+                            Me.AutoCompNClient.SelectedItem = item
+                            cl = c
+                            Exit For
+                        End If
+                    Next
+
+                    If Me.AutoCompNClient.SelectedItem Is Nothing Then Exit Sub
+
+                    cli = "IdentifierClient=" + cl.Identifier.ToString() + " "
                 End If
 
                 If Me.AutoCompNContremarque.SelectedItem IsNot Nothing Then
@@ -450,25 +425,7 @@ Public Class RechercheCommande
 
                 Dim query As String
 
-                If ChkEndCmd.IsChecked Then
-                    If cmq = String.Empty And cli = String.Empty Then
-                        whereLivrOk = whereLivrOk.Substring(3, whereLivrOk.Length - 4)
-                    ElseIf cmq = String.Empty Or cli = String.Empty Then
-                        whereLivrOk = whereLivrOk.Substring(3)
-                    End If
-                    query = "SELECT DISTINCT NumCmd, DateFinalisations, DelaiPrevu FROM Commande as c, Etat as e" + whereEndOk + cli + cmq + whereLivrOk + cli + cmq + "Order By" + param
-                Else
-                    If cmq = String.Empty And cli = String.Empty Then
-                        whereLivrNotOk = whereLivrNotOk.Substring(3, whereLivrNotOk.Length - 4)
-                    ElseIf cmq = String.Empty Or cli = String.Empty Then
-                        whereLivrNotOk = whereLivrNotOk.Substring(3)
-                    End If
-
-                    Dim temp As String = String.Empty
-                    If cli <> String.Empty And cmq = String.Empty Then whereLivrNotOk = "AND" + whereLivrNotOk
-                    query = "SELECT DISTINCT NumCmd, DateFinalisations, DelaiPrevu FROM Commande as c, Etat as e" + whereEndNotOk + cli + cmq + whereLivrNotOk + cli + cmq + temp + "Order By" +
-                        param
-                End If
+                query = "SELECT DISTINCT NumCmd, DateFinalisations, DelaiPrevu FROM Commande as c, Etat as e" + whereEtat + cli + cmq + "Order By" + param
 
                 Objects = connection.ExecuteQuery(query, parameters)
 
@@ -480,12 +437,82 @@ Public Class RechercheCommande
                     Dim cmd As New Commande(Long.Parse(obj(0)))
                     cmd = cmd.GetCommande()
 
-                    If Me.ChkEndCmd.IsChecked Then
-                        If cmd.Etat.Label = "Terminée" Or cmd.Etat.Label = "Rendue" Then
+                    If Me.CbxEtat.SelectedIndex = 0 Then
+                        If cmd.Etat.Label <> "Terminée" And cmd.Etat.Label <> "Rendue" Then
                             LbxSearchCmd.Items.Add(cmd)
                         End If
-                    Else
-                        If cmd.Etat.Label <> "Terminée" Or cmd.Etat.Label <> "Rendue" Then
+                    ElseIf Me.CbxEtat.SelectedIndex = 1 Then
+                        If cmd.Etat.Label = "Terminée" Then
+                            LbxSearchCmd.Items.Add(cmd)
+                        End If
+                    ElseIf Me.CbxEtat.SelectedIndex = 2 Then
+                        If cmd.Etat.Label = "Rendue" Then
+                            LbxSearchCmd.Items.Add(cmd)
+                        End If
+                    End If
+                Next
+            Catch ex As Exception
+                MessageBox.Show(ex.Message, "Erreur")
+            Finally
+                Try
+                    connection.Close()
+                Catch ex As Exception
+                End Try
+            End Try
+        ElseIf Me.AutoCompNContremarque.SelectedItem IsNot Nothing Or Me.AutoCompNContremarque.Text <> "" Then
+            Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
+            Dim Objects As New List(Of List(Of Object))
+            Dim parameters As New List(Of MySqlParameter)
+
+            Try
+                connection.Open()
+
+                Dim cmq As String
+
+                If Me.AutoCompNContremarque.SelectedItem IsNot Nothing Then
+                    Dim c As Contremarque = Me.AutoCompNContremarque.SelectedItem
+                    cmq = "IdentifierContremarque=" + c.Identifier.ToString() + " "
+                Else
+                    Dim cm As Contremarque = Nothing
+
+                    For Each item In Me.AutoCompNContremarque.ItemsSource
+                        Dim c As Contremarque = item
+                        If c.Nom = Me.AutoCompNContremarque.Text.ToUpper() Then
+                            Me.AutoCompNContremarque.SelectedItem = item
+                            cm = c
+                            Exit For
+                        End If
+                    Next
+
+                    If Me.AutoCompNContremarque.SelectedItem Is Nothing Then Exit Sub
+
+                    cmq = "IdentifierContremarque=" + cm.Identifier.ToString() + " "
+                End If
+
+                Dim query As String
+
+                query = "SELECT DISTINCT NumCmd, DateFinalisations, DelaiPrevu FROM Commande as c, Etat as e" + whereEtat + cmq + "Order By" + param
+
+                Objects = connection.ExecuteQuery(query, parameters)
+
+                parameters = Nothing
+
+                connection.Close()
+
+                For Each obj In Objects
+                    Dim cmd As New Commande(Long.Parse(obj(0)))
+                    cmd = cmd.GetCommande()
+
+                    If Me.CbxEtat.SelectedIndex = 0 Then
+                        If cmd.Etat.Label <> "Terminée" And cmd.Etat.Label <> "Rendue" Then
+                            LbxSearchCmd.Items.Add(cmd)
+                        End If
+                    ElseIf Me.CbxEtat.SelectedIndex = 1 Then
+                        If cmd.Etat.Label = "Terminée" Then
+                            LbxSearchCmd.Items.Add(cmd)
+                        End If
+                    ElseIf Me.CbxEtat.SelectedIndex = 2 Then
+                        If cmd.Etat.Label = "Rendue" Then
                             LbxSearchCmd.Items.Add(cmd)
                         End If
                     End If
@@ -507,13 +534,7 @@ Public Class RechercheCommande
                 connection.Open()
 
                 Dim query As String
-                If ChkEndCmd.IsChecked Then
-                    query = "SELECT DISTINCT NumCmd, DateFinalisations, DelaiPrevu FROM Commande as c, Etat as e" + whereEndOk.Substring(0, whereEndOk.Length - 4) +
-                        whereLivrOk.Substring(0, whereLivrOk.Length - 4) + "Order By" + param
-                Else
-                    query = "SELECT DISTINCT NumCmd, DelaiPrevu FROM Commande as c, Etat as e" + whereEndNotOk.Substring(0, whereEndNotOk.Length - 4) +
-                        whereLivrNotOk.Substring(0, whereLivrNotOk.Length - 4) + "Order By" + param
-                End If
+                query = "SELECT DISTINCT NumCmd, DateFinalisations, DelaiPrevu FROM Commande as c, Etat as e" + whereEtat.Substring(0, whereEtat.Length - 4) + "Order By" + param
 
                 Objects = connection.ExecuteQuery(query, parameters)
 
@@ -823,7 +844,7 @@ Public Class RechercheCommande
         Me.AutoCompNContremarque.SelectedItem = Nothing
         Me.AutoCompNumCmd.SelectedItem = Nothing
         Me.AutoCompLMateriau.SelectedItem = Nothing
-        Me.ChkEndCmd.IsChecked = False
+        Me.CbxEtat.SelectedIndex = 0
         Me.LbxSearchCmd.Items.Clear()
     End Sub
 

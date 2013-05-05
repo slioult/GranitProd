@@ -86,7 +86,20 @@
             </toolkit:AutoCompleteBox>
         </StackPanel>
 
-        <CheckBox x:Name="ChkEndCmd" Width="Auto" Grid.Row="0" Grid.Column="1" Content="Commandes terminées" VerticalAlignment="Center" Checked="ChkEndCmd_Checked" />
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+            <TextBlock Text="Commandes :" Margin="2" VerticalAlignment="Center" />
+            <ComboBox x:Name="CbxEtat" VerticalAlignment="Center" Margin="2" SelectedIndex="0" >
+                <ComboBoxItem>
+                    En cours
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    Terminées
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    Rendues
+                </ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
 
         <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" >
             <Button x:Name="BtnPdf" Height="50" Width="50" HorizontalAlignment="Right" Margin="2" VerticalAlignment="Center"
