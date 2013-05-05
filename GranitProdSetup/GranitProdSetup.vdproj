@@ -877,15 +877,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:GranitProd"
-        "ProductCode" = "8:{662A3EAD-0D2E-4B5B-8903-C2E104A6C953}"
-        "PackageCode" = "8:{3C899BE5-5670-444F-A44B-458B450F1FC0}"
+        "ProductCode" = "8:{AAC73980-1FD6-43C9-BBCE-BC8C8E9958E1}"
+        "PackageCode" = "8:{5C652CE6-52DA-42F9-96DD-43281EF0CEA7}"
         "UpgradeCode" = "8:{FCC7D729-CD1D-49C0-ADC1-9F64131440F4}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:2.0.0"
+        "ProductVersion" = "8:1.3.0"
         "Manufacturer" = "8:LIOULT Samuel - PACHECO Luis Alberto"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1413,7 +1413,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7D59A4791E7949D688E6D00F5AAB4672"
             {
-            "SourcePath" = "8:..\\GranitProd\\obj\\x86\\Debug\\GranitProd.exe"
+            "SourcePath" = "8:..\\GranitProd\\obj\\x86\\Release\\GranitProd.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F1E0E8048DDF421689E47EC03C62F6D9"

@@ -1,5 +1,6 @@
 ﻿Imports MGranitDALcsharp
 Imports System.IO
+Imports System.Runtime.InteropServices
 
 Public Class Connexion
 
