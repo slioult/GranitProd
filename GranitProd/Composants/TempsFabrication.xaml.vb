@@ -211,6 +211,7 @@ Public Class TempsFabrication
                         Dim tpsFabItem As New TempsFabrication(tempSem, tps, listCmd)
                         DgTpsFab.Items.Add(tpsFabItem)
                         total += tps
+                        tps = 0
                         listCmd = New List(Of Commande)
                     ElseIf sem = tempSem And tempSem <> 0 Then
                         For Each obj In Objects
@@ -231,7 +232,7 @@ Public Class TempsFabrication
                         Next
                     Else
                         For Each obj In Objects
-                            tps = Integer.Parse(obj(1))
+                            tps += Integer.Parse(obj(1))
                             listCmd.Add(New Commande(Integer.Parse(obj(0))))
                         Next
                         tempSem = sem

@@ -122,9 +122,11 @@
     ''' <remarks></remarks>
     Private Sub DgCommentaires_PreviewMouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Input.MouseButtonEventArgs)
         Dim comItem As Commentaires = DgCommentaires.SelectedItem
-        Dim cmd As New Commande(comItem.NumCmd)
-        Dim consult As New ConsultCommande(Me.Session, cmd.GetCommande(), Nothing, Me.Planning)
-        consult.Show()
+        If comItem IsNot Nothing Then
+            Dim cmd As New Commande(comItem.NumCmd)
+            Dim consult As New ConsultCommande(Me.Session, cmd.GetCommande(), Nothing, Me.Planning)
+            consult.Show()
+        End If
         e.Handled = True
     End Sub
 
