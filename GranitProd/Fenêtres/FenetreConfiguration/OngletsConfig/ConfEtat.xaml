@@ -1,0 +1,112 @@
+﻿<UserControl x:Class="ConfEtat"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GranitProd"
+             mc:Ignorable="d" 
+             d:DesignHeight="520" d:DesignWidth="500">
+    <UserControl.Resources>
+        <local:ConfigConverter x:Key="configConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="40*"/>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="40*"/>
+            <ColumnDefinition Width="5*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="15*"/>
+            <RowDefinition Height="70*"/>
+            <RowDefinition Height="15*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="85*"/>
+                <RowDefinition Height="5*"/>
+                <RowDefinition Height="10*"/>
+            </Grid.RowDefinitions>
+            <ListBox Name="LstEtat" Grid.Row="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:Etat}" >
+                        <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=Label}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="35*"/>
+                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="35*"/>
+                    <ColumnDefinition Width="10*"/>
+                </Grid.ColumnDefinitions>
+                <Button Name="BtnUP" Grid.Column="1" Height="25" Width="25" Click="BtnUP_Click"
+                 HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Content>
+                        <Image>
+                            <Image.Source>
+                                <BitmapImage UriSource="..\..\..\Images\up.png" />
+                            </Image.Source>
+                        </Image>
+                    </Button.Content>
+                </Button>
+                <Button Name="BtnDown" Grid.Column="3" Height="25" Width="25" Click="BtnDown_Click"
+                 HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Content>
+                        <Image>
+                            <Image.Source>
+                                <BitmapImage UriSource="..\..\..\Images\down.png" />
+                            </Image.Source>
+                        </Image>
+                    </Button.Content>
+                </Button>
+            </Grid>
+
+        </Grid>
+
+        <Grid Grid.Column="3" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="16*"/>
+                <RowDefinition Height="17*"/>
+                <RowDefinition Height="17*"/>
+                <RowDefinition Height="16*"/>
+                <RowDefinition Height="17*"/>
+                <RowDefinition Height="16*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Label de l'état :" Grid.Row="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Bottom" />
+            <TextBox Name="TxtNomEtat" Grid.Row="2" FontFamily="Calibri" FontSize="13" VerticalContentAlignment="Center" 
+                 VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="200" MinHeight="30" 
+                 Text="{Binding ElementName=LstEtat, Path=SelectedItem.Label, Mode=OneWay, Converter={StaticResource configConverter}}" />
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="96"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="48*"/>
+                </Grid.ColumnDefinitions>
+                <Button Name="BtnDelete" Grid.Column="0" MaxHeight="25" Width="50" Click="BtnDelete_Click"
+                MinWidth="100" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Content>
+                        <Image>
+                            <Image.Source>
+                                <BitmapImage UriSource="..\..\..\Images\cancel.png" />
+                            </Image.Source>
+                        </Image>
+                    </Button.Content>
+                </Button>
+                <Button Name="BtnSave" Grid.Column="2" MaxHeight="25" Width="50" Click="BtnSave_Click"
+                MinWidth="100" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Content>
+                        <Image>
+                            <Image.Source>
+                                <BitmapImage UriSource="..\..\..\Images\submit.png" />
+                            </Image.Source>
+                        </Image>
+                    </Button.Content>
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

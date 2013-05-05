@@ -1,0 +1,83 @@
+﻿<Application x:Class="Application"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:GranitProd"
+    StartupUri="Fenêtres\Connexion.xaml">
+    <Application.Resources>
+        <LinearGradientBrush x:Key="LinearGBMG" StartPoint="0,0.5" EndPoint="1,0.5">
+            <GradientStop Color="Gray" Offset="0.0" />
+            <GradientStop Color="#af4fa2" Offset="0.5" />
+            <GradientStop Color="Gray" Offset="1" />
+        </LinearGradientBrush>
+
+        <Style TargetType="Grid" x:Key="BackgroundPrincipal">
+            <Setter Property="Background" Value="{StaticResource LinearGBMG}" />
+        </Style>
+
+        <DataTemplate x:Key="MateriauTemplate" DataType="{x:Type local:MateriauTemplate}" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <CheckBox x:Name="ChkUse" IsChecked="{Binding IsChecked}" Grid.Column="0" Margin="5" VerticalAlignment="Center" FontSize="13" />
+                <TextBlock x:Name="TbName" Text="{Binding Label}" Grid.Column="2" Margin="5" VerticalAlignment="Center" FontSize="13" />
+                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" >
+                    <ComboBox x:Name="CbxEpaisseur" SelectedItem="{Binding Epaisseur}" Initialized="CbxEpaisseur_Initialized" Margin="5,5,2,5" FontSize="13"
+                          VerticalAlignment="Center" />
+                    <TextBlock Text="mm" Grid.Column="1" VerticalAlignment="Center" FontSize="13" Margin="0,0,5,0" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="NatureTemplate" DataType="{x:Type local:NatureTemplate}" >
+            <StackPanel Orientation="Horizontal">
+                <CheckBox x:Name="ChkUse" IsChecked="{Binding IsChecked}" Grid.Column="0" Margin="5" VerticalAlignment="Center" FontSize="13" />
+                <TextBlock x:Name="TbName" Text="{Binding Label}" Grid.Column="1" Margin="5" VerticalAlignment="Center" FontSize="13" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="FinalisationTemplate" DataType="{x:Type local:FinalisationTemplate}" >
+            <StackPanel Orientation="Horizontal">
+                <CheckBox x:Name="ChkUse" IsChecked="{Binding IsChecked}" Grid.Column="0" Margin="5" VerticalAlignment="Center" FontSize="13" />
+                <TextBlock x:Name="TbName" Text="{Binding Label}" Grid.Column="1" Margin="5" VerticalAlignment="Center" FontSize="13" />
+            </StackPanel>
+        </DataTemplate>
+
+
+        <Style TargetType="ListBox" x:Key="ListBoxItemStyle">
+            <Style.Resources>
+                <!-- Background of selected item when focussed -->
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#af4fa2" />
+                <!-- Background of selected item when not focussed -->
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="White" />
+            </Style.Resources>
+        </Style>
+
+        <Style TargetType="ListBox" x:Key="HorizontalListBox" >
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"
+                          VerticalAlignment="Center"
+                          HorizontalAlignment="Center"/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Setter Property="Background" Value="Transparent" />
+
+            <Style.Resources>
+                <!-- Background of selected item when focussed -->
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                <!-- Background of selected item when not focussed -->
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
+            </Style.Resources>
+        </Style>
+
+    </Application.Resources>
+
+
+</Application>

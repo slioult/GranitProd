@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="Enlevement"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GranitProd"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    
+    <UserControl.Resources>
+        <local:FinalisationsConverter x:Key="finConverter" />
+        <Style TargetType="DataGrid" x:Key="DataGridItemStyle">
+            <Style.Resources>
+                <!-- Background of selected item when focussed -->
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#af4fa2" />
+                <!-- Background of selected item when not focussed -->
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="White" />
+            </Style.Resources>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="Enlèvement de la semaine" FontFamily="Calibri" FontSize="20" TextWrapping="Wrap" />
+
+            <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right" >
+                <ComboBox x:Name="CbxSemaine" Grid.Row="1" Width="Auto" SelectionChanged="CbxDate_SelectionChanged" />
+                <ComboBox x:Name="CbxAnnee" Grid.Row="1" Width="Auto" SelectionChanged="CbxDate_SelectionChanged" />
+            </StackPanel>
+
+            <DataGrid x:Name="DgEnlevement" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Disabled" Grid.Row="2" Background="Transparent"
+                      Style="{StaticResource DataGridItemStyle}" PreviewMouseDoubleClick="DgEnlevement_PreviewMouseDoubleClick" IsReadOnly="True" >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="N°cmd" Width="Auto" Binding="{Binding NumCmd}" />
+                    <DataGridTextColumn Header="Date" Width="Auto" Binding="{Binding DatePrest, StringFormat=dd/MM/yyyy}" />
+                    <DataGridTextColumn Header="Heure" Width="Auto" Binding="{Binding Heure}" />
+                    <DataGridTextColumn Header="Prestations" Width="*" Binding="{Binding Prestations, Converter={StaticResource finConverter}}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</UserControl>

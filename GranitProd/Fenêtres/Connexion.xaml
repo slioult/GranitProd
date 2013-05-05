@@ -1,0 +1,28 @@
+﻿<Window x:Class="Connexion"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" WindowStartupLocation="CenterScreen"
+    xmlns:local="clr-namespace:GranitProd"
+    Title="Connexion" Height="200" Width="300" ResizeMode="CanMinimize" >
+    <Grid Background="Gray">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" >
+            <TextBlock Text="Identifiant :" FontFamily="Calibri" FontSize="15" />
+            <TextBox x:Name="TxtLogin" FontFamily="Calibri" FontSize="13" Width="150" KeyUp="TxtLogin_KeyUp" />
+         </StackPanel>
+
+        <StackPanel Grid.Row="2" VerticalAlignment="Center" Width="Auto" HorizontalAlignment="Center" >
+            <TextBlock Text="Mot de passe :" FontFamily="Calibri" FontSize="15"  />
+            <PasswordBox x:Name="PsxPassword" FontFamily="Calibri" FontSize="13" Width="150" KeyUp="PsxPassword_KeyUp" />
+        </StackPanel>
+        
+        <Button x:Name="BtnConnexion" VerticalAlignment="Bottom" Content="Connexion" Grid.Row="3" Width="80" Height="25" FontFamily="Calibri" FontSize="15"
+                Click="BtnConnexion_Click" />
+    </Grid>
+</Window>

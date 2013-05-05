@@ -1,0 +1,116 @@
+﻿<Window x:Class="Panel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:GranitProd"
+        x:Name="panel"
+    Title="Tableau de bord" Height="600" Width="800" WindowState="Maximized" WindowStartupLocation="CenterScreen" >
+    
+    <Window.Resources>
+        <local:ContremarqueConverter x:Key="contremarqueConverter" />
+    </Window.Resources>
+
+    <Grid Style="{StaticResource ResourceKey=BackgroundPrincipal}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="33.3*" />
+            <ColumnDefinition Width="33.3*" />
+            <ColumnDefinition Width="33.3*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions >
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" Text="TABLEAU DE BORD" FontFamily="Calibri" FontSize="30" />
+
+        <Button x:Name="BtnRefresh" Grid.Row="0" Grid.Column="2" FontFamily="Calibri" FontSize="13" Margin="2,2,20,2" Height="25" Width="25" HorizontalAlignment="Right" Click="BtnRefresh_Click" >
+            <Button.Content>
+                <Image>
+                    <Image.Source>
+                        <BitmapImage UriSource="..\Images\refresh.png" />
+                    </Image.Source>
+                </Image>
+            </Button.Content>
+        </Button>
+
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Margin="10, 0, 10, 10" VerticalScrollBarVisibility="Hidden">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="Chiffre d'affaire" FontFamily="Calibri" FontSize="20" />
+
+                <local:CA x:Name="CAffaire" Grid.Row="1" />
+
+            </Grid>
+        </ScrollViewer>
+
+        <local:TempsFabrication x:Name="TpsFabrication" Grid.Row="1" Grid.Column="1" Margin="10, 0, 10, 10" />
+
+        <local:SuiviQualite x:Name="SqQualite" Grid.Row="1" Grid.Column="2" Margin="10, 0, 10, 10" />
+
+        <local:Commentaires x:Name="Commentaire" Grid.Row="2" Grid.Column="0" Margin="10" />
+        
+        <Grid Grid.Row="2" Grid.Column="1" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            
+            <ListBox x:Name="LbxDisplayCommandes" Grid.Row="0" Margin="5" MaxWidth="400" Style="{StaticResource ResourceKey=ListBoxItemStyle}" MouseDoubleClick="LbxDisplayCommandes_MouseDoubleClick" >
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:Commande}" >
+                        <StackPanel Orientation="Vertical">
+                            <Grid Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="33.3*" />
+                                    <RowDefinition Height="33.3*" />
+                                    <RowDefinition Height="33.3*" />
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Width="100" >
+                                    <Border BorderBrush="Black" BorderThickness="0,1,0,1" >
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                                            <TextBlock FontFamily="Calibri" FontSize="13" Text="N°" Margin="10,5,10,5" HorizontalAlignment="Center" />
+                                            <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=NoCommande}" Margin="10,5,10,5" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" >
+                                    <TextBlock FontFamily="Calibri" FontSize="13" Text="Cli :   " Margin="10,5,0,5" />
+                                    <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=Client.Nom}"
+                                   Margin="10,5,10,5" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
+                                    <TextBlock FontFamily="Calibri" FontSize="13" Text="CM :   " Margin="10,5,0,5" />
+                                    <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=Contremarque, Converter={StaticResource contremarqueConverter}}"
+                                   Margin="10,5,10,5" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" >
+                                    <TextBlock FontFamily="Calibri" FontSize="13" Text="Délai :   " Margin="10,5,0,5" />
+                                    <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=DelaiPrevu, StringFormat=dd-MM-yyyy}"
+                                   Margin="0,5,10,5" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                <TextBlock FontFamily="Calibri" FontSize="13" Text="Nombre de commandes affichées : " Margin="10,5,0,5" HorizontalAlignment="Center" />
+                <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding ElementName=LbxDisplayCommandes, Path=Items.Count}" Margin="0,5,10,5" HorizontalAlignment="Center" />
+            </StackPanel>
+        </Grid>
+
+        <local:Enlevement x:Name="Enlevement" Grid.Row="2" Grid.Column="2" Margin="10" />
+    </Grid>
+</Window>

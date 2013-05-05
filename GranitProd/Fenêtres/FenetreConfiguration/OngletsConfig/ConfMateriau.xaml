@@ -1,0 +1,110 @@
+﻿<UserControl x:Class="ConfMateriau"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:GranitProd"
+             mc:Ignorable="d" 
+             d:DesignHeight="520" d:DesignWidth="500">
+    <UserControl.Resources>
+        <local:ConfigConverter x:Key="configConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="40*"/>
+            <ColumnDefinition Width="30*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30*"/>
+            <RowDefinition Height="40*"/>
+            <RowDefinition Height="30*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="2" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10*"/>
+                <ColumnDefinition Width="80*"/>
+                <ColumnDefinition Width="10*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35*"/>
+                <RowDefinition Height="15*"/>
+                <RowDefinition Height="15*"/>
+                <RowDefinition Height="35*"/>
+            </Grid.RowDefinitions>
+            <ComboBox Name="CbxConfMateriau" Grid.Column="1" Grid.Row="1" FontFamily="Calibri" FontSize="15" MinHeight="22" 
+                MinWidth="100" HorizontalContentAlignment="Left" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:Materiau}" >
+                        <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=Label}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock Text="(liste des matériaux)" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" 
+               TextAlignment="Center" FontFamily="Calibri" FontSize="15"/>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="17*"/>
+                <RowDefinition Height="17*"/>
+                <RowDefinition Height="18*"/>
+                <RowDefinition Height="12*"/>
+                <RowDefinition Height="19*"/>
+                <RowDefinition Height="17*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Nom du matériau :" Grid.Row="0" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
+            <TextBox Name="TxtNomMateriau" Grid.Row="1" FontFamily="Calibri" FontSize="13" VerticalContentAlignment="Center" 
+               VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="200" MinHeight="30" 
+               Text="{Binding ElementName=CbxConfMateriau, Path=SelectedItem.Label, Mode=OneWay, Converter={StaticResource configConverter}}"/>
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="55*"/>
+                    <ColumnDefinition Width="25*"/>
+                    <ColumnDefinition Width="20*"/>
+                </Grid.ColumnDefinitions>
+                <!--Grid Spinner-->
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="70*"/>
+                        <ColumnDefinition Width="30*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50*"/>
+                            <RowDefinition Height="50*"/>
+                        </Grid.RowDefinitions>
+                    </Grid>
+                </Grid>
+                <!--Grid Spinner Fin-->
+            </Grid>
+            <Grid Grid.Row="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="48*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="48*"/>
+                </Grid.ColumnDefinitions>
+                <Button Name="BtnDelete" Grid.Column="0" MaxHeight="25" Width="50" Click="BtnDelete_Click"
+                MinWidth="100" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Content>
+                        <Image>
+                            <Image.Source>
+                                <BitmapImage UriSource="..\..\..\Images\cancel.png" />
+                            </Image.Source>
+                        </Image>
+                    </Button.Content>
+                </Button>
+                <Button Name="BtnSave" Grid.Column="2" MaxHeight="25" Width="50" Click="BtnSave_Click"
+                MinWidth="100" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button.Content>
+                        <Image Name="Image1">
+                            <Image.Source>
+                                <BitmapImage UriSource="..\..\..\Images\submit.png" />
+                            </Image.Source>
+                        </Image>
+                    </Button.Content>
+                </Button>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</UserControl>

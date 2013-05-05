@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="" GeneratedClassName="MySettings" UseMySettingsClassName="true">
+  <Profiles />
+  <Settings>
+    <Setting Name="DBSource" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.\ConfigFiles\connectionString.txt</Value>
+    </Setting>
+    <Setting Name="Logo" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.\Images\logoMgLaval.png</Value>
+    </Setting>
+    <Setting Name="ExportFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.\ExportFile</Value>
+    </Setting>
+    <Setting Name="ConfigFiles" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.\ConfigFiles</Value>
+    </Setting>
+    <Setting Name="ConfigFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.\ConfigFiles\conf.ini</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,0 +1,152 @@
+﻿<UserControl x:Class="ConfSession"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GranitProd"
+             mc:Ignorable="d" 
+             d:DesignHeight="520" d:DesignWidth="500">
+    <UserControl.Resources>
+        <local:ConfigConverter x:Key="configConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="40*"/>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="40*"/>
+            <ColumnDefinition Width="5*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="80*"/>
+            <RowDefinition Height="20*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="3" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20*"/>
+                <ColumnDefinition Width="60*"/>
+                <ColumnDefinition Width="20*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35*"/>
+                <RowDefinition Height="30*"/>
+                <RowDefinition Height="35*"/>
+            </Grid.RowDefinitions>
+            <ComboBox Name="CbxConfSession" Grid.Column="1" Grid.Row="1" FontFamily="Calibri" FontSize="15" MinHeight="22" 
+                MinWidth="100" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:Session}" >
+                        <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=Login}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="15*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="5*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="5*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="15*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Identifiant : " Grid.Row="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
+            <TextBox Name="TxtIdSession" Grid.Row="2" FontFamily="Calibri" FontSize="13" VerticalContentAlignment="Center" 
+               VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="180" MinHeight="30" 
+               Text="{Binding ElementName=CbxConfSession, Path=SelectedItem.Login, Mode=OneWay, Converter={StaticResource configConverter}}"/>
+
+            <TextBlock Text="Mot de passe :  " Grid.Row="4" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
+            <PasswordBox Name="PwdBxMdpSession" Grid.Row="5" VerticalContentAlignment="Center" 
+               VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="180" MinHeight="30"/>
+            <TextBlock Text="Confirmer le mot de passe :  " Grid.Row="7" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
+            <PasswordBox Name="PwdBxConfirmationMdpSession" Grid.Row="8" VerticalContentAlignment="Center" 
+               VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="180" MinHeight="30"/>
+        </Grid>
+        <Grid Grid.Column="3" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="5*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="15*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="15*"/>
+                <ColumnDefinition Width="85*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Droits :" Grid.Row="1" Grid.ColumnSpan="2" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
+            <CheckBox Name="ChkAddCmd" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                      IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsAddCmd, Mode=OneWay, Converter={StaticResource configConverter}}"/>
+            <CheckBox Name="ChkUpdCmd" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                      IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsUpdCmd, Mode=OneWay, Converter={StaticResource configConverter}}"/>
+            <CheckBox Name="ChkDelCmd" Grid.Row="5" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                      IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsDelCmd, Mode=OneWay, Converter={StaticResource configConverter}}"/>
+            <CheckBox Name="ChkDispCA" Grid.Row="6" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                      IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsDispCA, Mode=OneWay, Converter={StaticResource configConverter}}"/>
+            <CheckBox Name="ChkDispPaneld" Grid.Row="7" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                      IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsDispPanel, Mode=OneWay, Converter={StaticResource configConverter}}"/>
+            <CheckBox Name="ChkUpdConfig" Grid.Row="8" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                      IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsUpdConfig, Mode=OneWay, Converter={StaticResource configConverter}}"/>
+            <CheckBox Name="ChkUpdSession" Grid.Row="9" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                      IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsUpdSession, Mode=OneWay, Converter={StaticResource configConverter}}"/>
+            <TextBlock Text="Ajouter une commande" Grid.Row="3" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
+            <TextBlock Text="Modifier une commande" Grid.Row="4" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
+            <TextBlock Text="Supprimer une commande" Grid.Row="5" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
+            <TextBlock Text="Afficher le chiffre d'ffaire" Grid.Row="6" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
+            <TextBlock Text="Afficher le tableau de bord" Grid.Row="7" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
+            <TextBlock Text="Modifier la configuration" Grid.Row="8" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
+            <TextBlock Text="Modifier les sessions" Grid.Row="9" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
+        </Grid>
+        <Grid Grid.Row="2" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40*"/>
+                <ColumnDefinition Width="60*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40*"/>
+                <RowDefinition Height="60*"/>
+            </Grid.RowDefinitions>
+            <Button Name="BtnDelete" Grid.Column="1" Grid.Row="0" MaxHeight="25" Width="50" Click="BtnDelete_Click"
+                MinWidth="100" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button.Content>
+                    <Image>
+                        <Image.Source>
+                            <BitmapImage UriSource="..\..\..\Images\cancel.png" />
+                        </Image.Source>
+                    </Image>
+                </Button.Content>
+            </Button>
+        </Grid>
+        <Grid Grid.Row="2" Grid.Column="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60*"/>
+                <ColumnDefinition Width="40*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40*"/>
+                <RowDefinition Height="60*"/>
+            </Grid.RowDefinitions>
+            <Button Name="BtnSave" Grid.Column="0" Grid.Row="0" MaxHeight="25" Width="50" Click="BtnSave_Click"
+                MinWidth="100" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button.Content>
+                    <Image>
+                        <Image.Source>
+                            <BitmapImage UriSource="..\..\..\Images\submit.png" />
+                        </Image.Source>
+                    </Image>
+                </Button.Content>
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

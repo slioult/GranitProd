@@ -1,0 +1,37 @@
+﻿<Window x:Class="ConfigurationWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:GranitProd"
+    Title="Configuration" Height="600" Width="580" ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen">
+
+
+    <Grid Style="{StaticResource ResourceKey=BackgroundPrincipal}">
+        <TabControl Name="TabCtrlConfig" Background="Transparent">
+            <TabItem Header="Matériau">
+                <local:ConfMateriau x:Name="confMateriau" />
+            </TabItem>
+            <TabItem Header="Nature">
+                <local:ConfNature x:Name="confNature"/>
+            </TabItem>
+            <TabItem Header="État">
+                <local:ConfEtat x:Name="confEtat"/>
+            </TabItem>
+            <TabItem Header="Épaisseur">
+                <local:ConfEpaisseur x:Name="confEpaisseur"/>
+            </TabItem>
+            <TabItem Header="Prestation">
+                <local:ConfFinalisation x:Name="confFinalisation" />
+            </TabItem>
+            <TabItem Header="Relevés">
+                <local:ConfReleves x:Name="confReleves" />
+            </TabItem>
+            <TabItem Header="Qualité">
+                <local:ConfQualite x:Name="confQualite" />
+            </TabItem>
+            <TabItem x:Name="TabSession" Header="Session">
+                <local:ConfSession/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
