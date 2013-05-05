@@ -58,7 +58,12 @@ Public Class PlanningControl
 
             'Ouvre une consultation de commande
             Dim consult As New ConsultCommande(main.Session, commande, main.SearchCommande, Me)
-            consult.Show()
+            If consult.ShowType = 0 Then
+                consult.Show()
+            Else
+                consult.Close()
+                consult = Nothing
+            End If
         End If
     End Sub
 

@@ -10,6 +10,7 @@ Public Class NouvelleCommande
     Private _Session As Session
     Private _IsUpdate As Boolean
     Private _Commande As Commande
+    Private _IsReadOnly As Boolean
     Private _ListMateriaux As New List(Of Materiau)
     Private _ListNatures As New List(Of Nature)
     Private _ListEtat As New List(Of Etat)
@@ -56,6 +57,15 @@ Public Class NouvelleCommande
         Set(ByVal value As Commande)
             Me._Commande = value
             DisplayCommande()
+        End Set
+    End Property
+
+    Public Property IsReadOnly As Boolean
+        Get
+            Return Me._IsReadOnly
+        End Get
+        Set(ByVal value As Boolean)
+            Me._IsReadOnly = value
         End Set
     End Property
 
@@ -166,6 +176,7 @@ Public Class NouvelleCommande
         Me.IsUpdate = False
         Me.Commande = Nothing
         Me._IsTextChangeMontant = True
+        Me._IsReadOnly = False
 
         'Remplit la liste de touches du pavé numériques
         _ListNumPadKeys = New List(Of Key)
@@ -482,19 +493,144 @@ Public Class NouvelleCommande
             Next
         End If
 
-        'Vérifie les droits de la session en cours
-        If (Me.Session IsNot Nothing AndAlso Not Me.Session.IsAddCmd And Me.Session.IsUpdCmd) Then
-            'Si la session a peu de droits (seulement mise à jour) alors beaucoup de choses ne sont pas modifiable, et les informations comme le montant de la commande ne sont pas visibles
+        'Vérifie si la commande est ouverte en lecture seule
+        If Not Me.IsReadOnly Then
+            'Vérifie les droits de la session en cours
+            If (Me.Session IsNot Nothing AndAlso Not Me.Session.IsAddCmd And Me.Session.IsUpdCmd) Then
+                'Si la session a peu de droits (seulement mise à jour) alors beaucoup de choses ne sont pas modifiable, et les informations comme le montant de la commande ne sont pas visibles
+                Me.StDateCommande.IsEnabled = False
+                Me.TxtNumCmd.IsEnabled = False
+                Me.AutoCompNClient.IsEnabled = False
+                Me.AutoCompNContremarque.IsEnabled = False
+                Me.StDelaiPrevu.IsEnabled = False
+                Me.StMontant.Visibility = Windows.Visibility.Collapsed
+                Me.StDateFinalisation.IsEnabled = False
+                Me.CbxMesure.IsEnabled = False
+                Me.StAdresse.IsEnabled = False
+                Me.StDateReleves.IsEnabled = False
+
+                For Each ch In StMateriaux.Children
+                    If (TypeOf (ch) Is Expander) Then
+                        Dim exp As Expander = ch
+                        exp.IsExpanded = True
+                    End If
+                Next
+
+                Dim index As New List(Of Integer)
+                For Each item In Me.LbxMateriaux.Items
+                    Dim mt As MateriauTemplate = item
+                    If Not mt.IsChecked Then
+                        index.Add(Me.LbxMateriaux.Items.IndexOf(item))
+                    End If
+                Next
+
+                For i = index.Count - 1 To 0 Step -1
+                    Dim j As Integer = index(i)
+                    Me.LbxMateriaux.Items.RemoveAt(j)
+                Next
+
+                For Each ch In StNatures.Children
+                    If (TypeOf (ch) Is Expander) Then
+                        Dim exp As Expander = ch
+                        exp.IsExpanded = True
+                    End If
+                Next
+
+                index = New List(Of Integer)
+                For Each item In Me.LbxNatures.Items
+                    Dim nt As NatureTemplate = item
+                    If Not nt.IsChecked Then
+                        index.Add(Me.LbxNatures.Items.IndexOf(item))
+                    End If
+                Next
+
+                For i = index.Count - 1 To 0 Step -1
+                    Dim j As Integer = index(i)
+                    Me.LbxNatures.Items.RemoveAt(j)
+                Next
+
+                For Each ch In StFinalisations.Children
+                    If (TypeOf (ch) Is Expander) Then
+                        Dim exp As Expander = ch
+                        exp.IsExpanded = True
+                    End If
+                Next
+
+                'Booléen qui permettra de savoir, lors de la sauvegarde, qu'il ne faut pas sauvegarder les données non modifiables
+                Me._IsRestrictUpdate = True
+            ElseIf Me.Session IsNot Nothing AndAlso Me.Session.IsDelCmd Then
+                If Me.Session.IsDelCmd Then
+                    Me.BtnDeleteRemarque.Visibility = Windows.Visibility.Visible
+                    Me.BtnDeleteQualite.Visibility = Windows.Visibility.Visible
+                End If
+
+                'trie les matériaux sélectionnés (les place en début de liste)
+                Dim index As New List(Of Integer)
+                For Each item In Me.LbxMateriaux.Items
+                    Dim mt As MateriauTemplate = item
+                    If mt.IsChecked Then
+                        index.Add(Me.LbxMateriaux.Items.IndexOf(item))
+                    End If
+                Next
+
+                Dim listChecked = New List(Of MateriauTemplate)
+                For i = index.Count - 1 To 0 Step -1
+                    Dim j As Integer = index(i)
+                    listChecked.Add(Me.LbxMateriaux.Items.GetItemAt(j))
+                    Me.LbxMateriaux.Items.RemoveAt(j)
+                Next
+
+                For Each mt In listChecked
+                    Me.LbxMateriaux.Items.Insert(0, mt)
+                Next
+
+                'trie les natures sélectionnées (les place en début de liste)
+                index = New List(Of Integer)
+                For Each item In Me.LbxNatures.Items
+                    Dim nt As NatureTemplate = item
+                    If nt.IsChecked Then
+                        index.Add(Me.LbxNatures.Items.IndexOf(item))
+                    End If
+                Next
+
+                Dim listCheckedNat = New List(Of NatureTemplate)
+                For i = index.Count - 1 To 0 Step -1
+                    Dim j As Integer = index(i)
+                    listCheckedNat.Add(Me.LbxNatures.Items.GetItemAt(j))
+                    Me.LbxNatures.Items.RemoveAt(j)
+                Next
+
+                For Each nt In listCheckedNat
+                    Me.LbxNatures.Items.Insert(0, nt)
+                Next
+            Else
+                Me._IsRestrictUpdate = False
+            End If
+        Else
+            Me.ReadOnlyInterface()
+        End If
+
+    End Sub
+
+    ''' <summary>
+    ''' Permet de mettre à jour l'interface graphique en mode LECTURE SEULE
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Sub ReadOnlyInterface()
+        If (Me.Session IsNot Nothing) Then
             Me.StDateCommande.IsEnabled = False
             Me.TxtNumCmd.IsEnabled = False
             Me.AutoCompNClient.IsEnabled = False
             Me.AutoCompNContremarque.IsEnabled = False
             Me.StDelaiPrevu.IsEnabled = False
-            Me.StMontant.Visibility = Windows.Visibility.Collapsed
             Me.StDateFinalisation.IsEnabled = False
             Me.CbxMesure.IsEnabled = False
             Me.StAdresse.IsEnabled = False
             Me.StDateReleves.IsEnabled = False
+            Me.BtnDelete.Visibility = Windows.Visibility.Collapsed
+            Me.BtnSauvegarde.Visibility = Windows.Visibility.Collapsed
+            Me.BtnAddQualite.Visibility = Windows.Visibility.Collapsed
+            Me.BtnAddRemarque.Visibility = Windows.Visibility.Collapsed
 
             For Each ch In StMateriaux.Children
                 If (TypeOf (ch) Is Expander) Then
@@ -543,57 +679,21 @@ Public Class NouvelleCommande
                 End If
             Next
 
-            'Booléen qui permettra de savoir, lors de la sauvegarde, qu'il ne faut pas sauvegarder les données non modifiables
+            Me.GdTpsFabrication.IsEnabled = False
+
+            Me.CbxEtat.IsEnabled = False
+
+            Me.StRemarques.IsEnabled = False
+
+            Me.StQualites.IsEnabled = False
+
             Me._IsRestrictUpdate = True
-        ElseIf Me.Session IsNot Nothing AndAlso Me.Session.IsDelCmd Then
-            If Me.Session.IsDelCmd Then
-                Me.BtnDeleteRemarque.Visibility = Windows.Visibility.Visible
-                Me.BtnDeleteQualite.Visibility = Windows.Visibility.Visible
-            End If
 
-            'trie les matériaux sélectionnés (les place en début de liste)
-            Dim index As New List(Of Integer)
-            For Each item In Me.LbxMateriaux.Items
-                Dim mt As MateriauTemplate = item
-                If mt.IsChecked Then
-                    index.Add(Me.LbxMateriaux.Items.IndexOf(item))
-                End If
-            Next
-
-            Dim listChecked = New List(Of MateriauTemplate)
-            For i = index.Count - 1 To 0 Step -1
-                Dim j As Integer = index(i)
-                listChecked.Add(Me.LbxMateriaux.Items.GetItemAt(j))
-                Me.LbxMateriaux.Items.RemoveAt(j)
-            Next
-
-            For Each mt In listChecked
-                Me.LbxMateriaux.Items.Insert(0, mt)
-            Next
-
-            'trie les natures sélectionnées (les place en début de liste)
-            index = New List(Of Integer)
-            For Each item In Me.LbxNatures.Items
-                Dim nt As NatureTemplate = item
-                If nt.IsChecked Then
-                    index.Add(Me.LbxNatures.Items.IndexOf(item))
-                End If
-            Next
-
-            Dim listCheckedNat = New List(Of NatureTemplate)
-            For i = index.Count - 1 To 0 Step -1
-                Dim j As Integer = index(i)
-                listCheckedNat.Add(Me.LbxNatures.Items.GetItemAt(j))
-                Me.LbxNatures.Items.RemoveAt(j)
-            Next
-
-            For Each nt In listCheckedNat
-                Me.LbxNatures.Items.Insert(0, nt)
-            Next
-        Else
-            Me._IsRestrictUpdate = False
         End If
 
+        If Me.Session IsNot Nothing And Not Me.Session.IsAddCmd And Me.Session.IsUpdCmd Then
+            Me.StMontant.Visibility = Windows.Visibility.Collapsed
+        End If
     End Sub
 
 #End Region

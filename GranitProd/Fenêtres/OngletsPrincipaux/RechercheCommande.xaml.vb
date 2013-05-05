@@ -259,7 +259,12 @@ Public Class RechercheCommande
 
             'Ouvre une consultation de commande
             Dim commande As ConsultCommande = New ConsultCommande(Me.Session, cmd, Me, Me.Planning)
-            commande.Show()
+            If commande.ShowType = 0 Then
+                commande.Show()
+            Else
+                commande.Close()
+                commande = Nothing
+            End If
         Else
             MessageBox.Show("Veuillez sélectionner une commande.", "Aucune commande sélectionnée", MessageBoxButton.OK, MessageBoxImage.Exclamation)
         End If

@@ -66,7 +66,12 @@
 
             'Ouvre une fenêtre de consultation de commande
             Dim consult As New ConsultCommande(Me.Session, commande, Nothing, Me.Planning)
-            consult.ShowDialog()
+            If consult.ShowType = 0 Then
+                consult.ShowDialog()
+            Else
+                consult.Close()
+                consult = Nothing
+            End If
 
             'Rafraîchit toutes les donnée du tableau de bord
             Me.BtnRefresh_Click(Nothing, Nothing)

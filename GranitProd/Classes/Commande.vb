@@ -28,6 +28,7 @@ Public Class Commande
     Private _DateFinalisations As DateTime
     Private _Remarques As List(Of Remarque)
     Private _Qualites As List(Of Qualite)
+    Private _Flag As Long
 
 #End Region
 
@@ -245,6 +246,15 @@ Public Class Commande
         End Set
     End Property
 
+    Public Property Flag As Long
+        Get
+            Return Me._Flag
+        End Get
+        Set(ByVal value As Long)
+            Me._Flag = value
+        End Set
+    End Property
+
 #End Region
 
 #Region "Constructors"
@@ -260,6 +270,14 @@ Public Class Commande
         Me.Natures = New List(Of Nature)
         Me.Finalisations = New List(Of Finalisation)
         Me.NoCommande = numeroCommande
+    End Sub
+
+    Public Sub New(ByVal numeroCommande As Integer, ByVal flag As Long)
+        Me.Materiaux = New List(Of Materiau)
+        Me.Natures = New List(Of Nature)
+        Me.Finalisations = New List(Of Finalisation)
+        Me.NoCommande = numeroCommande
+        Me.Flag = flag
     End Sub
 
     Public Sub New(ByVal noCommande As Integer, ByVal montant As Decimal, ByVal arrhes As Decimal, ByVal dateCommande As DateTime, ByVal adresseChantier As String,
@@ -1217,6 +1235,83 @@ Public Class Commande
             End Try
         End Try
     End Sub
+
+    ''' <summary>
+    ''' Permet de réserver ou de libérer la commande en écriture
+    ''' </summary>
+    ''' <param name="flag">Identifier de la session ayant les droits de modification, 0 si la commande est libre en modification</param>
+    ''' <remarks></remarks>
+    Public Sub UpdateFlag(ByVal flag As Long)
+        Dim connection As New MGConnection(My.Settings.DBSource)
+        Dim parameters As New List(Of MySqlParameter)
+
+        Try
+            'Ouvre la connection
+            connection.Open()
+
+            'Défini les paramètres de la requête
+            Dim parCommande As MySqlParameter = connection.Create("@IdCmd", DbType.Int64, Me.Identifier)
+            parameters.Add(parCommande)
+
+            Dim parSession As MySqlParameter = connection.Create("@Flag", DbType.Int64, flag)
+            parameters.Add(parSession)
+
+            'Exécute la requête
+            connection.ExecuteNonQuery("UPDATE Commande SET Flag=@Flag WHERE Identifier=@IdCmd", parameters)
+
+            parameters = Nothing
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
+        Finally
+            Try
+                'Ferme la connection
+                connection.Close()
+                connection = Nothing
+            Catch ex As Exception
+            End Try
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Permet de récupérer le flag d'une une commande
+    ''' </summary>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Public Function GetFlag() As Commande
+        Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
+        Dim Objects As New List(Of List(Of Object))
+        Dim parameters As New List(Of MySqlParameter)
+
+        Try
+            'Ouvre la connection à la base de données
+            connection.Open()
+
+            'Initialise les paramètres de la commande
+            Dim parNumeroCommande As MySqlParameter = connection.Create("@NumCommande", DbType.Int32, Me.NoCommande)
+            parameters.Add(parNumeroCommande)
+
+            'Requête
+            Objects = connection.ExecuteQuery("SELECT Flag" +
+                                              " FROM Commande" +
+                                              " WHERE NumCmd=@NumCommande", parameters)
+
+            'Traite les résultats
+            For Each obj In Objects
+                Me.Flag = Long.Parse(obj(0))
+            Next
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        Finally
+            Try
+                'Ferme la connection
+                connection.Close()
+            Catch ex As Exception
+            End Try
+        End Try
+
+        Return Me
+    End Function
 
 #End Region
 

@@ -127,7 +127,12 @@
 
             'Ouvre la consultation de commande
             Dim consult As New ConsultCommande(Me.Session, cmd.GetCommande(), Nothing, Me.Planning)
-            consult.Show()
+            If consult.ShowType = 0 Then
+                consult.ShowDialog()
+            Else
+                consult.Close()
+                consult = Nothing
+            End If
         End If
         e.Handled = True
     End Sub

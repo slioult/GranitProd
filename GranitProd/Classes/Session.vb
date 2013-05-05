@@ -132,6 +132,11 @@ Public Class Session
 
     End Sub
 
+    Public Sub New(ByVal id As Long)
+
+        Me.Identifier = id
+
+    End Sub
 
     Public Sub New(ByVal login As String, ByVal password As String, Optional ByVal isAddCmd As Boolean = False, Optional ByVal isUpdCmd As Boolean = False, Optional ByVal isDelCmd As Boolean = False,
                    Optional ByVal isDispCA As Boolean = False, Optional ByVal isDispPanel As Boolean = False, Optional ByVal isUpdConfig As Boolean = False, Optional ByVal isUpdSession As Boolean = False,

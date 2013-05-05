@@ -16,6 +16,8 @@ Public Class Connexion
         ' Cet appel est requis par le concepteur.
         InitializeComponent()
 
+        TbVersion.Text = "2013 GranitProd - Version " + My.Application.Info.Version.ToString().Substring(0, My.Application.Info.Version.ToString().Length - 2)
+
         ' Ajoutez une initialisation quelconque après l'appel InitializeComponent().
         TxtLogin.Focus()
         isOk = True
