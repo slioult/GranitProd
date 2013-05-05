@@ -167,6 +167,45 @@ Public Class Epaisseur
         End Try
     End Sub
 
+    ''' <summary>
+    ''' Permet de savoir si une epaisseur est utilisée dans une commande
+    ''' </summary>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Public Function IsUsed() As Boolean
+        Dim bool As Boolean = False
+        Dim Objects As New List(Of List(Of Object))
+        Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
+        Dim parameters As New List(Of MySqlParameter)
+
+        Try
+            connection.Open()
+
+            Dim parValue As MySqlParameter = connection.Create("@Value", DbType.Int32, Me.Value)
+            parameters.Add(parValue)
+
+            Objects = connection.ExecuteQuery("SELECT COUNT(Identifier_Commande) FROM Commande_materiau WHERE Epaisseur=@Value", parameters)
+
+            For Each obj In Objects
+                If Integer.Parse(obj(0)) > 0 Then
+                    bool = True
+                End If
+            Next
+
+            parameters.Clear()
+
+            connection.Close()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Error")
+        Finally
+            Try
+                connection.Close()
+            Catch ex As Exception
+            End Try
+        End Try
+        Return bool
+    End Function
+
 #End Region
 
 End Class

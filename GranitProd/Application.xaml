@@ -53,7 +53,7 @@ ShutdownMode="OnLastWindowClose">
                 <!-- Background of selected item when focussed -->
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#af4fa2" />
                 <!-- Background of selected item when not focussed -->
-                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="White" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#af4fa2" />
             </Style.Resources>
         </Style>
 

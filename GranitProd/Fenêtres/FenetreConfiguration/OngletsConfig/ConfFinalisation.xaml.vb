@@ -36,7 +36,7 @@
         InitializeComponent()
 
         ' Ajoutez une initialisation quelconque après l'appel InitializeComponent().
-        Me.CbxConfFinalisation.Items.Add(New Finalisation("Nouveau"))
+        Me.CbxConfFinalisation.Items.Add(New Finalisation("Nouvelle", "", True))
 
         Dim finalisations As New List(Of Finalisation)
         finalisations = Finalisation.GetFinalisations()
@@ -70,6 +70,8 @@
                     Me.NouvelleCommande.LbxFinalisations.Items.Remove(ft)
                     If Me.Planning IsNot Nothing Then Me.Planning.Fill()
                     Me.CbxConfFinalisation.SelectedIndex = 0
+
+                    MessageBox.Show("La prestation a été supprimée.", "Prestation supprimée", MessageBoxButton.OK, MessageBoxImage.Information)
                 End If
             Else
                 MessageBox.Show("La prestation est utilisée dans une commande et ne peut pas être supprimée.", "Suppression d'une prestation", MessageBoxButton.OK, MessageBoxImage.Stop)
@@ -176,32 +178,37 @@
             End If
 
             If Not isExistsLabel And Not isExistsColor Then
-                finalisation.Label = TxtNomFinalisation.Text
-                finalisation.Update()
+                Dim result As MessageBoxResult = MessageBox.Show("Voulez-vous modifier la prestation « " + finalisation.Label + " » ?", "Modifier une prestation",
+                                                                 MessageBoxButton.YesNo, MessageBoxImage.Question)
 
-                Me.CbxConfFinalisation.Items.RemoveAt(index)
-                Me.CbxConfFinalisation.Items.Insert(index, finalisation)
+                If result = MessageBoxResult.Yes Then
+                    finalisation.Label = TxtNomFinalisation.Text
+                    finalisation.Update()
 
-                Dim finT As New List(Of FinalisationTemplate)
-                For Each item In Me.NouvelleCommande.LbxFinalisations.Items
-                    Dim ft As FinalisationTemplate = item
-                    If ft.Identifier = finalisation.Identifier Then
-                        ft.Label = finalisation.Label
-                        ft.Color = finalisation.Color
-                    End If
+                    Me.CbxConfFinalisation.Items.RemoveAt(index)
+                    Me.CbxConfFinalisation.Items.Insert(index, finalisation)
 
-                    finT.Add(ft)
-                Next
+                    Dim finT As New List(Of FinalisationTemplate)
+                    For Each item In Me.NouvelleCommande.LbxFinalisations.Items
+                        Dim ft As FinalisationTemplate = item
+                        If ft.Identifier = finalisation.Identifier Then
+                            ft.Label = finalisation.Label
+                            ft.Color = finalisation.Color
+                        End If
 
-                Me.NouvelleCommande.LbxFinalisations.Items.Clear()
+                        finT.Add(ft)
+                    Next
 
-                For Each f In finT
-                    Me.NouvelleCommande.LbxFinalisations.Items.Add(f)
-                Next
-                If Me.Planning IsNot Nothing Then Me.Planning.Fill()
+                    Me.NouvelleCommande.LbxFinalisations.Items.Clear()
 
-                Me.CbxConfFinalisation.SelectedIndex = index
-                MessageBox.Show("La prestation a été modifiée.", "Prestation modifiée", MessageBoxButton.OK, MessageBoxImage.Information)
+                    For Each f In finT
+                        Me.NouvelleCommande.LbxFinalisations.Items.Add(f)
+                    Next
+                    If Me.Planning IsNot Nothing Then Me.Planning.Fill()
+
+                    Me.CbxConfFinalisation.SelectedIndex = index
+                    MessageBox.Show("La prestation a été modifiée.", "Prestation modifiée", MessageBoxButton.OK, MessageBoxImage.Information)
+                End If
             Else
                 If isExistsLabel Then
                     MessageBox.Show("La prestation existe déjà", "Prestation existante", MessageBoxButton.OK, MessageBoxImage.Stop)
@@ -210,7 +217,7 @@
                 End If
             End If
 
-        End If
+            End If
     End Sub
 
 #End Region
@@ -258,6 +265,5 @@
     End Sub
 
 #End Region
-
 
 End Class

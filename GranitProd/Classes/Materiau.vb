@@ -306,7 +306,7 @@ Public Class Materiau
             Dim parIdMateriau As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdMateriau)
 
-            Objects = connection.ExecuteQuery("SELECT COUNT Identifier_Commande FROM Commande_materiau WHERE Identifier_Materiau=@Identifier", parameters)
+            Objects = connection.ExecuteQuery("SELECT COUNT(Identifier_Commande) FROM Commande_materiau WHERE Identifier_Materiau=@Identifier", parameters)
 
             For Each obj In Objects
                 If Integer.Parse(obj(0)) > 0 Then

@@ -29,7 +29,7 @@
         <DataGrid x:Name="DgCommentaires" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Disabled" Grid.Row="1"
                   Background="Transparent" Style="{StaticResource DataGridItemStyle}" PreviewMouseDoubleClick="DgCommentaires_PreviewMouseDoubleClick" IsReadOnly="True" >
             <DataGrid.Columns>
-                <DataGridTextColumn Header="N°cmd" Width="Auto" Binding="{Binding NumCmd}" />
+                <DataGridTextColumn Header="Contremarque" Width="Auto" Binding="{Binding Contremarque.Nom}" />
                 <DataGridTextColumn Header="Source" Width="Auto" Binding="{Binding Source}" />
                 <DataGridTextColumn Header="Date/Heure" Width="Auto" Binding="{Binding DateRem}" />
                 <DataGridTextColumn Header="Remarque" Width="*" Binding="{Binding Remarque}" />

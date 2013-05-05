@@ -689,6 +689,8 @@ Public Class NouvelleCommande
 
             Me._IsRestrictUpdate = True
 
+            Me.StMontant.IsEnabled = False
+
         End If
 
         If Me.Session IsNot Nothing And Not Me.Session.IsAddCmd And Me.Session.IsUpdCmd Then
@@ -1758,7 +1760,7 @@ Public Class NouvelleCommande
             connection.Open()
 
             'Élargit la recherche
-            Dim text As String = Me.AutoCompNClient.Text.Replace("'", "\'")
+            Dim text As String = Me.AutoCompNContremarque.Text.Replace("'", "\'")
             text = text.Replace("""", "\""")
 
             'Exécute la requête

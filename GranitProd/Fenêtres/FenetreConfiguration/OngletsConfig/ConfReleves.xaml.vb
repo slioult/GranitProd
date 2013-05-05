@@ -36,7 +36,7 @@
         InitializeComponent()
 
         'Remplir la CmbConfMesure
-        Me.CbxConfReleves.Items.Add(New Mesure("Nouveau"))
+        Me.CbxConfReleves.Items.Add(New Mesure("Nouveau", "", True))
 
         Dim releves As New List(Of Mesure)
         releves = Mesure.GetMesures()
@@ -74,6 +74,8 @@
 
                     If Me.Planning IsNot Nothing Then Me.Planning.Fill()
                     Me.CbxConfReleves.SelectedIndex = 0
+
+                    MessageBox.Show("Le type de mesure a été supprimé", "Type de mesure supprimé", MessageBoxButton.OK, MessageBoxImage.Information)
                 End If
             Else
                 MessageBox.Show("Le type de relevé est utilisé dans une commande." + vbCrLf + "Vous ne pouvez donc pas le supprimer", "Suppression impossible", MessageBoxButton.OK, MessageBoxImage.Exclamation)
@@ -184,23 +186,28 @@
             End If
 
             If Not isExistsLabel And Not isExistsColor Then
-                mesure.Label = TxtNomReleves.Text
-                mesure.Update()
+                Dim result As MessageBoxResult = MessageBox.Show("Voulez-vous modifier le type de mesure « " + mesure.Label + " » ?", "Modification d'un type de mesure",
+                                                                 MessageBoxButton.OK, MessageBoxImage.Question)
 
-                Me.CbxConfReleves.Items.RemoveAt(index)
-                Me.CbxConfReleves.Items.Insert(index, mesure)
+                If result = MessageBoxResult.Yes Then
+                    mesure.Label = TxtNomReleves.Text
+                    mesure.Update()
 
-                Dim selected As Integer = Me.NouvelleCommande.CbxMesure.SelectedIndex
-                Dim mesures As New List(Of Mesure)
-                For Each mes In CbxConfReleves.Items
-                    mesures.Add(mes)
-                Next
-                Me.NouvelleCommande.CbxMesure.ItemsSource = mesures
-                Me.NouvelleCommande.CbxMesure.SelectedIndex = selected
-                If Me.Planning IsNot Nothing Then Me.Planning.Fill()
+                    Me.CbxConfReleves.Items.RemoveAt(index)
+                    Me.CbxConfReleves.Items.Insert(index, mesure)
 
-                Me.CbxConfReleves.SelectedIndex = index
-                MessageBox.Show("Le type de relevé a été modifié avec succès.", "Type de relevé modifié", MessageBoxButton.OK, MessageBoxImage.Information)
+                    Dim selected As Integer = Me.NouvelleCommande.CbxMesure.SelectedIndex
+                    Dim mesures As New List(Of Mesure)
+                    For Each mes In CbxConfReleves.Items
+                        mesures.Add(mes)
+                    Next
+                    Me.NouvelleCommande.CbxMesure.ItemsSource = mesures
+                    Me.NouvelleCommande.CbxMesure.SelectedIndex = selected
+                    If Me.Planning IsNot Nothing Then Me.Planning.Fill()
+
+                    Me.CbxConfReleves.SelectedIndex = index
+                    MessageBox.Show("Le type de relevé a été modifié avec succès.", "Type de relevé modifié", MessageBoxButton.OK, MessageBoxImage.Information)
+                End If
             Else
                 If isExistsLabel Then
                     MessageBox.Show("Le type de relevé existe déjà.", "Type de relevé existant", MessageBoxButton.OK, MessageBoxImage.Information)
@@ -210,7 +217,7 @@
                 End If
             End If
 
-        End If
+            End If
     End Sub
 
 #End Region
@@ -257,7 +264,4 @@
 
 #End Region
 
-
 End Class
-
-

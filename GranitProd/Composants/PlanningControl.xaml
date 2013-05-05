@@ -12,17 +12,20 @@
         <local:ContremarqueConverter x:Key="contremarqueConverter" />
         <local:DateConverter x:Key="dateConverter" />
         <local:EventHeureConverter x:Key="heureConverter" />
+        <local:PlVisibilityConverter x:Key="visibilityConverter" />
 
         <DataTemplate DataType="{x:Type local:CommandeWork}" x:Key="planningCommande" >
             <Border BorderThickness="{Binding Border}" BorderBrush="Black" >
                 <StackPanel Orientation="Vertical" Margin="5">
-                    <StackPanel Orientation="Horizontal" >
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding Converter={StaticResource visibilityConverter}}" >
                         <TextBlock Text="N° cmd : " FontFamily="Calibri" FontSize="10" />
                         <TextBlock Text="{Binding NoCommande}" FontFamily="Calibri" FontSize="10" />
                     </StackPanel>
-                    <TextBlock Text="{Binding Client.Nom, StringFormat=Cli : {0:c}}" FontFamily="Calibri" FontSize="10" />
+                    <TextBlock Text="{Binding Client.Nom, StringFormat=Cli : {0:c}}" FontFamily="Calibri" FontSize="10" 
+                               Visibility="{Binding Converter={StaticResource visibilityConverter}}" />
                     <TextBlock Text="{Binding Contremarque, Converter={StaticResource contremarqueConverter}, StringFormat=CM : {0:c}}" FontFamily="Calibri" FontSize="10" />
-                    <TextBlock Text="{Binding DelaiPrevu, Converter={StaticResource dateConverter}, StringFormat=Délai : {0:c}}" FontFamily="Calibri" FontSize="10" />
+                    <TextBlock Text="{Binding DelaiPrevu, Converter={StaticResource dateConverter}, StringFormat=Délai : {0:c}}" FontFamily="Calibri" FontSize="10"
+                               Visibility="{Binding Converter={StaticResource visibilityConverter}}"/>
                     <TextBlock Text="{Binding Converter={StaticResource heureConverter}, StringFormat=Heure : {0:c}}" FontFamily="Calibri" FontSize="10" />
                     <Grid Background="{Binding Converter={StaticResource workBackgroundConverter}}"
                                           Height="3" />
@@ -54,6 +57,14 @@
                     <TextBlock x:Name="TxtWeek" FontFamily="Calibri" FontSize="20" Margin="4,0,0,0"/>
                 </StackPanel>
             </Grid>
+
+            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Vertical" Margin="5" >
+                <TextBlock HorizontalAlignment="Left" Text="Afficher par :" />
+                <ComboBox x:Name="CbxTri" SelectedIndex="0" HorizontalAlignment="Left" Width="Auto" SelectionChanged="CbxTri_SelectionChanged" >
+                    <ComboBoxItem>Délai prévu</ComboBoxItem>
+                    <ComboBoxItem>Date de commande</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
 
             <Button x:Name="BtnRefresh" Grid.Row="0" Grid.Column="1" Height="23" Width="23" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Click="BtnRefresh_Click" >
                 <Image>
@@ -115,7 +126,7 @@
             <Grid Grid.Row="1" Grid.Column="1" Background="#aaaaaa">
                 <Border BorderBrush="Black" BorderThickness="0 1 0 0">
                     <ListBox x:Name="LbxLundi" Style="{StaticResource HorizontalListBox}" ItemTemplate="{StaticResource ResourceKey=planningCommande}"
-                             MouseDoubleClick="Commande_MouseDoubleClick"/>
+                             MouseDoubleClick="Commande_MouseDoubleClick" />
                 </Border>
             </Grid>
 

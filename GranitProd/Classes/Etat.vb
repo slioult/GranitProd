@@ -109,7 +109,7 @@ Public Class Etat
             parameters.Add(parIdentifierEtat)
 
             'Exécute la requête
-            Objects = connection.ExecuteQuery("SELECT Identifier, Label FROM Etat WHERE Identifier=@Identifier", parameters)
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Position FROM Etat WHERE Identifier=@Identifier", parameters)
 
             parameters = Nothing
 
@@ -119,6 +119,7 @@ Public Class Etat
             'Traite les résultats
             For Each obj In Objects
                 Me.Label = obj(1).ToString()
+                Me.Position = Integer.Parse(obj(2))
             Next
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -148,7 +149,7 @@ Public Class Etat
             connection.Open()
 
             'Exécute la requête
-            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Position FROM Etat")
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Position FROM Etat Order By Position")
 
             'Ferme la conection
             connection.Close()
@@ -187,8 +188,11 @@ Public Class Etat
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
 
+            Dim parPosition As MySqlParameter = connection.Create("@Position", DbType.String, Me.Position)
+            parameters.Add(parLabel)
+
             'Requête
-            Dim query As String = "INSERT INTO Etat (Label) VALUES (@Label)"
+            Dim query As String = "INSERT INTO Etat (Label, Position) VALUES (@Label, @Position)"
 
             'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
@@ -307,7 +311,7 @@ Public Class Etat
             Dim parIdEtat As MySqlParameter = connection.Create("@IdentifierEtat", DbType.Int32, Me.Identifier)
             parameters.Add(parIdEtat)
 
-            Objects = connection.ExecuteQuery("SELECT COUNT Identifier FROM Commande WHERE IdentifierEtat=@IdentifierEtat", parameters)
+            Objects = connection.ExecuteQuery("SELECT COUNT(Identifier) FROM Commande WHERE IdentifierEtat=@IdentifierEtat", parameters)
 
             For Each obj In Objects
                 If Integer.Parse(obj(0)) > 0 Then

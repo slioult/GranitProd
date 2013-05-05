@@ -84,6 +84,22 @@ Public Class PlanningControl
 
 #End Region
 
+#Region "SelectionChanged"
+
+    ''' <summary>
+    ''' Évènement se produisant lors de la modification du paramètre d'affichage du planning
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub CbxTri_SelectionChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
+        If Me.ListOfDays IsNot Nothing Then
+            Me.Fill()
+        End If
+    End Sub
+
+#End Region
+
 #Region "Methods"
 
     ''' <summary>
@@ -121,7 +137,7 @@ Public Class PlanningControl
         TxtVendredi.Text = IIf(days.ElementAt(4).Equals(New Date(1, 1, 1)) = False, days.ElementAt(4).Day, String.Empty)
 
         'Charge les commandes correspondant à cette semaine
-        LoadCommande()
+        LoadCommande(Me.CbxTri.SelectedIndex)
 
         'Charge les types de relevés dans la légende
         Dim mes As List(Of Mesure) = Mesure.GetLegendMesures()
@@ -228,8 +244,9 @@ Public Class PlanningControl
     ''' <summary>
     ''' Charge les commandes
     ''' </summary>
+    ''' <param name="sorted">Type de tri -- 0 > Délai prévu -- 1 > Date de commande</param>
     ''' <remarks></remarks>
-    Public Sub LoadCommande()
+    Public Sub LoadCommande(ByVal sorted As Integer)
         Try
             Dim Dates As New List(Of Date)
             ' Récupère les n° de jour de la semaine
@@ -274,8 +291,12 @@ Public Class PlanningControl
                     parameters.Add(parDate)
 
                     'Requête
-                    query = "SELECT NumCmd FROM Commande WHERE DAY(DateFinalisations)=DAY(@parDate) AND MONTH(DateFinalisations)=MONTH(@parDate) AND YEAR(DateFinalisations)=YEAR(@parDate) " +
-                        "Or DAY(DateMesure)=DAY(@parDate) AND MONTH(DateMesure)=MONTH(@parDate) AND YEAR(DateMesure)=YEAR(@parDate)"
+                    If sorted <> 1 Then
+                        query = "SELECT NumCmd FROM Commande WHERE DAY(DateFinalisations)=DAY(@parDate) AND MONTH(DateFinalisations)=MONTH(@parDate) AND YEAR(DateFinalisations)=YEAR(@parDate) " +
+                            "Or DAY(DateMesure)=DAY(@parDate) AND MONTH(DateMesure)=MONTH(@parDate) AND YEAR(DateMesure)=YEAR(@parDate)"
+                    Else
+                        query = "SELECT NumCmd FROM Commande WHERE DAY(DateCommande)=DAY(@parDate) AND MONTH(DateCommande)=MONTH(@parDate) AND YEAR(DateCommande)=YEAR(@parDate)"
+                    End If
 
                     'Exécute la requête
                     Objects = connection.ExecuteQuery(query, parameters)

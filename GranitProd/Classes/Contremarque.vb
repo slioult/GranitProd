@@ -41,6 +41,11 @@ Public Class Contremarque
         Me.Identifier = 0
     End Sub
 
+    Public Sub New(ByVal identifier As Long)
+        Me.Nom = String.Empty
+        Me.Identifier = identifier
+    End Sub
+
     Public Sub New(ByVal nom As String, Optional ByVal identifier As Long = 0)
         Me.Nom = nom
         Me.Identifier = identifier

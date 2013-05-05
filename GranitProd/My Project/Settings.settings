@@ -17,5 +17,11 @@
     <Setting Name="ConfigFile" Type="System.String" Scope="User">
       <Value Profile="(Default)">.\ConfigFiles\conf.ini</Value>
     </Setting>
+    <Setting Name="Sablier" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.\Images\sablier.png</Value>
+    </Setting>
+    <Setting Name="Search" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.\Images\search.png</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

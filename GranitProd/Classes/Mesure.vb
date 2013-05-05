@@ -399,7 +399,7 @@ Public Class Mesure
             Dim parIdMesure As MySqlParameter = connection.Create("@IdentifierMesure", DbType.Int32, Me.Identifier)
             parameters.Add(parIdMesure)
 
-            Objects = connection.ExecuteQuery("SELECT COUNT Identifier FROM Commande WHERE IdentifierMesure=@IdentifierMesure", parameters)
+            Objects = connection.ExecuteQuery("SELECT COUNT(Identifier) FROM Commande WHERE IdentifierMesure=@IdentifierMesure", parameters)
 
             For Each obj In Objects
                 If Integer.Parse(obj(0)) > 0 Then

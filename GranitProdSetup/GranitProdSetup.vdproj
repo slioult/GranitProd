@@ -21,6 +21,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0CB6C8018CDAB8EDFAC924A3BF95B187"
+        "OwnerKey" = "8:_7D59A4791E7949D688E6D00F5AAB4672"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_112A99D065244667A9B8B83389AC0FE0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -82,7 +88,7 @@
         "Entry"
         {
         "MsmKey" = "8:_5ABB1DA7A8DA717FE086EC3BED2468DC"
-        "OwnerKey" = "8:_E98A2E5F8CFE7C284B5EAB7F84166D05"
+        "OwnerKey" = "8:_0CB6C8018CDAB8EDFAC924A3BF95B187"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -147,14 +153,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_E98A2E5F8CFE7C284B5EAB7F84166D05"
+        "MsmKey" = "8:_F05630F8FEA40767A206DD60F9612E77"
         "OwnerKey" = "8:_7D59A4791E7949D688E6D00F5AAB4672"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_F05630F8FEA40767A206DD60F9612E77"
-        "OwnerKey" = "8:_7D59A4791E7949D688E6D00F5AAB4672"
+        "MsmKey" = "8:_F2CB766A676B4BCC874037C3B3566EAB"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -196,7 +202,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E98A2E5F8CFE7C284B5EAB7F84166D05"
+        "OwnerKey" = "8:_0CB6C8018CDAB8EDFAC924A3BF95B187"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -322,6 +328,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0CB6C8018CDAB8EDFAC924A3BF95B187"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:MGranitDALcsharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_0CB6C8018CDAB8EDFAC924A3BF95B187"
+                    {
+                    "Name" = "8:MGranitDALcsharp.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:MGranitDALcsharp.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_F1E0E8048DDF421689E47EC03C62F6D9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_112A99D065244667A9B8B83389AC0FE0"
@@ -717,37 +754,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E98A2E5F8CFE7C284B5EAB7F84166D05"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:MGranitDALcsharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_E98A2E5F8CFE7C284B5EAB7F84166D05"
-                    {
-                    "Name" = "8:MGranitDALcsharp.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:MGranitDALcsharp.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_F1E0E8048DDF421689E47EC03C62F6D9"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F05630F8FEA40767A206DD60F9612E77"
             {
             "AssemblyRegister" = "3:1"
@@ -777,6 +783,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F2CB766A676B4BCC874037C3B3566EAB"
+            {
+            "SourcePath" = "8:..\\GranitProd\\Images\\sablier.png"
+            "TargetName" = "8:sablier.png"
+            "Tag" = "8:"
+            "Folder" = "8:_0770857587744AA1AE7B43F096BBCCEA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FCCE50D0DF2F4186909C040B676170BF"

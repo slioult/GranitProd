@@ -109,6 +109,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BindingConverter\ChiffreConverter.vb" />
+    <Compile Include="BindingConverter\PlVisibilityConverter.vb" />
     <Compile Include="Classes\Client.vb" />
     <Compile Include="Classes\Commande.vb" />
     <Compile Include="Classes\CommandeWork.vb" />
@@ -444,6 +445,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Version.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\sablier.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

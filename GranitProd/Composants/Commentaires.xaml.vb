@@ -29,6 +29,7 @@
 #Region "Fields"
 
     Private _NumCmd As Integer
+    Private _Contremarque As Contremarque
     Private _Source As String
     Private _DateRem As String
     Private _Remarque As String
@@ -44,6 +45,15 @@
         End Get
         Set(ByVal value As Integer)
             Me._NumCmd = value
+        End Set
+    End Property
+
+    Public Property Contremarque As Contremarque
+        Get
+            Return Me._Contremarque
+        End Get
+        Set(ByVal value As Contremarque)
+            Me._Contremarque = value
         End Set
     End Property
 
@@ -97,13 +107,14 @@
 
     End Sub
 
-    Public Sub New(ByVal numCmd As Integer, ByVal source As String, ByVal dateRem As String, ByVal remarque As String, ByVal identifierCmd As Long)
+    Public Sub New(ByVal numCmd As Integer, ByVal source As String, ByVal dateRem As String, ByVal remarque As String, ByVal identifierCmd As Long, Optional ByVal idCmq As Long = 0)
 
         ' Cet appel est requis par le concepteur.
         InitializeComponent()
 
         ' Ajoutez une initialisation quelconque après l'appel InitializeComponent().
         Me.NumCmd = numCmd
+        If idCmq <> 0 Then Me.Contremarque = New Contremarque(idCmq).GetContremarque()
         Me.Source = source
         Me.DateRem = dateRem
         Me.Remarque = remarque
@@ -155,7 +166,7 @@
             connection.Open()
 
             'Exécute la requête
-            Objects = connection.ExecuteQuery("SELECT r.Identifier, r.Commentaire, r.Source, r.Date, r.IdentifierCommande, c.NumCmd " +
+            Objects = connection.ExecuteQuery("SELECT r.Identifier, r.Commentaire, r.Source, r.Date, r.IdentifierCommande, c.NumCmd, c.IdentifierContremarque " +
                                               "FROM Remarque as r, Commande as c " +
                                               "WHERE r.IdentifierCommande = c.Identifier " +
                                               "Order By r.Identifier DESC LIMIT 0, 10;")
@@ -164,7 +175,7 @@
 
             'Traite les résultats
             For Each obj In Objects
-                Dim comItem As New Commentaires(Integer.Parse(obj(5)), obj(2).ToString(), obj(3).ToString(), obj(1).ToString(), Long.Parse(obj(0)))
+                Dim comItem As New Commentaires(Integer.Parse(obj(5)), obj(2).ToString(), obj(3).ToString(), obj(1).ToString(), Long.Parse(obj(0)), Long.Parse(obj(6)))
                 Me.DgCommentaires.Items.Add(comItem)
             Next
         Catch ex As Exception

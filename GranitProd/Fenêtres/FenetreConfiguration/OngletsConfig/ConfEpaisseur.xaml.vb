@@ -54,26 +54,31 @@ Public Class ConfEpaisseur
     Private Sub BtnDelete_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
         If Me.CbxConfEpaisseur.SelectedIndex >= 0 Then
             Dim epaisseur As Epaisseur = Me.CbxConfEpaisseur.SelectedItem
-            Dim question As MessageBoxResult = MessageBox.Show("Voulez vous vraiment supprimer l'épaisseur selectionnée ?", "Attention", MessageBoxButton.YesNo, MessageBoxImage.Warning)
-            If question = MessageBoxResult.Yes Then
-                Me.CbxConfEpaisseur.Items.Remove(Me.CbxConfEpaisseur.SelectedItem)
-                epaisseur.Delete()
-                Dim listMTT As New List(Of MateriauTemplate)
+            If Not epaisseur.IsUsed Then
+                Dim question As MessageBoxResult = MessageBox.Show("Voulez vous vraiment supprimer l'épaisseur selectionnée ?", "Suppression d'une épaisseur", MessageBoxButton.YesNo, MessageBoxImage.Warning)
+                If question = MessageBoxResult.Yes Then
+                    Me.CbxConfEpaisseur.Items.Remove(Me.CbxConfEpaisseur.SelectedItem)
+                    epaisseur.Delete()
+                    Dim listMTT As New List(Of MateriauTemplate)
 
-                For Each item In Me.NouvelleCommande.LbxMateriaux.Items
-                    Dim matT As MateriauTemplate = item
-                    listMTT.Add(matT)
-                Next
+                    For Each item In Me.NouvelleCommande.LbxMateriaux.Items
+                        Dim matT As MateriauTemplate = item
+                        listMTT.Add(matT)
+                    Next
 
-                Me.NouvelleCommande.LbxMateriaux.Items.Clear()
+                    Me.NouvelleCommande.LbxMateriaux.Items.Clear()
 
-                For Each m In listMTT
-                    Me.NouvelleCommande.LbxMateriaux.Items.Add(m)
-                Next
-                Me.CbxConfEpaisseur.SelectedIndex = 0
+                    For Each m In listMTT
+                        Me.NouvelleCommande.LbxMateriaux.Items.Add(m)
+                    Next
+                    Me.CbxConfEpaisseur.SelectedIndex = 0
+                    MessageBox.Show("L'épaisseur a été supprimée.", "Épaisseur supprimée", MessageBoxButton.OK, MessageBoxImage.Information)
+                End If
+            Else
+                MessageBox.Show("L'épaisseur est utilisée dans une commande et ne peut pas être supprimée.", "Suppression impossible", MessageBoxButton.OK, MessageBoxImage.Stop)
             End If
         Else
-            MessageBox.Show("Veuillez sélectionner une épaisseur a supprimer.", "Épaisseur non sélectionnée", MessageBoxButton.OK, MessageBoxImage.Warning)
+            MessageBox.Show("Veuillez sélectionner une épaisseur à supprimer.", "Épaisseur non sélectionnée", MessageBoxButton.OK, MessageBoxImage.Warning)
         End If
     End Sub
 
@@ -113,7 +118,7 @@ Public Class ConfEpaisseur
                 For Each m In listMTT
                     Me.NouvelleCommande.LbxMateriaux.Items.Add(m)
                 Next
-                MessageBox.Show("L'épaisseur a été ajoutée avec succès.", "Nouvelle épaisseur ajoutée", MessageBoxButton.OK, MessageBoxImage.Information)
+                MessageBox.Show("L'épaisseur a été ajoutée.", "Nouvelle épaisseur ajoutée", MessageBoxButton.OK, MessageBoxImage.Information)
             Else
                 MessageBox.Show("L'épaisseur existe déjà.", "Épaisseur existante", MessageBoxButton.OK, MessageBoxImage.Information)
             End If

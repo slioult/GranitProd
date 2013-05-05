@@ -61,10 +61,10 @@
                Text="{Binding ElementName=CbxConfSession, Path=SelectedItem.Login, Mode=OneWay, Converter={StaticResource configConverter}}"/>
 
             <TextBlock Text="Mot de passe :  " Grid.Row="4" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
-            <PasswordBox Name="PwdBxMdpSession" Grid.Row="5" VerticalContentAlignment="Center" 
+            <PasswordBox Name="PwdBxMdpSession" Grid.Row="5" VerticalContentAlignment="Center"
                VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="180" MinHeight="30"/>
             <TextBlock Text="Confirmer le mot de passe :  " Grid.Row="7" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
-            <PasswordBox Name="PwdBxConfirmationMdpSession" Grid.Row="8" VerticalContentAlignment="Center" 
+            <PasswordBox Name="PwdBxConfirmationMdpSession" Grid.Row="8" VerticalContentAlignment="Center"
                VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="180" MinHeight="30"/>
         </Grid>
         <Grid Grid.Column="3" Grid.Row="1">
@@ -81,32 +81,20 @@
                 <RowDefinition Height="10*"/>
                 <RowDefinition Height="15*"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="15*"/>
-                <ColumnDefinition Width="85*"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Droits :" Grid.Row="1" Grid.ColumnSpan="2" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
-            <CheckBox Name="ChkAddCmd" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" 
+            <TextBlock Text="Droits :" Grid.Row="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
+            <CheckBox Name="ChkAddCmd" Grid.Row="3" VerticalAlignment="Center" Content="Ajouter une commande" Checked="ChkAddCmd_Checked" Unchecked="ChkAddCmd_Unchecked"
                       IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsAddCmd, Mode=OneWay, Converter={StaticResource configConverter}}"/>
-            <CheckBox Name="ChkUpdCmd" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                      IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsUpdCmd, Mode=OneWay, Converter={StaticResource configConverter}}"/>
-            <CheckBox Name="ChkDelCmd" Grid.Row="5" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+            <CheckBox Name="ChkUpdCmd" Grid.Row="4" VerticalAlignment="Center" Content="Modifier une commande" IsChecked="True" IsEnabled="False" />
+            <CheckBox Name="ChkDelCmd" Grid.Row="5" VerticalAlignment="Center" Content="Supprimer une commande"
                       IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsDelCmd, Mode=OneWay, Converter={StaticResource configConverter}}"/>
-            <CheckBox Name="ChkDispCA" Grid.Row="6" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+            <CheckBox Name="ChkDispCA" Grid.Row="6" VerticalAlignment="Center" Content="Afficher le chiffre d'affaire" Checked="ChkDispCA_Checked" Unchecked="ChkDispCA_Unchecked"
                       IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsDispCA, Mode=OneWay, Converter={StaticResource configConverter}}"/>
-            <CheckBox Name="ChkDispPaneld" Grid.Row="7" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" 
+            <CheckBox Name="ChkDispPaneld" Grid.Row="7" VerticalAlignment="Center" Content="Afficher le tableau de bord"
                       IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsDispPanel, Mode=OneWay, Converter={StaticResource configConverter}}"/>
-            <CheckBox Name="ChkUpdConfig" Grid.Row="8" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+            <CheckBox Name="ChkUpdConfig" Grid.Row="8" VerticalAlignment="Center" Content="Modifier la configuration" Checked="ChkUpdConfig_Checked" Unchecked="ChkUpdConfig_Unchecked"
                       IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsUpdConfig, Mode=OneWay, Converter={StaticResource configConverter}}"/>
-            <CheckBox Name="ChkUpdSession" Grid.Row="9" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+            <CheckBox Name="ChkUpdSession" Grid.Row="9" VerticalAlignment="Center" Content="Modifier les sessions"
                       IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsUpdSession, Mode=OneWay, Converter={StaticResource configConverter}}"/>
-            <TextBlock Text="Ajouter une commande" Grid.Row="3" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
-            <TextBlock Text="Modifier une commande" Grid.Row="4" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
-            <TextBlock Text="Supprimer une commande" Grid.Row="5" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
-            <TextBlock Text="Afficher le chiffre d'ffaire" Grid.Row="6" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
-            <TextBlock Text="Afficher le tableau de bord" Grid.Row="7" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
-            <TextBlock Text="Modifier la configuration" Grid.Row="8" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
-            <TextBlock Text="Modifier les sessions" Grid.Row="9" Grid.Column="1" FontFamily="Calibri" FontSize="15" VerticalAlignment="Center" />
         </Grid>
         <Grid Grid.Row="2" Grid.Column="1">
             <Grid.ColumnDefinitions>

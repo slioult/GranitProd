@@ -6,6 +6,7 @@ Public Class Enlevement
 #Region "Fields"
 
     Private _NumCmd As Integer
+    Private _Contremarque As Contremarque
     Private _DatePrest As DateTime
     Private _Heure As String
     Private _Prestations As List(Of Finalisation)
@@ -22,6 +23,15 @@ Public Class Enlevement
         End Get
         Set(ByVal value As Integer)
             Me._NumCmd = value
+        End Set
+    End Property
+
+    Public Property Contremarque As Contremarque
+        Get
+            Return Me._Contremarque
+        End Get
+        Set(ByVal value As Contremarque)
+            Me._Contremarque = value
         End Set
     End Property
 
@@ -78,6 +88,7 @@ Public Class Enlevement
         InitializeComponent()
 
         Me.NumCmd = cmd.NoCommande
+        Me.Contremarque = cmd.Contremarque
         Me.DatePrest = cmd.DateFinalisations
         Me.Prestations = cmd.Finalisations
         Dim m As String = IIf(Me.DatePrest.Minute > 9, Me.DatePrest.Minute.ToString(), "0" + Me.DatePrest.Minute.ToString())
