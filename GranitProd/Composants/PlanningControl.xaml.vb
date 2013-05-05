@@ -36,18 +36,6 @@ Public Class PlanningControl
         ' Ajoutez une initialisation quelconque après l'appel InitializeComponent().
         ListOfDays = New List(Of Date)
 
-        Dim mes As List(Of Mesure) = Mesure.GetMesures()
-
-        For Each m In mes
-            LbxLengendeMesure.Items.Add(m)
-        Next
-
-        Dim fin As List(Of Finalisation) = Finalisation.GetFinalisations()
-
-        For Each f In fin
-            LbxLengendeFinalisation.Items.Add(f)
-        Next
-
     End Sub
 
 #End Region
@@ -106,6 +94,14 @@ Public Class PlanningControl
         TxtVendredi.Text = IIf(days.ElementAt(4).Equals(New Date(1, 1, 1)) = False, days.ElementAt(4).Day, String.Empty)
 
         LoadCommande()
+
+        Dim mes As List(Of Mesure) = Mesure.GetMesures()
+
+        LbxLengendeMesure.ItemsSource = mes
+
+        Dim fin As List(Of Finalisation) = Finalisation.GetFinalisations()
+
+        LbxLengendeFinalisation.ItemsSource = fin
 
     End Sub
 
@@ -242,29 +238,36 @@ Public Class PlanningControl
                     parameters.Clear()
 
                     For Each obj In Objects
-                        Select Case d.Day
-                            Case lundi
-                                Dim cmd As Commande = New Commande(Long.Parse(obj(0))).GetCommande()
-                                Me.LbxLundi.Items.Add(New CommandeWork(cmd, d, borderLundi))
-                                borderLundi = "1, 0, 0, 0"
-                            Case mardi
-                                Dim cmd As Commande = New Commande(Long.Parse(obj(0))).GetCommande()
-                                Me.LbxMardi.Items.Add(New CommandeWork(cmd, d, borderMardi))
-                                borderMardi = "1, 0, 0, 0"
-                            Case mercredi
-                                Dim cmd As Commande = New Commande(Long.Parse(obj(0))).GetCommande()
-                                Dim cmdw As CommandeWork = New CommandeWork(cmd, d, borderMercredi)
-                                Me.LbxMercredi.Items.Add(cmdw)
-                                borderMercredi = "1, 0, 0, 0"
-                            Case jeudi
-                                Dim cmd As Commande = New Commande(Long.Parse(obj(0))).GetCommande()
-                                Me.LbxJeudi.Items.Add(New CommandeWork(cmd, d, borderJeudi))
-                                borderJeudi = "1, 0, 0, 0"
-                            Case vendredi
-                                Dim cmd As Commande = New Commande(Long.Parse(obj(0))).GetCommande()
-                                Me.LbxVendredi.Items.Add(New CommandeWork(cmd, d, borderVendredi))
-                                borderVendredi = "1, 0, 0, 0"
-                        End Select
+                        Dim isDisplay As Boolean = True
+                        Dim cmd As Commande = New Commande(Long.Parse(obj(0))).GetCommande()
+                        If d.Year = cmd.DateMesure.Year And d.Month = cmd.DateMesure.Month And d.Day = cmd.DateMesure.Day Then
+                            If Not cmd.Mesure.Display Then isDisplay = False
+                        End If
+
+                        If cmd.Etat.Label = "Rendue" Then
+                            isDisplay = False
+                        End If
+
+                        If isDisplay Then
+                            Select Case d.Day
+                                Case lundi
+                                    Me.LbxLundi.Items.Add(New CommandeWork(cmd, d, borderLundi))
+                                    borderLundi = "1, 0, 0, 0"
+                                Case mardi
+                                    Me.LbxMardi.Items.Add(New CommandeWork(cmd, d, borderMardi))
+                                    borderMardi = "1, 0, 0, 0"
+                                Case mercredi
+                                    Dim cmdw As CommandeWork = New CommandeWork(cmd, d, borderMercredi)
+                                    Me.LbxMercredi.Items.Add(cmdw)
+                                    borderMercredi = "1, 0, 0, 0"
+                                Case jeudi
+                                    Me.LbxJeudi.Items.Add(New CommandeWork(cmd, d, borderJeudi))
+                                    borderJeudi = "1, 0, 0, 0"
+                                Case vendredi
+                                    Me.LbxVendredi.Items.Add(New CommandeWork(cmd, d, borderVendredi))
+                                    borderVendredi = "1, 0, 0, 0"
+                            End Select
+                        End If
                     Next
                 Next
 

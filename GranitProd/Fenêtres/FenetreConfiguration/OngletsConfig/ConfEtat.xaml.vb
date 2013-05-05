@@ -144,6 +144,14 @@ Public Class ConfEtat
                     Me.LstEtat.Items.RemoveAt(index)
                     Me.LstEtat.Items.Insert(index, etat)
 
+                    Dim selected = Me.NouvelleCommande.CbxEtat.SelectedIndex
+                    Dim etats As New List(Of Etat)
+                    For Each eta In LstEtat.Items
+                        etats.Add(eta)
+                    Next
+                    Me.NouvelleCommande.CbxEtat.ItemsSource = etats
+                    Me.NouvelleCommande.CbxEtat.SelectedIndex = selected
+
                     Me.LstEtat.SelectedIndex = index
                     MessageBox.Show("L'état a été modifié")
                 Else

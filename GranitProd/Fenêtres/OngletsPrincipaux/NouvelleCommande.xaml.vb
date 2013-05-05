@@ -1222,7 +1222,7 @@ Public Class NouvelleCommande
                                     If (Me.LbxFinalisations.Items.Count <> 0) Then
                                         For Each item In Me.LbxFinalisations.Items
                                             Dim ft As FinalisationTemplate = item
-                                            If (ft.IsChecked) Then finalisations.Add(New Finalisation(ft.Label, ft.Color, ft.Identifier))
+                                            If (ft.IsChecked) Then finalisations.Add(New Finalisation(ft.Label, ft.Color, ft.Display, ft.Identifier))
                                         Next
 
                                         'Récupère la date de finalisation

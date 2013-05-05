@@ -7,6 +7,7 @@ Public Class ConfReleves
 #Region "Fields"
 
     Private _NouvelleCommande As NouvelleCommande
+    Private _Planning As PlanningControl
 
 #End Region
 
@@ -18,6 +19,15 @@ Public Class ConfReleves
         End Get
         Set(ByVal value As NouvelleCommande)
             Me._NouvelleCommande = value
+        End Set
+    End Property
+
+    Public Property Planning As PlanningControl
+        Get
+            Return Me._Planning
+        End Get
+        Set(ByVal value As PlanningControl)
+            Me._Planning = value
         End Set
     End Property
 
@@ -65,6 +75,8 @@ Public Class ConfReleves
                         mesures.Add(mes)
                     Next
                     Me.NouvelleCommande.CbxMesure.ItemsSource = mesures
+
+                    If Me.Planning IsNot Nothing Then Me.Planning.Fill()
                     Me.CbxConfReleves.SelectedIndex = 0
                 End If
             Else
@@ -117,6 +129,7 @@ Public Class ConfReleves
                     mesures.Add(mes)
                 Next
                 Me.NouvelleCommande.CbxMesure.ItemsSource = mesures
+                If Me.Planning IsNot Nothing Then Me.Planning.Fill()
                 MessageBox.Show("Le type de relevé a été ajouté avec succès.", "Nouveau type de relevé ajouté", MessageBoxButton.OK, MessageBoxImage.Information)
             Else
                 If isExistsLabel Then
@@ -158,6 +171,15 @@ Public Class ConfReleves
 
                 Me.CbxConfReleves.Items.RemoveAt(index)
                 Me.CbxConfReleves.Items.Insert(index, mesure)
+
+                Dim selected As Integer = Me.NouvelleCommande.CbxMesure.SelectedIndex
+                Dim mesures As New List(Of Mesure)
+                For Each mes In CbxConfReleves.Items
+                    mesures.Add(mes)
+                Next
+                Me.NouvelleCommande.CbxMesure.ItemsSource = mesures
+                Me.NouvelleCommande.CbxMesure.SelectedIndex = selected
+                If Me.Planning IsNot Nothing Then Me.Planning.Fill()
 
                 Me.CbxConfReleves.SelectedIndex = index
                 MessageBox.Show("Le type de relevé a été modifié avec succès.", "Type de relevé modifié", MessageBoxButton.OK, MessageBoxImage.Information)

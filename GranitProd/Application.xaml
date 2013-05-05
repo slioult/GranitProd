@@ -56,6 +56,15 @@
             </Style.Resources>
         </Style>
 
+        <Style TargetType="ComboBox">
+            <Style.Resources>
+                <!-- Background of selected item when focussed -->
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#af4fa2" />
+                <!-- Background of selected item when not focussed -->
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="White" />
+            </Style.Resources>
+        </Style>
+
         <Style TargetType="ListBox" x:Key="HorizontalListBox" >
             <Setter Property="ItemsPanel">
                 <Setter.Value>

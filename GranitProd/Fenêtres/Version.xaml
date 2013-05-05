@@ -17,7 +17,11 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Image Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Source="C:\Users\Samy-laptop\Documents\Visual Studio 2010\Projects\GranitProd\GranitProd\Images\prod.ico" />
+        <Image Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" >
+            <Image.Source>
+                <BitmapImage UriSource="..\Images\Version.png" />
+            </Image.Source>
+        </Image>
 
         <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Height="20" Width="Auto" FontSize="15" Foreground="#ffca0f" Background="Transparent"
                    Text="GranitProd" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="center" FontWeight="Bold" />

@@ -88,7 +88,7 @@ Class MainWindow
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub BtnConfig_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
-        Dim conf As New ConfigurationWindow(Me.Session, Me.NewCommande)
+        Dim conf As New ConfigurationWindow(Me.Session, Me.NewCommande, Me.planning)
         conf.ShowDialog()
     End Sub
 

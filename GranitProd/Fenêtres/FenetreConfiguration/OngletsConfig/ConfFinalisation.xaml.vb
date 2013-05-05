@@ -7,6 +7,7 @@ Public Class ConfFinalisation
 #Region "Fields"
 
     Private _NouvelleCommande As NouvelleCommande
+    Private _Planning As PlanningControl
 
 #End Region
 
@@ -18,6 +19,15 @@ Public Class ConfFinalisation
         End Get
         Set(ByVal value As NouvelleCommande)
             Me._NouvelleCommande = value
+        End Set
+    End Property
+
+    Public Property Planning As PlanningControl
+        Get
+            Return Me._Planning
+        End Get
+        Set(ByVal value As PlanningControl)
+            Me._Planning = value
         End Set
     End Property
 
@@ -62,6 +72,8 @@ Public Class ConfFinalisation
                     finalisation.Delete()
                     Dim ft As New FinalisationTemplate(finalisation)
                     Me.NouvelleCommande.LbxFinalisations.Items.Remove(ft)
+                    If Me.Planning IsNot Nothing Then Me.Planning.Fill()
+
                     Me.CbxConfFinalisation.SelectedIndex = 0
                 End If
             Else
@@ -109,6 +121,8 @@ Public Class ConfFinalisation
                 Me.CbxConfFinalisation.SelectedItem = finalisation
                 Dim ft As New FinalisationTemplate(finalisation)
                 Me.NouvelleCommande.LbxFinalisations.Items.Add(ft)
+                If Me.Planning IsNot Nothing Then Me.Planning.Fill()
+
                 MessageBox.Show("La Finalisation a été ajouté")
             Else
                 If isExistsLabel Then
@@ -150,6 +164,24 @@ Public Class ConfFinalisation
 
                 Me.CbxConfFinalisation.Items.RemoveAt(index)
                 Me.CbxConfFinalisation.Items.Insert(index, finalisation)
+
+                Dim finT As New List(Of FinalisationTemplate)
+                For Each item In Me.NouvelleCommande.LbxFinalisations.Items
+                    Dim ft As FinalisationTemplate = item
+                    If ft.Identifier = finalisation.Identifier Then
+                        ft.Label = finalisation.Label
+                        ft.Color = finalisation.Color
+                    End If
+
+                    finT.Add(ft)
+                Next
+
+                Me.NouvelleCommande.LbxFinalisations.Items.Clear()
+
+                For Each f In finT
+                    Me.NouvelleCommande.LbxFinalisations.Items.Add(f)
+                Next
+                If Me.Planning IsNot Nothing Then Me.Planning.Fill()
 
                 Me.CbxConfFinalisation.SelectedIndex = index
                 MessageBox.Show("La Finalisation a été modifié")

@@ -681,17 +681,8 @@ Public Class Commande
                 Next
                 parameters.Clear()
                 parIdentifierContremarque = Nothing
-
-
-                Dim parIdentifierMesure As MySqlParameter = connection.Create("@IdentifierMesure", DbType.Int32, Long.Parse(obj(14)))
-                parameters.Add(parIdentifierMesure)
-
-                tempObjects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur FROM Mesure WHERE Identifier=@IdentifierMesure", parameters)
-                For Each tmpObj In tempObjects
-                    commande.Mesure = New Mesure(tmpObj(1).ToString(), obj(2).ToString(), Long.Parse(tmpObj(0)))
-                Next
-                parameters.Clear()
-                parIdentifierMesure = Nothing
+                
+                commande.Mesure = New Mesure(Long.Parse(obj(14))).GetMesure()
 
                 commande.Remarques = Remarque.GetRemarques(commande.Identifier)
 

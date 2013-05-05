@@ -48,7 +48,6 @@ Public Class ConfMateriau
     End Sub
 #End Region
 
-
 #Region "Button"
 
     ''' <summary>
@@ -127,6 +126,19 @@ Public Class ConfMateriau
                 Me.CbxConfMateriau.Items.RemoveAt(index)
                 Me.CbxConfMateriau.Items.Insert(index, materiau)
 
+                Dim listMTT As New List(Of MateriauTemplate)
+
+                For Each item In Me.NouvelleCommande.LbxMateriaux.Items
+                    Dim matT As MateriauTemplate = item
+                    listMTT.Add(matT)
+                Next
+
+                Me.NouvelleCommande.LbxMateriaux.Items.Clear()
+
+                For Each m In listMTT
+                    If m.Identifier = materiau.Identifier Then m.Label = materiau.Label
+                    Me.NouvelleCommande.LbxMateriaux.Items.Add(m)
+                Next
 
                 Me.CbxConfMateriau.SelectedIndex = index
                 MessageBox.Show("Le Materiau a été modifié")
@@ -138,4 +150,5 @@ Public Class ConfMateriau
     End Sub
 
 #End Region
+
 End Class
