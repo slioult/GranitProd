@@ -87,8 +87,8 @@ Public Class RechercheCommande
             'liste de commandes à exporter
             Dim cmds As New List(Of Commande)
             For Each item In LbxSearchCmd.Items
-                Dim cmd As Commande = item
-                cmds.Add(cmd)
+                Dim cmd As cmdItem = item
+                cmds.Add(cmd.Commande)
             Next
 
             'Définit tous les paramètres de l'exportation
@@ -170,8 +170,8 @@ Public Class RechercheCommande
                 'Liste des commandes à exporter
                 Dim cmds As New List(Of Commande)
                 For Each item In LbxSearchCmd.Items
-                    Dim cmd As Commande = item
-                    cmds.Add(cmd)
+                    Dim cmd As cmdItem = item
+                    cmds.Add(cmd.Commande)
                 Next
 
                 'Définit tous les paramètres de l'exportation
@@ -278,6 +278,342 @@ Public Class RechercheCommande
         Else
             MessageBox.Show("Veuillez sélectionner une commande.", "Aucune commande sélectionnée", MessageBoxButton.OK, MessageBoxImage.Exclamation)
         End If
+    End Sub
+
+    ''' <summary>
+    ''' Bouton permettant de lancer la recherche
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Public Sub BtnSearch_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
+        Try
+            Dim img As New Image()
+            Dim bmp As New BitmapImage(New Uri(System.IO.Path.GetFullPath(My.Settings.Sablier)))
+            img.Source = bmp
+            Me.BtnSearch.Content = img
+            Me.LbxSearchCmd.Items.Clear()
+            bwk.RunWorkerAsync()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
+        End Try
+    End Sub
+
+#End Region
+
+#Region "AutoCompletion"
+
+    ''' <summary>
+    ''' Delegate de l'auto-complétion du nom client
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Delegate Sub cbxClient()
+
+    ''' <summary>
+    ''' Auto-complétion du nom client
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Sub AutoCompClient()
+        Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
+        Dim objects As New List(Of List(Of Object))
+        Try
+            'Ouvre la connection
+            connection.Open()
+
+            'Élargit la recherche
+            Dim text As String = Me.AutoCompNClient.Text.Replace("'", "\'")
+            text = text.Replace("""", "\""")
+
+            'Exécute la requête
+            objects = connection.ExecuteQuery("SELECT Identifier, Nom FROM Client WHERE Nom Like '%" + text.ToUpper() + "%' Order By Nom")
+
+            Dim clients As New List(Of Client)
+
+            'Traite les résultats
+            For Each obj In objects
+                clients.Add(New Client(obj(1).ToString(), Long.Parse(obj(0))))
+            Next
+
+            'Modifie la source de l'autocompletebox en fonction des résultats obtenus
+            Me.AutoCompNClient.ItemsSource = clients
+            Me.AutoCompNClient.PopulateComplete()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        Finally
+            Try
+                'Ferme la connection
+                connection.Close()
+            Catch ex As Exception
+            End Try
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Delegate de l'auto-complétion du n° commande
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Delegate Sub cbxNumCommande()
+
+    ''' <summary>
+    ''' Auto-complétion du n° commande
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Sub AutoCompCommand()
+        Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
+        Dim objects As New List(Of List(Of Object))
+        Try
+            'Ouvre la connection
+            connection.Open()
+
+            'Élargit la recherche
+            Dim text As String = Me.AutoCompNumCmd.Text.Replace("'", "\'")
+            text = text.Replace("""", "\""")
+
+            'Exécute la requête
+            objects = connection.ExecuteQuery("SELECT NumCmd, DelaiPrevu FROM Commande WHERE NumCmd Like '%" + text.ToUpper() + "%' Order By DelaiPrevu")
+
+            Dim commandes As New List(Of String)
+
+            'Traite les résultats
+            For Each obj In objects
+                commandes.Add(obj(0).ToString())
+            Next
+
+            'Modifie la source de l'autocompletebox en fonction des résultats obtenus
+            Me.AutoCompNumCmd.ItemsSource = commandes
+            Me.AutoCompNumCmd.PopulateComplete()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        Finally
+            Try
+                'Ferme la connection
+                connection.Close()
+            Catch ex As Exception
+            End Try
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Delegate de l'auto-complétion du nom contremarque
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Delegate Sub cbxContremarque()
+
+    ''' <summary>
+    ''' Auto-complétion du nom contremarque
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Sub AutoCompContremarque()
+        Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
+        Dim objects As New List(Of List(Of Object))
+        Try
+            'Ouvre la connection
+            connection.Open()
+
+            'Élargit la recherche
+            Dim text As String = Me.AutoCompNContremarque.Text.Replace("'", "\'")
+            text = text.Replace("""", "\""")
+
+            'Exécute la requête
+            objects = connection.ExecuteQuery("SELECT Identifier, Nom FROM Contremarque WHERE Nom Like '%" + text.ToUpper() + "%' Order By Nom")
+
+            Dim contremarques = New List(Of Contremarque)
+
+            'Traite les résultats
+            For Each obj In objects
+                contremarques.Add(New Contremarque(obj(1).ToString(), Long.Parse(obj(0))))
+            Next
+
+            'Modifie la source de l'autocompletebox en fonction des résultats obtenus
+            Me.AutoCompNContremarque.ItemsSource = contremarques
+            Me.AutoCompNContremarque.PopulateComplete()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        Finally
+            Try
+                'Ferme la connection
+                connection.Close()
+            Catch ex As Exception
+            End Try
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Delegate de l'auto-complétion du label materiau
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Delegate Sub cbxMateriau()
+
+    ''' <summary>
+    ''' Auto-complétion du nom contremarque
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Sub AutoCompMateriau()
+        Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
+        Dim objects As New List(Of List(Of Object))
+        Try
+            'Ouvre la connection
+            connection.Open()
+
+            'Élargit la recherche
+            Dim text As String = Me.AutoCompLMateriau.Text.Replace("'", "\'")
+            text = text.Replace("""", "\""")
+
+            'Exécute la requête
+            objects = connection.ExecuteQuery("SELECT Identifier, Label FROM Materiau WHERE Label Like '" + text.ToUpper() + "%' Order By Label")
+
+            Dim materiaux = New List(Of Materiau)
+
+            'Traite les résultats
+            For Each obj In objects
+                materiaux.Add(New Materiau(obj(1).ToString(), Long.Parse(obj(0))))
+            Next
+
+            'Modifie la source de l'autocompletebox en fonction des résultats obtenus
+            Me.AutoCompLMateriau.ItemsSource = materiaux
+            Me.AutoCompLMateriau.PopulateComplete()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        Finally
+            Try
+                'Ferme la connection
+                connection.Close()
+            Catch ex As Exception
+            End Try
+        End Try
+    End Sub
+
+
+    ''' <summary>
+    ''' Écriture dans l'AutoCompleteBox du n° de commande
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub AutoCompNumCmd_Populating(ByVal sender As System.Object, ByVal e As System.Windows.Controls.PopulatingEventArgs)
+        Dim del As cbxNumCommande
+        del = AddressOf AutoCompCommand
+        del.Invoke()
+
+        Me.AutoCompNClient.SelectedItem = Nothing
+        Me.AutoCompNClient.Text = ""
+        Me.AutoCompNContremarque.SelectedItem = Nothing
+        Me.AutoCompNContremarque.Text = ""
+        Me.AutoCompLMateriau.SelectedItem = Nothing
+        Me.AutoCompLMateriau.Text = ""
+    End Sub
+
+    ''' <summary>
+    ''' Écriture dans l'AutoCompleteBox du nom client
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub AutoCompNClient_Populating(ByVal sender As System.Object, ByVal e As System.Windows.Controls.PopulatingEventArgs)
+        Dim del As cbxClient
+        del = AddressOf AutoCompClient
+        del.Invoke()
+    End Sub
+
+    ''' <summary>
+    ''' Écriture dans l'AutoCompleteBox de la contremarque
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub AutoCompNContremarque_Populating(ByVal sender As System.Object, ByVal e As System.Windows.Controls.PopulatingEventArgs)
+        Dim del As cbxContremarque
+        del = AddressOf AutoCompContremarque
+        del.Invoke()
+    End Sub
+
+    ''' <summary>
+    ''' Écriture dans l'AutoCompleteBox du matériau
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub AutoCompLMateriau_Populating(ByVal sender As System.Object, ByVal e As System.Windows.Controls.PopulatingEventArgs)
+        Dim del As cbxMateriau
+        del = AddressOf AutoCompMateriau
+        del.Invoke()
+
+        Me.AutoCompNumCmd.SelectedItem = Nothing
+        Me.AutoCompNumCmd.Text = ""
+    End Sub
+
+#End Region
+
+#Region "Delegates"
+
+    ''' <summary>
+    ''' Delegate du selectionChanged de l'AutoCompleteBox client
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Delegate Sub cbxClientChanged()
+
+    ''' <summary>
+    ''' Delegate du selectionChanged de l'AutoCompleteBox contremarque
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Delegate Sub cbxCmqChanged()
+
+    ''' <summary>
+    ''' Delegate du selectionChanged de l'AutoCompleteBox n° de commande
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Delegate Sub cbxNumCmdChanged()
+
+#End Region
+
+#Region "SelectionChanged"
+
+    ''' <summary>
+    ''' Se produit lorque la valeur du ckeckbox ChkEndCmd change
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub ChkEndCmd_Checked(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
+        LbxSearchCmd.Items.Clear()
+    End Sub
+
+#End Region
+
+#Region "EventControlEnter"
+
+    ''' <summary>
+    ''' Évènement se produisant lorsque qu'une touche est enfoncée sur une AutoCompleteBox
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub AutoComp_PreviewKeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Input.KeyEventArgs)
+        Dim autoComp As AutoCompleteBox = sender
+
+        'Limite la saisie à 50 caractères
+        If e.Key <> Key.Enter And e.Key <> Key.Return And e.Key <> Key.Back And e.Key <> Key.LeftCtrl <> e.Key <> Key.RightAlt Then
+            If autoComp.Text.Length >= 50 Then
+                e.Handled = True
+            End If
+        End If
+    End Sub
+
+#End Region
+
+#Region "Methods"
+
+    ''' <summary>
+    ''' Réinitialise le UserControl
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Sub Reinitialize()
+        Me.AutoCompNClient.SelectedItem = Nothing
+        Me.AutoCompNContremarque.SelectedItem = Nothing
+        Me.AutoCompNumCmd.SelectedItem = Nothing
+        Me.AutoCompLMateriau.SelectedItem = Nothing
+        Me.CbxEtat.SelectedIndex = 0
+        Me.LbxSearchCmd.Items.Clear()
     End Sub
 
     ''' <summary>
@@ -720,7 +1056,7 @@ Public Class RechercheCommande
     End Sub
 
     ''' <summary>
-    ''' Se produit à la fin de la recherche
+    ''' Se produit à la fin de la recherche, modifie l'image du bouton de recherhce
     ''' </summary>
     ''' <remarks></remarks>
     Public Sub endSearch()
@@ -732,342 +1068,6 @@ Public Class RechercheCommande
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
         End Try
-    End Sub
-
-    ''' <summary>
-    ''' Bouton permettant de lancer la recherche
-    ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
-    ''' <remarks></remarks>
-    Public Sub BtnSearch_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
-        Try
-            Dim img As New Image()
-            Dim bmp As New BitmapImage(New Uri(System.IO.Path.GetFullPath(My.Settings.Sablier)))
-            img.Source = bmp
-            Me.BtnSearch.Content = img
-            Me.LbxSearchCmd.Items.Clear()
-            bwk.RunWorkerAsync()
-        Catch ex As Exception
-            MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
-        End Try
-    End Sub
-
-#End Region
-
-#Region "AutoCompletion"
-
-    ''' <summary>
-    ''' Delegate de l'auto-complétion du nom client
-    ''' </summary>
-    ''' <remarks></remarks>
-    Public Delegate Sub cbxClient()
-
-    ''' <summary>
-    ''' Auto-complétion du nom client
-    ''' </summary>
-    ''' <remarks></remarks>
-    Public Sub AutoCompClient()
-        Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
-        Dim objects As New List(Of List(Of Object))
-        Try
-            'Ouvre la connection
-            connection.Open()
-
-            'Élargit la recherche
-            Dim text As String = Me.AutoCompNClient.Text.Replace("'", "\'")
-            text = text.Replace("""", "\""")
-
-            'Exécute la requête
-            objects = connection.ExecuteQuery("SELECT Identifier, Nom FROM Client WHERE Nom Like '%" + text.ToUpper() + "%' Order By Nom")
-
-            Dim clients As New List(Of Client)
-
-            'Traite les résultats
-            For Each obj In objects
-                clients.Add(New Client(obj(1).ToString(), Long.Parse(obj(0))))
-            Next
-
-            'Modifie la source de l'autocompletebox en fonction des résultats obtenus
-            Me.AutoCompNClient.ItemsSource = clients
-            Me.AutoCompNClient.PopulateComplete()
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        Finally
-            Try
-                'Ferme la connection
-                connection.Close()
-            Catch ex As Exception
-            End Try
-        End Try
-    End Sub
-
-    ''' <summary>
-    ''' Delegate de l'auto-complétion du n° commande
-    ''' </summary>
-    ''' <remarks></remarks>
-    Public Delegate Sub cbxNumCommande()
-
-    ''' <summary>
-    ''' Auto-complétion du n° commande
-    ''' </summary>
-    ''' <remarks></remarks>
-    Public Sub AutoCompCommand()
-        Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
-        Dim objects As New List(Of List(Of Object))
-        Try
-            'Ouvre la connection
-            connection.Open()
-
-            'Élargit la recherche
-            Dim text As String = Me.AutoCompNumCmd.Text.Replace("'", "\'")
-            text = text.Replace("""", "\""")
-
-            'Exécute la requête
-            objects = connection.ExecuteQuery("SELECT NumCmd, DelaiPrevu FROM Commande WHERE NumCmd Like '%" + text.ToUpper() + "%' Order By DelaiPrevu")
-
-            Dim commandes As New List(Of String)
-
-            'Traite les résultats
-            For Each obj In objects
-                commandes.Add(obj(0).ToString())
-            Next
-
-            'Modifie la source de l'autocompletebox en fonction des résultats obtenus
-            Me.AutoCompNumCmd.ItemsSource = commandes
-            Me.AutoCompNumCmd.PopulateComplete()
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        Finally
-            Try
-                'Ferme la connection
-                connection.Close()
-            Catch ex As Exception
-            End Try
-        End Try
-    End Sub
-
-    ''' <summary>
-    ''' Delegate de l'auto-complétion du nom contremarque
-    ''' </summary>
-    ''' <remarks></remarks>
-    Public Delegate Sub cbxContremarque()
-
-    ''' <summary>
-    ''' Auto-complétion du nom contremarque
-    ''' </summary>
-    ''' <remarks></remarks>
-    Public Sub AutoCompContremarque()
-        Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
-        Dim objects As New List(Of List(Of Object))
-        Try
-            'Ouvre la connection
-            connection.Open()
-
-            'Élargit la recherche
-            Dim text As String = Me.AutoCompNContremarque.Text.Replace("'", "\'")
-            text = text.Replace("""", "\""")
-
-            'Exécute la requête
-            objects = connection.ExecuteQuery("SELECT Identifier, Nom FROM Contremarque WHERE Nom Like '%" + text.ToUpper() + "%' Order By Nom")
-
-            Dim contremarques = New List(Of Contremarque)
-
-            'Traite les résultats
-            For Each obj In objects
-                contremarques.Add(New Contremarque(obj(1).ToString(), Long.Parse(obj(0))))
-            Next
-
-            'Modifie la source de l'autocompletebox en fonction des résultats obtenus
-            Me.AutoCompNContremarque.ItemsSource = contremarques
-            Me.AutoCompNContremarque.PopulateComplete()
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        Finally
-            Try
-                'Ferme la connection
-                connection.Close()
-            Catch ex As Exception
-            End Try
-        End Try
-    End Sub
-
-    ''' <summary>
-    ''' Delegate de l'auto-complétion du label materiau
-    ''' </summary>
-    ''' <remarks></remarks>
-    Public Delegate Sub cbxMateriau()
-
-    ''' <summary>
-    ''' Auto-complétion du nom contremarque
-    ''' </summary>
-    ''' <remarks></remarks>
-    Public Sub AutoCompMateriau()
-        Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
-        Dim objects As New List(Of List(Of Object))
-        Try
-            'Ouvre la connection
-            connection.Open()
-
-            'Élargit la recherche
-            Dim text As String = Me.AutoCompLMateriau.Text.Replace("'", "\'")
-            text = text.Replace("""", "\""")
-
-            'Exécute la requête
-            objects = connection.ExecuteQuery("SELECT Identifier, Label FROM Materiau WHERE Label Like '" + text.ToUpper() + "%' Order By Label")
-
-            Dim materiaux = New List(Of Materiau)
-
-            'Traite les résultats
-            For Each obj In objects
-                materiaux.Add(New Materiau(obj(1).ToString(), Long.Parse(obj(0))))
-            Next
-
-            'Modifie la source de l'autocompletebox en fonction des résultats obtenus
-            Me.AutoCompLMateriau.ItemsSource = materiaux
-            Me.AutoCompLMateriau.PopulateComplete()
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        Finally
-            Try
-                'Ferme la connection
-                connection.Close()
-            Catch ex As Exception
-            End Try
-        End Try
-    End Sub
-
-
-    ''' <summary>
-    ''' Écriture dans l'AutoCompleteBox du n° de commande
-    ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
-    ''' <remarks></remarks>
-    Private Sub AutoCompNumCmd_Populating(ByVal sender As System.Object, ByVal e As System.Windows.Controls.PopulatingEventArgs)
-        Dim del As cbxNumCommande
-        del = AddressOf AutoCompCommand
-        del.Invoke()
-
-        Me.AutoCompNClient.SelectedItem = Nothing
-        Me.AutoCompNClient.Text = ""
-        Me.AutoCompNContremarque.SelectedItem = Nothing
-        Me.AutoCompNContremarque.Text = ""
-        Me.AutoCompLMateriau.SelectedItem = Nothing
-        Me.AutoCompLMateriau.Text = ""
-    End Sub
-
-    ''' <summary>
-    ''' Écriture dans l'AutoCompleteBox du nom client
-    ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
-    ''' <remarks></remarks>
-    Private Sub AutoCompNClient_Populating(ByVal sender As System.Object, ByVal e As System.Windows.Controls.PopulatingEventArgs)
-        Dim del As cbxClient
-        del = AddressOf AutoCompClient
-        del.Invoke()
-    End Sub
-
-    ''' <summary>
-    ''' Écriture dans l'AutoCompleteBox de la contremarque
-    ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
-    ''' <remarks></remarks>
-    Private Sub AutoCompNContremarque_Populating(ByVal sender As System.Object, ByVal e As System.Windows.Controls.PopulatingEventArgs)
-        Dim del As cbxContremarque
-        del = AddressOf AutoCompContremarque
-        del.Invoke()
-    End Sub
-
-    ''' <summary>
-    ''' Écriture dans l'AutoCompleteBox du matériau
-    ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
-    ''' <remarks></remarks>
-    Private Sub AutoCompLMateriau_Populating(ByVal sender As System.Object, ByVal e As System.Windows.Controls.PopulatingEventArgs)
-        Dim del As cbxMateriau
-        del = AddressOf AutoCompMateriau
-        del.Invoke()
-
-        Me.AutoCompNumCmd.SelectedItem = Nothing
-        Me.AutoCompNumCmd.Text = ""
-    End Sub
-
-#End Region
-
-#Region "Delegates"
-
-    ''' <summary>
-    ''' Delegate du selectionChanged de l'AutoCompleteBox client
-    ''' </summary>
-    ''' <remarks></remarks>
-    Public Delegate Sub cbxClientChanged()
-
-    ''' <summary>
-    ''' Delegate du selectionChanged de l'AutoCompleteBox contremarque
-    ''' </summary>
-    ''' <remarks></remarks>
-    Public Delegate Sub cbxCmqChanged()
-
-    ''' <summary>
-    ''' Delegate du selectionChanged de l'AutoCompleteBox n° de commande
-    ''' </summary>
-    ''' <remarks></remarks>
-    Public Delegate Sub cbxNumCmdChanged()
-
-#End Region
-
-#Region "SelectionChanged"
-
-    ''' <summary>
-    ''' Se produit lorque la valeur du ckeckbox ChkEndCmd change
-    ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
-    ''' <remarks></remarks>
-    Private Sub ChkEndCmd_Checked(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
-        LbxSearchCmd.Items.Clear()
-    End Sub
-
-#End Region
-
-#Region "EventControlEnter"
-
-    ''' <summary>
-    ''' Évènement se produisant lorsque qu'une touche est enfoncée sur une AutoCompleteBox
-    ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
-    ''' <remarks></remarks>
-    Private Sub AutoComp_PreviewKeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Input.KeyEventArgs)
-        Dim autoComp As AutoCompleteBox = sender
-
-        'Limite la saisie à 50 caractères
-        If e.Key <> Key.Enter And e.Key <> Key.Return And e.Key <> Key.Back And e.Key <> Key.LeftCtrl <> e.Key <> Key.RightAlt Then
-            If autoComp.Text.Length >= 50 Then
-                e.Handled = True
-            End If
-        End If
-    End Sub
-
-#End Region
-
-#Region "Methods"
-
-    ''' <summary>
-    ''' Réinitialise le UserControl
-    ''' </summary>
-    ''' <remarks></remarks>
-    Public Sub Reinitialize()
-        Me.AutoCompNClient.SelectedItem = Nothing
-        Me.AutoCompNContremarque.SelectedItem = Nothing
-        Me.AutoCompNumCmd.SelectedItem = Nothing
-        Me.AutoCompLMateriau.SelectedItem = Nothing
-        Me.CbxEtat.SelectedIndex = 0
-        Me.LbxSearchCmd.Items.Clear()
     End Sub
 
 #End Region

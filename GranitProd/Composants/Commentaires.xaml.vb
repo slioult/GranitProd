@@ -126,7 +126,7 @@
 #Region "EventControlEnter"
 
     ''' <summary>
-    ''' Évènement se produisant lors du double clique sur un item du DataGrid répertoriant les enlèvements
+    ''' Évènement se produisant lors du double clique sur un item du DataGrid répertoriant les 10 dernières remarques
     ''' </summary>
     ''' <param name="sender"></param>
     ''' <param name="e"></param>

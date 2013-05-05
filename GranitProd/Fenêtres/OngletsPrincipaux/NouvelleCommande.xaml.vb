@@ -1042,7 +1042,7 @@ Public Class NouvelleCommande
         If (txt.Text = "") Then
             txt.Text = Decimal.Parse("0,00")
         Else
-            Dim tempMontant As String = FormatNumber(Decimal.Parse(txt.Text), 2).ToString()
+            Dim tempMontant As String = FormatNumber(Decimal.Parse(txt.Text.Replace(".", ",")), 2).ToString()
             Me._IsTextChangeMontant = False
             txt.Text = tempMontant
         End If
@@ -1838,7 +1838,7 @@ Public Class NouvelleCommande
     ''' Convertit un nombre de minutes en Heure et Minute.
     ''' </summary>
     ''' <param name="min">Nombre de minutes à convertir</param>
-    ''' <returns>Retourne une chaîne de caracère contenant les heures et les minutes séparées par le caractères ';'</returns>
+    ''' <returns>Retourne une chaîne de caracère contenant les heures et les minutes séparées par le caractère ';'</returns>
     ''' <remarks></remarks>
     Private Function convertMinuteToHourMinute(ByVal min As Integer) As String
         Dim result As String = String.Empty

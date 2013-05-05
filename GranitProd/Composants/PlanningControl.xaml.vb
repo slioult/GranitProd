@@ -192,10 +192,10 @@ Public Class PlanningControl
     End Sub
 
     ''' <summary>
-    ''' Permet le numéro d'une semaine à partir d'une date
+    ''' Permet de récupérer le numéro d'une semaine à partir d'une date
     ''' </summary>
     ''' <param name="d">Date contenue dans la semaine</param>
-    ''' <returns></returns>
+    ''' <returns>Retourne un numéro de semaine</returns>
     ''' <remarks></remarks>
     Public Function GetWeekOfDate(ByVal d As Date) As Integer
         Dim semaine As Integer = DatePart(DateInterval.WeekOfYear, d)
@@ -213,7 +213,7 @@ Public Class PlanningControl
     ''' </summary>
     ''' <param name="semaine">Numéro de la semaine</param>
     ''' <param name="year">Année de la semaine</param>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste de dates</returns>
     ''' <remarks></remarks>
     Public Function GetDaysOfWeek(ByVal semaine As Integer, ByVal year As Integer) As List(Of Date)
         GetDaysOfWeek = New List(Of Date)

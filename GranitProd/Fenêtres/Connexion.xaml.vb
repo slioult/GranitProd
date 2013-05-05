@@ -47,7 +47,7 @@ Public Class Connexion
 #Region "Button"
 
     ''' <summary>
-    ''' Action de l'évènement de clique sur le bouton Connexion
+    ''' Action de l'évènement de click sur le bouton Connexion
     ''' </summary>
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
@@ -156,6 +156,7 @@ Public Class Connexion
     ''' <summary>
     ''' Sauvegarde le login utilisé dans le fichier conf.ini
     ''' </summary>
+    ''' <param name="login">Login de connexion de l'utilisateur</param>
     ''' <remarks></remarks>
     Public Sub SaveLogin(ByVal login As String)
 

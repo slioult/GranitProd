@@ -83,7 +83,7 @@
 #Region "Button"
 
     ''' <summary>
-    ''' Évènement se produisant lors du clique sur le bouton refresh
+    ''' Évènement se produisant lors du click sur le bouton refresh, permettant de mettre à jour le contenu de la fenêtre
     ''' </summary>
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
