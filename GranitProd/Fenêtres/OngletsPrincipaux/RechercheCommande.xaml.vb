@@ -87,7 +87,8 @@ Public Class RechercheCommande
             'liste de commandes à exporter
             Dim cmds As New List(Of Commande)
             For Each item In LbxSearchCmd.Items
-                Dim cmd As Commande = item
+                Dim cmdI As cmdItem = item
+                Dim cmd As Commande = cmdI.Commande
                 cmds.Add(cmd)
             Next
 
@@ -170,7 +171,8 @@ Public Class RechercheCommande
                 'Liste des commandes à exporter
                 Dim cmds As New List(Of Commande)
                 For Each item In LbxSearchCmd.Items
-                    Dim cmd As Commande = item
+                    Dim cmdI As cmdItem = item
+                    Dim cmd As Commande = cmdI.Commande
                     cmds.Add(cmd)
                 Next
 
