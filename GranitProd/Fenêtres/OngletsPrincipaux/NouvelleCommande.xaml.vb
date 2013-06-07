@@ -1042,7 +1042,7 @@ Public Class NouvelleCommande
         If (txt.Text = "") Then
             txt.Text = Decimal.Parse("0,00")
         Else
-            Dim tempMontant As String = FormatNumber(Decimal.Parse(txt.Text), 2).ToString()
+            Dim tempMontant As String = FormatNumber(Decimal.Parse(txt.Text.Replace(".", ",")), 2).ToString()
             Me._IsTextChangeMontant = False
             txt.Text = tempMontant
         End If
