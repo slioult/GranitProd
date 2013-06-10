@@ -102,6 +102,20 @@ Class MainWindow
         v.ShowDialog()
     End Sub
 
+    ''' <summary>
+    ''' Évènement se produisant lors du clique sur le menu "Aide"
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub MenuItemAide_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
+        Try
+            Process.Start(My.Settings.Help)
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
+        End Try
+    End Sub
+
 #End Region
 
 End Class

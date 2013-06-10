@@ -23,5 +23,8 @@
     <Setting Name="Search" Type="System.String" Scope="User">
       <Value Profile="(Default)">.\Images\search.png</Value>
     </Setting>
+    <Setting Name="Help" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.\Help\GProd_help.pdf</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

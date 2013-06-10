@@ -21,12 +21,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_0CB6C8018CDAB8EDFAC924A3BF95B187"
-        "OwnerKey" = "8:_7D59A4791E7949D688E6D00F5AAB4672"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_112A99D065244667A9B8B83389AC0FE0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -88,7 +82,7 @@
         "Entry"
         {
         "MsmKey" = "8:_5ABB1DA7A8DA717FE086EC3BED2468DC"
-        "OwnerKey" = "8:_0CB6C8018CDAB8EDFAC924A3BF95B187"
+        "OwnerKey" = "8:_7DF1756EC07FDB55D1D519D0B99AD5BB"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -113,6 +107,12 @@
         {
         "MsmKey" = "8:_7D59A4791E7949D688E6D00F5AAB4672"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7DF1756EC07FDB55D1D519D0B99AD5BB"
+        "OwnerKey" = "8:_7D59A4791E7949D688E6D00F5AAB4672"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -148,6 +148,12 @@
         "Entry"
         {
         "MsmKey" = "8:_C0DC7783A64A4B1EB3E84BF74852F9D1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D9B38536D01B4290829BD43ED559BFD5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -202,7 +208,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_0CB6C8018CDAB8EDFAC924A3BF95B187"
+        "OwnerKey" = "8:_7DF1756EC07FDB55D1D519D0B99AD5BB"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -328,37 +334,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0CB6C8018CDAB8EDFAC924A3BF95B187"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:MGranitDALcsharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_0CB6C8018CDAB8EDFAC924A3BF95B187"
-                    {
-                    "Name" = "8:MGranitDALcsharp.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:MGranitDALcsharp.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_F1E0E8048DDF421689E47EC03C62F6D9"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_112A99D065244667A9B8B83389AC0FE0"
@@ -623,6 +598,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7DF1756EC07FDB55D1D519D0B99AD5BB"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:MGranitDALcsharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_7DF1756EC07FDB55D1D519D0B99AD5BB"
+                    {
+                    "Name" = "8:MGranitDALcsharp.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:MGranitDALcsharp.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_F1E0E8048DDF421689E47EC03C62F6D9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8266C601224144F89ACC9CB3C45D24C0"
             {
             "SourcePath" = "8:..\\GranitProd\\bin\\Release\\ConfigFiles\\connectionString.txt"
@@ -754,6 +760,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D9B38536D01B4290829BD43ED559BFD5"
+            {
+            "SourcePath" = "8:..\\GranitProd\\bin\\Release\\Help\\GProd_help.pdf"
+            "TargetName" = "8:GProd_help.pdf"
+            "Tag" = "8:"
+            "Folder" = "8:_4CAB6E2A8B284A78859E2CA40D806319"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F05630F8FEA40767A206DD60F9612E77"
             {
             "AssemblyRegister" = "3:1"
@@ -870,6 +896,17 @@
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
                     "Property" = "8:_AB95084270BB42D589E5803C591A09A8"
+                        "Folders"
+                        {
+                        }
+                    }
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_4CAB6E2A8B284A78859E2CA40D806319"
+                    {
+                    "Name" = "8:Help"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_3CE22C40D99E47F29B73B90A2F1201CC"
                         "Folders"
                         {
                         }

@@ -22,6 +22,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -103,8 +105,28 @@
                 </ComboBoxItem>
             </ComboBox>
         </StackPanel>
+        
+        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Vertical" >
+            <TextBlock Text="Date début :" Margin="2" VerticalAlignment="Center" />
+            <DatePicker x:Name="DpkDateDebut" Margin="2" VerticalAlignment="Center" SelectedDateChanged="DpkDateDebut_SelectedDateChanged" Width="Auto" />
+        </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" >
+        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Vertical" >
+            <TextBlock Text="Date fin :" Margin="2" VerticalAlignment="Center" />
+            <DatePicker x:Name="DpkDateFin" Margin="2" VerticalAlignment="Center" SelectedDateChanged="DpkDateFin_SelectedDateChanged" Width="Auto" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left" Margin="2" >
+            <CheckBox x:Name="ChkSemaine" VerticalAlignment="Center" Margin="2" IsChecked="True" Checked="ChkSemaine_Checked" Unchecked="ChkSemaine_Unchecked" />
+            <ComboBox x:Name="CbxSemaine" VerticalAlignment="Center" SelectionChanged="CbxSemaine_SelectionChanged" >
+                <ComboBoxItem>Sem</ComboBoxItem>
+            </ComboBox>
+            <ComboBox x:Name="CbxAnnee" VerticalAlignment="Center" SelectionChanged="CbxSemaine_SelectionChanged" >
+                <ComboBoxItem>Année</ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" >
             <Button x:Name="BtnPdf" Height="50" Width="50" HorizontalAlignment="Right" Margin="2" VerticalAlignment="Center"
                 Click="BtnPdf_Click" >
                 <Button.Content>
@@ -148,12 +170,12 @@
             </Button.Content>
         </Button>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" >
+        <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" >
             <TextBlock FontFamily="Calibri" FontSize="13" Text="Nombre de commandes affichées : " Margin="10,5,0,5" HorizontalAlignment="Center" />
             <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding ElementName=LbxSearchCmd, Path=Items.Count}" Margin="0,5,10,5" HorizontalAlignment="Center" />
         </StackPanel>
 
-        <ListBox x:Name="LbxSearchCmd" Grid.Row="3" Grid.RowSpan="2" Grid.Column="0" Margin="5" Style="{StaticResource ResourceKey=ListBoxItemStyle}"
+        <ListBox x:Name="LbxSearchCmd" Grid.Row="5" Grid.RowSpan="2" Grid.Column="0" Margin="5" Style="{StaticResource ResourceKey=ListBoxItemStyle}"
                  HorizontalContentAlignment="Stretch">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type local:cmdItem}" >
@@ -200,7 +222,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <ScrollViewer Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="5" Background="White" VerticalScrollBarVisibility="Auto" >
+        <ScrollViewer Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Margin="5" Background="White" VerticalScrollBarVisibility="Auto" >
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -268,7 +290,7 @@
             </Grid>
         </ScrollViewer>
 
-        <Image Width="Auto" Height="Auto" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2">
+        <Image Width="Auto" Height="Auto" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2">
             <Image.Source>
                 <BitmapImage UriSource="..\..\Images\logoMgLaval.png" />
             </Image.Source>

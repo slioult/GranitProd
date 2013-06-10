@@ -29,6 +29,7 @@
                             </Image.Source>
                         </Image>
                     </MenuItem.Header>
+                    <MenuItem Header="?  |  Aide" Click="MenuItemAide_Click" />
                     <MenuItem Header="À propos de..." Click="MenuItem_Click" />
                 </MenuItem>
             </Menu>

@@ -12,7 +12,7 @@
 
         <ToolBar Grid.Row="0" HorizontalAlignment="Right">
             <Menu>
-                <MenuItem Background="#ffffff" Click="MenuItem_Click" >
+                <MenuItem Background="#ffffff" >
                     <MenuItem.Header>
                         <Image>
                             <Image.Source>
@@ -20,7 +20,8 @@
                             </Image.Source>
                         </Image>
                     </MenuItem.Header>
-                    <MenuItem Header="A propos de..." />
+                    <MenuItem Header="?  |  Aide" Click="MenuItemAide_Click" />
+                    <MenuItem Header="À propos de..." Click="MenuItem_Click" />
                 </MenuItem>
             </Menu>
             <Button x:Name="BtnConfig" Click="BtnConfig_Click">

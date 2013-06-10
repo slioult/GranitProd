@@ -69,6 +69,24 @@ Public Class RechercheCommande
         AddHandler bwk.DoWork, AddressOf search
         AddHandler bwk.RunWorkerCompleted, AddressOf endSearch
 
+        For i = 1 To 53
+            Me.CbxSemaine.Items.Add(i)
+        Next
+
+        For i = 2010 To Date.Now.Year + 2
+            Me.CbxAnnee.Items.Add(i)
+        Next
+
+        Dim pl As New PlanningControl(True)
+        Dim ds As New List(Of Date)
+        Dim sem As Integer = pl.GetWeekOfDate(Date.Now)
+        ds = pl.GetDaysOfWeek(sem, Date.Now.Year)
+        Dim count As Integer = ds.Count
+        Me.DpkDateDebut.SelectedDate = ds(0)
+        Me.DpkDateFin.SelectedDate = ds(count - 1)
+
+        Me.CbxSemaine.SelectedIndex = sem
+        Me.CbxAnnee.SelectedItem = Date.Now.Year
     End Sub
 
 #End Region
@@ -582,6 +600,97 @@ Public Class RechercheCommande
         LbxSearchCmd.Items.Clear()
     End Sub
 
+    ''' <summary>
+    ''' Se produit lorsque la date de début change
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub DpkDateDebut_SelectedDateChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
+        If Me.DpkDateFin.SelectedDate IsNot Nothing And sender.SelectedDate IsNot Nothing Then
+            Dim dDeb As DateTime = sender.SelectedDate
+            Dim dFin As DateTime = Me.DpkDateFin.SelectedDate
+
+            If dDeb > dFin Then Me.DpkDateFin.SelectedDate = sender.SelectedDate
+        ElseIf sender.SelectedDate Is Nothing Then
+            Me.DpkDateFin.SelectedDate = Nothing
+            Me.ChkSemaine.IsChecked = False
+        End If
+
+        If sender.selectedDate IsNot Nothing And Me.ChkSemaine.IsChecked Then
+            Dim pl As New PlanningControl(True)
+            Dim sem As Integer = pl.GetWeekOfDate(sender.SelectedDate)
+            Me.CbxSemaine.SelectedIndex = sem
+            Me.CbxAnnee.SelectedItem = sender.SelectedDate.Year
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Se produit lorsque la date de fin change
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub DpkDateFin_SelectedDateChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
+        If Me.DpkDateDebut.SelectedDate IsNot Nothing And sender.selectedDate IsNot Nothing Then
+            Dim dFin As DateTime = sender.SelectedDate
+            Dim dDeb As DateTime = Me.DpkDateDebut.SelectedDate
+
+            If dDeb > dFin Then Me.DpkDateDebut.SelectedDate = sender.SelectedDate
+        ElseIf sender.SelectedDate Is Nothing Then
+            Me.DpkDateDebut.SelectedDate = Nothing
+            Me.ChkSemaine.IsChecked = False
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Se produit lorsque la semaine sélectionnée est modifiée
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub CbxSemaine_SelectionChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
+        If Me.CbxSemaine.SelectedIndex > 0 And Me.CbxAnnee.SelectedIndex > 0 Then
+            Dim pl As New PlanningControl(True)
+            Dim ds As New List(Of Date)
+            ds = pl.GetDaysOfWeek(Me.CbxSemaine.SelectedIndex, Me.CbxAnnee.SelectedItem)
+            Dim count As Integer = ds.Count
+            Me.DpkDateDebut.SelectedDate = ds(0)
+            Me.DpkDateFin.SelectedDate = ds(count - 1)
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Se produit quand le checkbox permettant d'activer la mise à jour de la semaine est coché
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub ChkSemaine_Checked(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
+        If Me.CbxSemaine IsNot Nothing And Me.CbxAnnee IsNot Nothing Then
+            Me.CbxSemaine.IsEnabled = True
+            Me.CbxAnnee.IsEnabled = True
+            If Me.DpkDateDebut.SelectedDate IsNot Nothing And Me.DpkDateFin.SelectedDate IsNot Nothing Then
+                Me.DpkDateDebut_SelectedDateChanged(Me.DpkDateDebut, Nothing)
+            End If
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Se produit quand le checkbox permettant d'activer la mise à jour de la semaine est décoché
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub ChkSemaine_Unchecked(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
+        If Me.CbxSemaine IsNot Nothing And Me.CbxAnnee IsNot Nothing Then
+            Me.CbxSemaine.IsEnabled = False
+            Me.CbxAnnee.IsEnabled = False
+            Me.CbxSemaine.SelectedIndex = 0
+            Me.CbxAnnee.SelectedIndex = 0
+        End If
+    End Sub
+
 #End Region
 
 #Region "EventControlEnter"
@@ -697,6 +806,36 @@ Public Class RechercheCommande
                                                                      whereEtat = " WHERE c.IdentifierEtat = e.Identifier AND e.Label = 'Rendue' AND "
                                                                  ElseIf Me.CbxEtat.SelectedIndex = 3 Then
                                                                      whereEtat = " WHERE c.DelaiPrevu >= '" + year.ToString() + "-" + month.ToString() + "-1' AND "
+                                                                 End If
+
+                                                                 If Me.DpkDateDebut.SelectedDate IsNot Nothing And whereEtat <> String.Empty Then
+                                                                     Dim dDeb As Date = Me.DpkDateDebut.SelectedDate
+                                                                     Dim dDay As Integer = dDeb.Day
+                                                                     Dim dMonth As Integer = dDeb.Month
+                                                                     Dim dYear As Integer = dDeb.Year
+                                                                     Dim dFin As Date = Me.DpkDateFin.SelectedDate
+                                                                     Dim fDay As Integer = dFin.Day
+                                                                     Dim fMonth As Integer = dFin.Month
+                                                                     Dim fYear As Integer = dFin.Year
+
+                                                                     whereEtat = whereEtat + "DAY(c.DelaiPrevu) >= " + dDay.ToString() + " AND MONTH(c.DelaiPrevu) >= " +
+                                                                         dMonth.ToString() + " AND YEAR(c.DelaiPrevu) >= " + dYear.ToString() +
+                                                                         " AND DAY(c.DelaiPrevu) <= " + fDay.ToString() + " AND MONTH(c.DelaiPrevu) <= " +
+                                                                         fMonth.ToString() + " AND YEAR(c.DelaiPrevu) <= " + fYear.ToString() + " AND "
+                                                                 ElseIf Me.DpkDateDebut.SelectedDate IsNot Nothing Then
+                                                                     Dim dDeb As Date = Me.DpkDateDebut.SelectedDate
+                                                                     Dim dDay As Integer = dDeb.Day
+                                                                     Dim dMonth As Integer = dDeb.Month
+                                                                     Dim dYear As Integer = dDeb.Year
+                                                                     Dim dFin As Date = Me.DpkDateFin.SelectedDate
+                                                                     Dim fDay As Integer = dFin.Day
+                                                                     Dim fMonth As Integer = dFin.Month
+                                                                     Dim fYear As Integer = dFin.Year
+
+                                                                     whereEtat = " WHERE DAY(c.DelaiPrevu) >= " + dDay.ToString() + " AND MONTH(c.DelaiPrevu) >= " +
+                                                                         dMonth.ToString() + " AND YEAR(c.DelaiPrevu) >= " + dYear.ToString() +
+                                                                         " AND DAY(c.DelaiPrevu) <= " + fDay + " AND MONTH(c.DelaiPrevu) <= " +
+                                                                         fMonth.ToString() + " AND YEAR(c.DelaiPrevu) <= " + fYear.ToString() + " AND "
                                                                  End If
 
                                                                  'Définit une partie de la clause WHERE de la requête en fonction du type de tri sélectionné
