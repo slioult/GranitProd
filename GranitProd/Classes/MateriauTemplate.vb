@@ -19,10 +19,15 @@
 
 #End Region
 
+#Region "Constructor"
+
     Public Sub New(ByVal mat As Materiau, Optional ByVal isChecked As Boolean = False)
         Me.IsChecked = isChecked
         Me.Identifier = mat.Identifier
         Me.Label = mat.Label
         Me.Epaisseur = mat.Epaisseur
     End Sub
+
+#End Region
+
 End Class

@@ -12,17 +12,17 @@
         <local:ContremarqueConverter x:Key="contremarqueConverter" />
         <local:DateConverter x:Key="dateConverter" />
         <local:EventHeureConverter x:Key="heureConverter" />
+        <local:PlVisibilityConverter x:Key="visibilityConverter" />
 
         <DataTemplate DataType="{x:Type local:CommandeWork}" x:Key="planningCommande" >
             <Border BorderThickness="{Binding Border}" BorderBrush="Black" >
                 <StackPanel Orientation="Vertical" Margin="5">
-                    <StackPanel Orientation="Horizontal" >
-                        <TextBlock Text="N° cmd : " FontFamily="Calibri" FontSize="10" />
-                        <TextBlock Text="{Binding NoCommande}" FontFamily="Calibri" FontSize="10" />
-                    </StackPanel>
-                    <TextBlock Text="{Binding Client.Nom, StringFormat=Cli : {0:c}}" FontFamily="Calibri" FontSize="10" />
+                    <TextBlock Text="{Binding Client.Nom, StringFormat=Cli : {0:c}}" FontFamily="Calibri" FontSize="10" 
+                               Visibility="{Binding Converter={StaticResource visibilityConverter}}" />
                     <TextBlock Text="{Binding Contremarque, Converter={StaticResource contremarqueConverter}, StringFormat=CM : {0:c}}" FontFamily="Calibri" FontSize="10" />
-                    <TextBlock Text="{Binding DelaiPrevu, Converter={StaticResource dateConverter}, StringFormat=Délai : {0:c}}" FontFamily="Calibri" FontSize="10" />
+                    <TextBlock Text="{Binding Etat.Label, StringFormat=État : {0:c}}" FontFamily="Calibri" FontSize="10" />
+                    <TextBlock Text="{Binding DelaiPrevu, Converter={StaticResource dateConverter}, StringFormat=Délai : {0:c}}" FontFamily="Calibri" FontSize="10"
+                               Visibility="{Binding Converter={StaticResource visibilityConverter}}"/>
                     <TextBlock Text="{Binding Converter={StaticResource heureConverter}, StringFormat=Heure : {0:c}}" FontFamily="Calibri" FontSize="10" />
                     <Grid Background="{Binding Converter={StaticResource workBackgroundConverter}}"
                                           Height="3" />
@@ -31,110 +31,144 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <Border BorderBrush="Black" BorderThickness="2">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="14*"/>
-                <RowDefinition Height="14*"/>
-                <RowDefinition Height="14*"/>
-                <RowDefinition Height="14*"/>
-                <RowDefinition Height="14*"/>
-                <RowDefinition Height="14*"/>
-                <RowDefinition Height="14*"/>
-            </Grid.RowDefinitions>
+    <Grid>
+        <Grid.RowDefinitions >
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <Calendar x:Name="cal" Grid.Row="0" Language="fr-FR" Margin="0,0,0,5" HorizontalAlignment="Center" VerticalAlignment="Center"
+                  SelectedDatesChanged="cal_SelectedDatesChanged" />
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="85" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <Border BorderBrush="Black" Grid.Row="1" BorderThickness="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="14*"/>
+                    <RowDefinition Height="14*"/>
+                    <RowDefinition Height="14*"/>
+                    <RowDefinition Height="14*"/>
+                    <RowDefinition Height="14*"/>
+                    <RowDefinition Height="14*"/>
+                    <RowDefinition Height="14*"/>
+                </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"  >
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" >
-                    <TextBlock Text="Semaine" FontFamily="Calibri" FontSize="20"/>
-                    <TextBlock x:Name="TxtWeek" FontFamily="Calibri" FontSize="20" Margin="4,0,0,0"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="85" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"  >
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                        <TextBlock Text="Semaine" FontFamily="Calibri" FontSize="20"/>
+                        <TextBlock x:Name="TxtWeek" FontFamily="Calibri" FontSize="20" Margin="4,0,0,0"/>
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Vertical" Margin="5" >
+                    <TextBlock HorizontalAlignment="Left" Text="Afficher par :" />
+                    <ComboBox x:Name="CbxTri" SelectedIndex="0" HorizontalAlignment="Left" Width="Auto" SelectionChanged="CbxTri_SelectionChanged" >
+                        <ComboBoxItem>Délai prévu</ComboBoxItem>
+                        <ComboBoxItem>Date de commande</ComboBoxItem>
+                    </ComboBox>
                 </StackPanel>
-            </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="0" Background="#aaaaaa">
-                <Border BorderBrush="Black" BorderThickness="0 1 1 0">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
-                        <TextBlock Text="Lundi" FontFamily="Calibri" FontSize="15"/>
-                        <TextBlock x:Name="TxtLundi" FontFamily="Calibri" FontSize="15" Margin="4,0,0,0"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
+                <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" >
+                    <Button x:Name="BtnRefresh" Height="23" Width="23" Margin="5" Click="BtnRefresh_Click" >
+                        <Image>
+                            <Image.Source>
+                                <BitmapImage UriSource="..\Images\refresh.png" />
+                            </Image.Source>
+                        </Image>
+                    </Button>
+                    <Button x:Name="BtnExtend" Height="23" Width="23" Margin="5" Click="BtnExtend_Click" >
+                        <Image>
+                            <Image.Source>
+                                <BitmapImage UriSource="..\Images\zoom.png" />
+                            </Image.Source>
+                        </Image>
+                    </Button>
+                </StackPanel>
 
-            <Grid Grid.Row="2" Grid.Column="0">
-                <Border BorderBrush="Black" BorderThickness="0 0 1 0">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
-                        <TextBlock Text="Mardi" FontFamily="Calibri" FontSize="15"/>
-                        <TextBlock x:Name="TxtMardi" FontFamily="Calibri" FontSize="15" Margin="4,0,0,0"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
+                <Grid Grid.Row="1" Grid.Column="0" Background="#aaaaaa">
+                    <Border BorderBrush="Black" BorderThickness="0 1 1 0">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
+                            <TextBlock Text="Lundi" FontFamily="Calibri" FontSize="15"/>
+                            <TextBlock x:Name="TxtLundi" FontFamily="Calibri" FontSize="15" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
 
-            <Grid Grid.Row="3" Grid.Column="0" Background="#aaaaaa">
-                <Border BorderBrush="Black" BorderThickness="0 0 1 0">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
-                        <TextBlock Text="Mercredi" FontFamily="Calibri" FontSize="15"/>
-                        <TextBlock x:Name="TxtMercredi" FontFamily="Calibri" FontSize="15" Margin="4,0,0,0"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
+                <Grid Grid.Row="2" Grid.Column="0">
+                    <Border BorderBrush="Black" BorderThickness="0 0 1 0">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
+                            <TextBlock Text="Mardi" FontFamily="Calibri" FontSize="15"/>
+                            <TextBlock x:Name="TxtMardi" FontFamily="Calibri" FontSize="15" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
 
-            <Grid Grid.Row="4" Grid.Column="0">
-                <Border BorderBrush="Black" BorderThickness="0 0 1 0">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
-                        <TextBlock Text="Jeudi" FontFamily="Calibri" FontSize="15"/>
-                        <TextBlock x:Name="TxtJeudi" FontFamily="Calibri" FontSize="15" Margin="4,0,0,0"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
+                <Grid Grid.Row="3" Grid.Column="0" Background="#aaaaaa">
+                    <Border BorderBrush="Black" BorderThickness="0 0 1 0">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
+                            <TextBlock Text="Mercredi" FontFamily="Calibri" FontSize="15"/>
+                            <TextBlock x:Name="TxtMercredi" FontFamily="Calibri" FontSize="15" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
 
-            <Grid Grid.Row="5" Grid.Column="0" Background="#aaaaaa">
-                <Border BorderBrush="Black" BorderThickness="0 0 1 1">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
-                        <TextBlock Text="Vendredi" FontFamily="Calibri" FontSize="15"/>
-                        <TextBlock x:Name="TxtVendredi" FontFamily="Calibri" FontSize="15" Margin="4,0,0,0"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
+                <Grid Grid.Row="4" Grid.Column="0">
+                    <Border BorderBrush="Black" BorderThickness="0 0 1 0">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
+                            <TextBlock Text="Jeudi" FontFamily="Calibri" FontSize="15"/>
+                            <TextBlock x:Name="TxtJeudi" FontFamily="Calibri" FontSize="15" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
 
-            <Grid Grid.Row="0" Grid.Column="1">
+                <Grid Grid.Row="5" Grid.Column="0" Background="#aaaaaa">
+                    <Border BorderBrush="Black" BorderThickness="0 0 1 1">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
+                            <TextBlock Text="Vendredi" FontFamily="Calibri" FontSize="15"/>
+                            <TextBlock x:Name="TxtVendredi" FontFamily="Calibri" FontSize="15" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
 
-            </Grid>
+                <Grid Grid.Row="0" Grid.Column="1">
 
-            <Grid Grid.Row="1" Grid.Column="1" Background="#aaaaaa">
-                <Border BorderBrush="Black" BorderThickness="0 1 0 0">
-                    <ListBox x:Name="LbxLundi" Style="{StaticResource HorizontalListBox}" ItemTemplate="{StaticResource ResourceKey=planningCommande}"
+                </Grid>
+
+                <Grid Grid.Row="1" Grid.Column="1" Background="#aaaaaa">
+                    <Border BorderBrush="Black" BorderThickness="0 1 0 0">
+                        <ListBox x:Name="LbxLundi" Style="{StaticResource HorizontalListBox}" ItemTemplate="{StaticResource ResourceKey=planningCommande}"
+                             MouseDoubleClick="Commande_MouseDoubleClick" />
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Row="2" Grid.Column="1">
+                    <ListBox x:Name="LbxMardi" Style="{StaticResource HorizontalListBox}" ItemTemplate="{StaticResource ResourceKey=planningCommande}"
+                         MouseDoubleClick="Commande_MouseDoubleClick"/>
+                </Grid>
+
+                <Grid Grid.Row="3" Grid.Column="1" Background="#aaaaaa">
+                    <ListBox x:Name="LbxMercredi" Style="{StaticResource HorizontalListBox}" ItemTemplate="{StaticResource ResourceKey=planningCommande}"
+                         MouseDoubleClick="Commande_MouseDoubleClick"/>
+                </Grid>
+
+                <Grid Grid.Row="4" Grid.Column="1">
+                    <ListBox x:Name="LbxJeudi" Style="{StaticResource HorizontalListBox}" ItemTemplate="{StaticResource ResourceKey=planningCommande}"
+                         MouseDoubleClick="Commande_MouseDoubleClick"/>
+                </Grid>
+
+                <Grid Grid.Row="5" Grid.Column="1" Background="#aaaaaa">
+                    <Border BorderBrush="Black" BorderThickness="0 0 0 1">
+                        <ListBox x:Name="LbxVendredi" Style="{StaticResource HorizontalListBox}" ItemTemplate="{StaticResource ResourceKey=planningCommande}"
                              MouseDoubleClick="Commande_MouseDoubleClick"/>
-                </Border>
-            </Grid>
+                    </Border>
+                </Grid>
 
-            <Grid Grid.Row="2" Grid.Column="1">
-                <ListBox x:Name="LbxMardi" Style="{StaticResource HorizontalListBox}" ItemTemplate="{StaticResource ResourceKey=planningCommande}"
-                         MouseDoubleClick="Commande_MouseDoubleClick"/>
-            </Grid>
-
-            <Grid Grid.Row="3" Grid.Column="1" Background="#aaaaaa">
-                <ListBox x:Name="LbxMercredi" Style="{StaticResource HorizontalListBox}" ItemTemplate="{StaticResource ResourceKey=planningCommande}"
-                         MouseDoubleClick="Commande_MouseDoubleClick"/>
-            </Grid>
-
-            <Grid Grid.Row="4" Grid.Column="1">
-                <ListBox x:Name="LbxJeudi" Style="{StaticResource HorizontalListBox}" ItemTemplate="{StaticResource ResourceKey=planningCommande}"
-                         MouseDoubleClick="Commande_MouseDoubleClick"/>
-            </Grid>
-
-            <Grid Grid.Row="5" Grid.Column="1" Background="#aaaaaa">
-                <Border BorderBrush="Black" BorderThickness="0 0 0 1">
-                    <ListBox x:Name="LbxVendredi" Style="{StaticResource HorizontalListBox}" ItemTemplate="{StaticResource ResourceKey=planningCommande}"
-                             MouseDoubleClick="Commande_MouseDoubleClick"/>
-                </Border>
-            </Grid>
-
-            <Grid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2">
-                <StackPanel Orientation="Vertical" >
+                <Grid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2">
+                    <StackPanel Orientation="Vertical" >
                         <ListBox x:Name="LbxLengendeMesure" Style="{StaticResource HorizontalListBox}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
                             <ListBox.ItemTemplate>
                                 <DataTemplate DataType="{x:Type local:Mesure}">
@@ -155,8 +189,9 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                </StackPanel>
+                    </StackPanel>
+                </Grid>
             </Grid>
-        </Grid>
-    </Border>
+        </Border>
+    </Grid>
 </UserControl>

@@ -60,19 +60,21 @@ Public Class ConfMateriau
         If Me.CbxConfMateriau.SelectedIndex > 0 Then
             Dim materiau As Materiau = Me.CbxConfMateriau.SelectedItem
             If Not materiau.IsUsed() Then
-                Dim question As MessageBoxResult = MessageBox.Show("Voulez vous vraiment supprimer le matériau selectionné", "Caution", MessageBoxButton.YesNo, MessageBoxImage.Warning)
+                Dim question As MessageBoxResult = MessageBox.Show("Voulez-vous vraiment supprimer le matériau selectionné ?", "Suppression d'un matériau", MessageBoxButton.YesNo, MessageBoxImage.Warning)
                 If question = MessageBoxResult.Yes Then
                     Me.CbxConfMateriau.Items.Remove(Me.CbxConfMateriau.SelectedItem)
                     materiau.Delete()
                     Dim mt As New MateriauTemplate(materiau, False)
                     Me.NouvelleCommande.LbxMateriaux.Items.Remove(mt)
                     Me.CbxConfMateriau.SelectedIndex = 0
+
+                    MessageBox.Show("Le matériau a été supprimé", "Matériau supprimé", MessageBoxButton.OK, MessageBoxImage.Information)
                 End If
             Else
-                MessageBox.Show("Le materiau est utilisé dans une commande et ne peut pas etre supprimer")
+                MessageBox.Show("Le materiau est utilisé dans une commande et ne peut pas être supprimé.", "Suppression impossible", MessageBoxButton.OK, MessageBoxImage.Exclamation)
             End If
         Else
-            MessageBox.Show("Selectionnez un Materiau a supprimé")
+            MessageBox.Show("Veuillez sélectionner un matériau à supprimer.", "Suppression d'un matériau", MessageBoxButton.OK, MessageBoxImage.Exclamation)
         End If
     End Sub
 
@@ -101,9 +103,9 @@ Public Class ConfMateriau
                 Me.CbxConfMateriau.SelectedItem = materiau
                 Dim mt As New MateriauTemplate(materiau, False)
                 Me.NouvelleCommande.LbxMateriaux.Items.Add(mt)
-                MessageBox.Show("Le Materiau a été ajouté")
+                MessageBox.Show("Le matériau a été ajouté.", "Nouveau matériau ajouté", MessageBoxButton.OK, MessageBoxImage.Information)
             Else
-                MessageBox.Show("Le Materiau existe")
+                MessageBox.Show("Le matériau existe déjà.", "Matériau existant", MessageBoxButton.OK, MessageBoxImage.Exclamation)
             End If
         ElseIf Me.CbxConfMateriau.SelectedIndex > 0 And TxtNomMateriau.Text <> "" Then
             Dim index = Me.CbxConfMateriau.SelectedIndex
@@ -119,21 +121,39 @@ Public Class ConfMateriau
             Next
 
             If Not isExists Then
-                Dim newMateriau As New Materiau(materiau.Label, materiau.Identifier)
-                materiau.Label = TxtNomMateriau.Text
-                materiau.Update()
+                Dim result As MessageBoxResult = MessageBox.Show("Voulez-vous modifier le matériau « " + materiau.Label + " » ?", "Modification d'un matériau",
+                                                                 MessageBoxButton.OK, MessageBoxImage.Question)
 
-                Me.CbxConfMateriau.Items.RemoveAt(index)
-                Me.CbxConfMateriau.Items.Insert(index, materiau)
+                If result = MessageBoxResult.Yes Then
+                    Dim newMateriau As New Materiau(materiau.Label, materiau.Identifier)
+                    materiau.Label = TxtNomMateriau.Text
+                    materiau.Update()
 
+                    Me.CbxConfMateriau.Items.RemoveAt(index)
+                    Me.CbxConfMateriau.Items.Insert(index, materiau)
 
-                Me.CbxConfMateriau.SelectedIndex = index
-                MessageBox.Show("Le Materiau a été modifié")
+                    Dim listMTT As New List(Of MateriauTemplate)
+
+                    For Each item In Me.NouvelleCommande.LbxMateriaux.Items
+                        Dim matT As MateriauTemplate = item
+                        listMTT.Add(matT)
+                    Next
+
+                    Me.NouvelleCommande.LbxMateriaux.Items.Clear()
+
+                    For Each m In listMTT
+                        If m.Identifier = materiau.Identifier Then m.Label = materiau.Label
+                        Me.NouvelleCommande.LbxMateriaux.Items.Add(m)
+                    Next
+
+                    Me.CbxConfMateriau.SelectedIndex = index
+                    MessageBox.Show("Le matériau a été modifié.", "Matériau modifié", MessageBoxButton.OK, MessageBoxImage.Information)
+                End If
             Else
-                MessageBox.Show("Le Materiau existe")
+                MessageBox.Show("Le matériau existe déjà.", "Matériau existant", MessageBoxButton.OK, MessageBoxImage.Exclamation)
             End If
 
-        End If
+            End If
     End Sub
 
 #End Region

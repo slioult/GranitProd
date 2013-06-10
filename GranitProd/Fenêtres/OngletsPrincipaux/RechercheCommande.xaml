@@ -86,7 +86,23 @@
             </toolkit:AutoCompleteBox>
         </StackPanel>
 
-        <CheckBox x:Name="ChkEndCmd" Width="Auto" Grid.Row="0" Grid.Column="1" Content="Commandes terminées" VerticalAlignment="Center" Checked="ChkEndCmd_Checked" />
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+            <TextBlock Text="Commandes :" Margin="2" VerticalAlignment="Center" />
+            <ComboBox x:Name="CbxEtat" VerticalAlignment="Center" Margin="2" SelectedIndex="0" >
+                <ComboBoxItem>
+                    En cours
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    Terminées
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    Rendues
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    Toutes
+                </ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
 
         <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" >
             <Button x:Name="BtnPdf" Height="50" Width="50" HorizontalAlignment="Right" Margin="2" VerticalAlignment="Center"
@@ -137,46 +153,48 @@
             <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding ElementName=LbxSearchCmd, Path=Items.Count}" Margin="0,5,10,5" HorizontalAlignment="Center" />
         </StackPanel>
 
-        <ListBox x:Name="LbxSearchCmd" Grid.Row="3" Grid.RowSpan="2" Grid.Column="0" Margin="5" Style="{StaticResource ResourceKey=ListBoxItemStyle}" >
+        <ListBox x:Name="LbxSearchCmd" Grid.Row="3" Grid.RowSpan="2" Grid.Column="0" Margin="5" Style="{StaticResource ResourceKey=ListBoxItemStyle}"
+                 HorizontalContentAlignment="Stretch">
             <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type local:Commande}" >
+                <DataTemplate DataType="{x:Type local:cmdItem}" >
                     <StackPanel Orientation="Vertical">
-                        <Grid Margin="5">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="33.3*" />
-                                <RowDefinition Height="33.3*" />
-                                <RowDefinition Height="33.3*" />
-                            </Grid.RowDefinitions>
+                        <Grid Background="{Binding Path=Color}" >
+                            <Grid Margin="10" >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="33.3*" />
+                                    <RowDefinition Height="33.3*" />
+                                    <RowDefinition Height="33.3*" />
+                                </Grid.RowDefinitions>
 
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
 
-                            <Grid Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Width="100" >
-                                <Border BorderBrush="Black" BorderThickness="0,1,0,1" >
+                                <Grid Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Width="100" >
                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" >
                                         <TextBlock FontFamily="Calibri" FontSize="13" Text="N°" Margin="10,5,10,5" HorizontalAlignment="Center" />
-                                        <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=NoCommande}" Margin="10,5,10,5" HorizontalAlignment="Center" />
+                                        <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=Commande.NoCommande}" Margin="10,5,10,5" HorizontalAlignment="Center" />
                                     </StackPanel>
-                                </Border>
-                            </Grid>
-                            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" >
-                                <TextBlock FontFamily="Calibri" FontSize="13" Text="Cli :   " Margin="10,5,0,5" />
-                                <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=Client.Nom}"
+                                </Grid>
+                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" >
+                                    <TextBlock FontFamily="Calibri" FontSize="13" Text="Cli :   " Margin="10,5,0,5" />
+                                    <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=Commande.Client.Nom}"
                                    Margin="10,5,10,5" />
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
-                                <TextBlock FontFamily="Calibri" FontSize="13" Text="CM :   " Margin="10,5,0,5" />
-                                <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=Contremarque, Converter={StaticResource contremarqueConverter}}"
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
+                                    <TextBlock FontFamily="Calibri" FontSize="13" Text="CM :   " Margin="10,5,0,5" />
+                                    <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=Commande.Contremarque, Converter={StaticResource contremarqueConverter}}"
                                    Margin="10,5,10,5" />
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" >
-                                <TextBlock FontFamily="Calibri" FontSize="13" Text="Délai :   " Margin="10,5,0,5" />
-                                <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=DelaiPrevu, StringFormat=dd-MM-yyyy}"
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" >
+                                    <TextBlock FontFamily="Calibri" FontSize="13" Text="Délai :   " Margin="10,5,0,5" />
+                                    <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=Commande.DelaiPrevu, StringFormat=dd-MM-yyyy}"
                                    Margin="0,5,10,5" />
-                            </StackPanel>
+                                </StackPanel>
+                            </Grid>
                         </Grid>
+                        <Separator Margin="0" BorderThickness="4" BorderBrush="Black" />
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
@@ -202,51 +220,51 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                           Background="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Remarques, Converter={StaticResource backgroundRemarquesConverter}}" >
+                           Background="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Commande.Remarques, Converter={StaticResource backgroundRemarquesConverter}}" >
                     <TextBlock FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Center"
                                            Margin="2, 8, 2, 8" Foreground="White" TextWrapping="Wrap" FontWeight="Bold"
-                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Remarques, Converter={StaticResource txtRemarquesConverter}}"/>
+                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Commande.Remarques, Converter={StaticResource txtRemarquesConverter}}"/>
                 </Grid>
 
                 <TextBlock Grid.Row="1" Grid.Column="0" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left"
                                            Margin="2, 8, 2, 8" Text="N° de commande :" />
                 <TextBlock Grid.Row="1" Grid.Column="1" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2, 8, 2, 8" 
-                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.NoCommande}" />
+                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Commande.NoCommande}" />
 
                 <TextBlock Grid.Row="2" Grid.Column="0" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left"
                                            Margin="2, 8, 2, 8" Text="Client :" />
                 <TextBlock Grid.Row="2" Grid.Column="1" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2, 8, 2, 8" 
-                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Client.Nom}" TextWrapping="Wrap" />
+                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Commande.Client.Nom}" TextWrapping="Wrap" />
 
                 <TextBlock Grid.Row="3" Grid.Column="0" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left"
                                            Margin="2, 8, 2, 8" Text="Contremarque :" />
                 <TextBlock Grid.Row="3" Grid.Column="1" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2, 8, 2, 8" 
-                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Contremarque, Converter={StaticResource contremarqueConverter}}" TextWrapping="Wrap" />
+                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Commande.Contremarque, Converter={StaticResource contremarqueConverter}}" TextWrapping="Wrap" />
 
                 <TextBlock Grid.Row="4" Grid.Column="0" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left"
                                            Margin="2, 8, 2, 8" Text="État :" />
                 <TextBlock Grid.Row="4" Grid.Column="1" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2, 8, 2, 8" 
-                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Etat.Label}" TextWrapping="Wrap" />
+                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Commande.Etat.Label}" TextWrapping="Wrap" />
 
                 <TextBlock Grid.Row="5" Grid.Column="0" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left"
                                            Margin="2, 8, 2, 8" Text="Matériau(x) :" />
                 <TextBlock Grid.Row="5" Grid.Column="1" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2, 8, 2, 8" 
-                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Materiaux, Converter={StaticResource materiauxConverter}}" TextWrapping="Wrap" />
+                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Commande.Materiaux, Converter={StaticResource materiauxConverter}}" TextWrapping="Wrap" />
 
                 <TextBlock Grid.Row="6" Grid.Column="0" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left"
                                            Margin="2, 8, 2, 8" Text="Nature(s) :" />
                 <TextBlock Grid.Row="6" Grid.Column="1" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2, 8, 2, 8" 
-                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Natures, Converter={StaticResource naturesConverter}}" TextWrapping="Wrap" />
+                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Commande.Natures, Converter={StaticResource naturesConverter}}" TextWrapping="Wrap" />
 
                 <TextBlock Grid.Row="7" Grid.Column="0" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left"
                                            Margin="2, 8, 2, 8" Text="Délai :" />
                 <TextBlock Grid.Row="7" Grid.Column="1" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2, 8, 2, 8" 
-                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.DelaiPrevu, StringFormat=dd-MM-yyyy}" />
+                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Commande.DelaiPrevu, StringFormat=dd-MM-yyyy}" />
 
                 <TextBlock Grid.Row="8" Grid.Column="0" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left"
                                            Margin="2, 8, 2, 8" Text="Tps de fabrication :" />
                 <TextBlock Grid.Row="8" Grid.Column="1" FontSize="13" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2, 8, 2, 8"
-                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem, Converter={StaticResource tpsFabricationConverter}}" TextWrapping="Wrap" />
+                           Text="{Binding ElementName=LbxSearchCmd, Path=SelectedItem.Commande, Converter={StaticResource tpsFabricationConverter}}" TextWrapping="Wrap" />
             </Grid>
         </ScrollViewer>
 

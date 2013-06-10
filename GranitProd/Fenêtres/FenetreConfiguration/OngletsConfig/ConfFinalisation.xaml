@@ -35,11 +35,11 @@
                 <RowDefinition Height="20*"/>
             </Grid.RowDefinitions>
             <ComboBox Name="CbxConfFinalisation" Grid.Column="1" Grid.Row="1" FontFamily="Calibri" FontSize="15" MinHeight="22" 
-                MinWidth="100" HorizontalContentAlignment="Left" HorizontalAlignment="Center" VerticalAlignment="Center"
+                MinWidth="100" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center"
                 SelectionChanged="CbxConfFinalisation_SelectionChanged">
                 <ComboBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type local:Finalisation}" >
-                        <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=Label}" HorizontalAlignment="Left" />
+                        <TextBlock FontFamily="Calibri" FontSize="13" Text="{Binding Path=Label}" />
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
@@ -61,6 +61,10 @@
             <TextBox Name="TxtNomFinalisation" Grid.Row="1" FontFamily="Calibri" FontSize="13" VerticalContentAlignment="Center"
                VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="200" MinHeight="30" 
                Text="{Binding ElementName=CbxConfFinalisation, Path=SelectedItem.Label, Mode=OneWay, Converter={StaticResource configConverter}}"/>
+            <TabPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <CheckBox Name="ChkDisplayColor" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ChkDisplayColor_Click" Content="Afficher dans le planning"
+                      IsChecked="{Binding ElementName=CbxConfFinalisation, Path=SelectedItem.Display, Mode=OneWay}"/>
+            </TabPanel>
             <tk:ColorPicker Name="CPFinalisation" Grid.Row="3" SelectedColor="{Binding ElementName=CbxConfFinalisation, Path=SelectedItem.Color, Mode=OneWay, Converter={StaticResource configConverter}}"/>
             <Grid Grid.Row="5">
                 <Grid.ColumnDefinitions>

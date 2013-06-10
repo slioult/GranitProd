@@ -1,6 +1,9 @@
 ﻿Imports MySql.Data.MySqlClient
 Imports System.Data
 Imports System.IO
+Imports System.ComponentModel
+Imports System.Threading
+Imports System.Threading.Tasks
 
 Public Class RechercheCommande
 
@@ -35,6 +38,7 @@ Public Class RechercheCommande
     Private _Commandes As List(Of Commande)
     Private IsUpdClient As Boolean = False
     Private IsUpdContremarque As Boolean = True
+    Private bwk As BackgroundWorker
 
 #End Region
 
@@ -59,6 +63,11 @@ Public Class RechercheCommande
         InitializeComponent()
 
         ' Ajoutez une initialisation quelconque après l'appel InitializeComponent().
+        bwk = New BackgroundWorker()
+
+        bwk.WorkerReportsProgress = True
+        AddHandler bwk.DoWork, AddressOf search
+        AddHandler bwk.RunWorkerCompleted, AddressOf endSearch
 
     End Sub
 
@@ -74,12 +83,15 @@ Public Class RechercheCommande
     ''' <remarks></remarks>
     Private Sub BtnExcel_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
         If LbxSearchCmd.Items.Count > 0 Then
+
+            'liste de commandes à exporter
             Dim cmds As New List(Of Commande)
             For Each item In LbxSearchCmd.Items
-                Dim cmd As Commande = item
-                cmds.Add(cmd)
+                Dim cmd As cmdItem = item
+                cmds.Add(cmd.Commande)
             Next
 
+            'Définit tous les paramètres de l'exportation
             Dim client As String = String.Empty
             Dim cm As String = String.Empty
             Dim numCmd As String = String.Empty
@@ -87,14 +99,11 @@ Public Class RechercheCommande
 
             Dim search As String = String.Empty
 
-            Dim cbxi As ComboBoxItem = CbxTri.SelectedItem
+            Dim cbxi As ComboBoxItem = Me.CbxTri.SelectedItem
             Dim tri As String = cbxi.Content
+            Dim etat As String = Me.CbxEtat.SelectedItem.Content.ToLower()
             Dim etatCmd As String
-            If ChkEndCmd.IsChecked Then
-                etatCmd = "Commandes terminées triées par " + tri.ToLower()
-            Else
-                etatCmd = "Commandes en cours triées par " + tri.ToLower()
-            End If
+            etatCmd = "Commandes " & etat & " triées par " + tri.ToLower()
 
             If Me.AutoCompNClient.SelectedItem IsNot Nothing Then
                 Dim cl As Client = AutoCompNClient.SelectedItem
@@ -158,12 +167,15 @@ Public Class RechercheCommande
     Private Sub BtnPdf_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
         Try
             If LbxSearchCmd.Items.Count > 0 Then
+
+                'Liste des commandes à exporter
                 Dim cmds As New List(Of Commande)
                 For Each item In LbxSearchCmd.Items
-                    Dim cmd As Commande = item
-                    cmds.Add(cmd)
+                    Dim cmd As cmdItem = item
+                    cmds.Add(cmd.Commande)
                 Next
 
+                'Définit tous les paramètres de l'exportation
                 Dim client As String = String.Empty
                 Dim cm As String = String.Empty
                 Dim numCmd As String = String.Empty
@@ -171,12 +183,11 @@ Public Class RechercheCommande
 
                 Dim search As String = String.Empty
 
+                Dim cbxi As ComboBoxItem = Me.CbxTri.SelectedItem
+                Dim tri As String = cbxi.Content
+                Dim etat As String = Me.CbxEtat.SelectedItem.Content.ToLower()
                 Dim etatCmd As String
-                If ChkEndCmd.IsChecked Then
-                    etatCmd = "Commandes terminées"
-                Else
-                    etatCmd = "Commandes en cours"
-                End If
+                etatCmd = "Commandes " & etat & " triées par " + tri.ToLower()
 
                 If Me.AutoCompNClient.SelectedItem IsNot Nothing Then
                     Dim cl As Client = AutoCompNClient.SelectedItem
@@ -256,11 +267,18 @@ Public Class RechercheCommande
     ''' <remarks></remarks>
     Private Sub BtnOpenCmd_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
         If LbxSearchCmd.SelectedItem IsNot Nothing Then
+            'Récupère la commande sélectionnée
+            Dim cmdItem As cmdItem = LbxSearchCmd.SelectedItem
+            Dim cmd As Commande = cmdItem.Commande
 
-            Dim cmd As Commande = LbxSearchCmd.SelectedItem
-
+            'Ouvre une consultation de commande
             Dim commande As ConsultCommande = New ConsultCommande(Me.Session, cmd, Me, Me.Planning)
-            commande.Show()
+            If commande.ShowType = 0 Then
+                commande.Show()
+            Else
+                commande.Close()
+                commande = Nothing
+            End If
         Else
             MessageBox.Show("Veuillez sélectionner une commande.", "Aucune commande sélectionnée", MessageBoxButton.OK, MessageBoxImage.Exclamation)
         End If
@@ -273,266 +291,16 @@ Public Class RechercheCommande
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Public Sub BtnSearch_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
-        Me.LbxSearchCmd.Items.Clear()
-        Dim whereEndOk As String = String.Empty
-        Dim whereEndNotOk As String = String.Empty
-        Dim whereLivrOk As String = String.Empty
-        Dim whereLivrNotOk As String = String.Empty
-        Dim param As String = String.Empty
-
-        If Me.ChkEndCmd.IsChecked Then
-            whereEndOk = " WHERE c.IdentifierEtat = e.Identifier AND e.Label = 'Terminée' AND "
-            whereLivrOk = " OR c.IdentifierEtat = e.Identifier AND e.Label = 'Rendue' AND "
-        Else
-            whereEndNotOk = " WHERE c.IdentifierEtat <> e.Identifier AND e.Label <> 'Terminée' AND "
-            whereLivrNotOk = " OR c.IdentifierEtat <> e.Identifier AND e.Label <> 'Rendue' AND "
-        End If
-
-        If CbxTri.SelectedIndex = 0 Then
-            param = " c.DelaiPrevu"
-        Else
-            param = " c.DateCommande"
-        End If
-
-        If Me.AutoCompLMateriau.SelectedItem IsNot Nothing Then
-            Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
-            Dim Objects As List(Of List(Of Object))
-            Dim materiau As Materiau = AutoCompLMateriau.SelectedItem
-            Dim parameters As New List(Of MySqlParameter)
-            Dim query As String = String.Empty
-
-            Try
-                connection.Open()
-
-                Dim parIdMateriau As MySqlParameter = connection.Create("@IdMateriau", DbType.Int32, materiau.Identifier)
-
-                If (Me.AutoCompNClient.SelectedItem IsNot Nothing And Me.AutoCompNContremarque.SelectedItem IsNot Nothing) Then
-                    Dim client As Client = AutoCompNClient.SelectedItem
-                    Dim cm As Contremarque = AutoCompNContremarque.SelectedItem
-
-                    parameters.Add(parIdMateriau)
-
-                    Dim parIdClient As MySqlParameter = connection.Create("@IdClient", DbType.Int32, client.Identifier)
-                    parameters.Add(parIdClient)
-
-                    Dim parIdContremarque As MySqlParameter = connection.Create("@IdContremarque", DbType.Int32, cm.Identifier)
-                    parameters.Add(parIdContremarque)
-
-                    If ChkEndCmd.IsChecked Then
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndOk + "cm.identifier_commande = c.identifier and " +
-                         "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau " + whereLivrOk +
-                         "cm.identifier_commande = c.identifier and " + "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and c.IdentifierContremarque = @IdContremarque and " +
-                          "m.identifier = @IdMateriau Order By" + param
-                    Else
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndNotOk + "cm.identifier_commande = c.identifier and " +
-                         "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau " + whereLivrNotOk +
-                         "cm.identifier_commande = c.identifier and " + "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and c.IdentifierContremarque = @IdContremarque and " +
-                          "m.identifier = @IdMateriau Order By" + param
-                    End If
-
-                ElseIf (AutoCompNClient.SelectedItem IsNot Nothing) Then
-                    Dim client As Client = AutoCompNClient.SelectedItem
-
-                    parameters.Add(parIdMateriau)
-
-                    Dim parIdClient As MySqlParameter = connection.Create("@IdClient", DbType.Int32, client.Identifier)
-                    parameters.Add(parIdClient)
-
-                    If ChkEndCmd.IsChecked Then
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and m.identifier = @IdMateriau" + whereLivrOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and m.identifier = @IdMateriau Order By" + param
-                    Else
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndNotOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and m.identifier = @IdMateriau" + whereLivrNotOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and m.identifier = @IdMateriau Order By" + param
-                    End If
-
-                ElseIf (AutoCompNContremarque.SelectedItem IsNot Nothing) Then
-                    Dim cm As Contremarque = AutoCompNContremarque.SelectedItem
-
-                    parameters.Add(parIdMateriau)
-
-                    Dim parIdContremarque As MySqlParameter = connection.Create("@IdContremarque", DbType.Int32, cm.Identifier)
-                    parameters.Add(parIdContremarque)
-
-                    If ChkEndCmd.IsChecked Then
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau" + whereLivrOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau Order By" + param
-                    Else
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndNotOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau" + whereLivrNotOk + "cm.identifier_commande = c.identifier and " +
-                           "cm.identifier_materiau = m.identifier and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau Order By" + param
-                    End If
-                Else
-                    parameters.Add(parIdMateriau)
-
-                    If ChkEndCmd.IsChecked Then
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndOk + "cm.identifier_commande = c.identifier and " +
-                                               "cm.identifier_materiau = m.identifier and m.identifier = @IdMateriau" + whereLivrOk + "cm.identifier_commande = c.identifier and " +
-                                               "cm.identifier_materiau = m.identifier and m.identifier = @IdMateriau Order By" + param
-                    Else
-                        query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEndNotOk + "cm.identifier_commande = c.identifier and " +
-                                               "cm.identifier_materiau = m.identifier and m.identifier = @IdMateriau" + whereLivrNotOk + "cm.identifier_commande = c.identifier and " +
-                                               "cm.identifier_materiau = m.identifier and m.identifier = @IdMateriau Order By" + param
-                    End If
-                End If
-
-                Objects = connection.ExecuteQuery(query, parameters)
-
-                parameters.Clear()
-
-                connection.Close()
-
-                For Each obj In Objects
-                    Dim cmd As New Commande(Integer.Parse(obj(0)))
-                    cmd = cmd.GetCommande()
-
-                    If ChkEndCmd.IsChecked Then
-                        If cmd.Etat.Label = "Terminée" Or cmd.Etat.Label = "Rendue" Then
-                            LbxSearchCmd.Items.Add(cmd)
-                        End If
-                    Else
-                        If cmd.Etat.Label <> "Terminée" Or cmd.Etat.Label <> "Rendue" Then
-                            LbxSearchCmd.Items.Add(cmd)
-                        End If
-                    End If
-                Next
-            Catch ex As Exception
-                MessageBox.Show(ex.Message)
-            Finally
-                Try
-                    connection.Close()
-                Catch ex As Exception
-                End Try
-            End Try
-        ElseIf (Me.AutoCompNumCmd.SelectedItem IsNot Nothing) Then
-            Dim cmd As New Commande(Integer.Parse(AutoCompNumCmd.SelectedItem))
-            cmd = cmd.GetCommande()
-            If Me.ChkEndCmd.IsChecked Then
-                If cmd.Etat.Label = "Terminée" Or cmd.Etat.Label = "Rendue" Then
-                    LbxSearchCmd.Items.Add(cmd)
-                End If
-            Else
-                If cmd.Etat.Label <> "Terminée" Or cmd.Etat.Label <> "Rendue" Then
-                    LbxSearchCmd.Items.Add(cmd)
-                End If
-            End If
-        ElseIf Me.AutoCompNClient.SelectedItem IsNot Nothing Or Me.AutoCompNClient.Text <> "" Then
-            Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
-            Dim Objects As New List(Of List(Of Object))
-            Dim parameters As New List(Of MySqlParameter)
-
-            Try
-                connection.Open()
-
-                Dim cli As String
-                Dim cmq As String
-
-                If Me.AutoCompNClient.SelectedItem IsNot Nothing Then
-                    Dim m As Client = Me.AutoCompNClient.SelectedItem
-                    cli = "IdentifierClient=" + m.Identifier.ToString() + " "
-                Else
-                    cli = String.Empty
-                End If
-
-                If Me.AutoCompNContremarque.SelectedItem IsNot Nothing Then
-                    Dim c As Contremarque = Me.AutoCompNContremarque.SelectedItem
-                    If cli = String.Empty Then
-                        cmq = "IdentifierContremarque=" + c.Identifier.ToString() + " "
-                    Else
-                        cmq = "AND IdentifierContremarque=" + c.Identifier.ToString() + " "
-                    End If
-                Else
-                    cmq = String.Empty
-                End If
-
-                Dim query As String
-
-                If ChkEndCmd.IsChecked Then
-                    If cmq = String.Empty And cli = String.Empty Then
-                        whereLivrOk = whereLivrOk.Substring(3, whereLivrOk.Length - 4)
-                    ElseIf cmq = String.Empty Or cli = String.Empty Then
-                        whereLivrOk = whereLivrOk.Substring(3)
-                    End If
-                    query = "SELECT DISTINCT NumCmd, DateFinalisations, DelaiPrevu FROM Commande as c, Etat as e" + whereEndOk + cli + cmq + whereLivrOk + cli + cmq + "Order By" + param
-                Else
-                    If cmq = String.Empty And cli = String.Empty Then
-                        whereLivrNotOk = whereLivrNotOk.Substring(3, whereLivrNotOk.Length - 4)
-                    ElseIf cmq = String.Empty Or cli = String.Empty Then
-                        whereLivrNotOk = whereLivrNotOk.Substring(3)
-                    End If
-
-                    Dim temp As String = String.Empty
-                    If cli <> String.Empty And cmq = String.Empty Then whereLivrNotOk = "AND" + whereLivrNotOk
-                    query = "SELECT DISTINCT NumCmd, DateFinalisations, DelaiPrevu FROM Commande as c, Etat as e" + whereEndNotOk + cli + cmq + whereLivrNotOk + cli + cmq + temp + "Order By" +
-                        param
-                End If
-
-                Objects = connection.ExecuteQuery(query, parameters)
-
-                parameters = Nothing
-
-                connection.Close()
-
-                For Each obj In Objects
-                    Dim cmd As New Commande(Long.Parse(obj(0)))
-                    cmd = cmd.GetCommande()
-
-                    If Me.ChkEndCmd.IsChecked Then
-                        If cmd.Etat.Label = "Terminée" Or cmd.Etat.Label = "Rendue" Then
-                            LbxSearchCmd.Items.Add(cmd)
-                        End If
-                    Else
-                        If cmd.Etat.Label <> "Terminée" Or cmd.Etat.Label <> "Rendue" Then
-                            LbxSearchCmd.Items.Add(cmd)
-                        End If
-                    End If
-                Next
-            Catch ex As Exception
-                MessageBox.Show(ex.Message, "Erreur")
-            Finally
-                Try
-                    connection.Close()
-                Catch ex As Exception
-                End Try
-            End Try
-        ElseIf AutoCompNClient.Text = "" And AutoCompNContremarque.Text = "" And AutoCompNumCmd.Text = "" And AutoCompLMateriau.Text = "" Then
-            Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
-            Dim Objects As New List(Of List(Of Object))
-            Dim parameters As New List(Of MySqlParameter)
-
-            Try
-                connection.Open()
-
-                Dim query As String
-                If ChkEndCmd.IsChecked Then
-                    query = "SELECT DISTINCT NumCmd, DateFinalisations, DelaiPrevu FROM Commande as c, Etat as e" + whereEndOk.Substring(0, whereEndOk.Length - 4) +
-                        whereLivrOk.Substring(0, whereLivrOk.Length - 4) + "Order By" + param
-                Else
-                    query = "SELECT DISTINCT NumCmd, DelaiPrevu FROM Commande as c, Etat as e" + whereEndNotOk.Substring(0, whereEndNotOk.Length - 4) +
-                        whereLivrNotOk.Substring(0, whereLivrNotOk.Length - 4) + "Order By" + param
-                End If
-
-                Objects = connection.ExecuteQuery(query, parameters)
-
-                parameters = Nothing
-
-                connection.Close()
-
-                For Each obj In Objects
-                    LbxSearchCmd.Items.Add(New Commande(Long.Parse(obj(0))).GetCommande())
-                Next
-            Catch ex As Exception
-                MessageBox.Show(ex.Message, "Erreur")
-            Finally
-                Try
-                    connection.Close()
-                Catch ex As Exception
-                End Try
-            End Try
-        End If
+        Try
+            Dim img As New Image()
+            Dim bmp As New BitmapImage(New Uri(System.IO.Path.GetFullPath(My.Settings.Sablier)))
+            img.Source = bmp
+            Me.BtnSearch.Content = img
+            Me.LbxSearchCmd.Items.Clear()
+            bwk.RunWorkerAsync()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
+        End Try
     End Sub
 
 #End Region
@@ -553,25 +321,31 @@ Public Class RechercheCommande
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
         Dim objects As New List(Of List(Of Object))
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Élargit la recherche
             Dim text As String = Me.AutoCompNClient.Text.Replace("'", "\'")
             text = text.Replace("""", "\""")
 
+            'Exécute la requête
             objects = connection.ExecuteQuery("SELECT Identifier, Nom FROM Client WHERE Nom Like '%" + text.ToUpper() + "%' Order By Nom")
 
             Dim clients As New List(Of Client)
 
+            'Traite les résultats
             For Each obj In objects
                 clients.Add(New Client(obj(1).ToString(), Long.Parse(obj(0))))
             Next
 
+            'Modifie la source de l'autocompletebox en fonction des résultats obtenus
             Me.AutoCompNClient.ItemsSource = clients
             Me.AutoCompNClient.PopulateComplete()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -592,25 +366,31 @@ Public Class RechercheCommande
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
         Dim objects As New List(Of List(Of Object))
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Élargit la recherche
             Dim text As String = Me.AutoCompNumCmd.Text.Replace("'", "\'")
             text = text.Replace("""", "\""")
 
+            'Exécute la requête
             objects = connection.ExecuteQuery("SELECT NumCmd, DelaiPrevu FROM Commande WHERE NumCmd Like '%" + text.ToUpper() + "%' Order By DelaiPrevu")
 
             Dim commandes As New List(Of String)
 
+            'Traite les résultats
             For Each obj In objects
                 commandes.Add(obj(0).ToString())
             Next
 
+            'Modifie la source de l'autocompletebox en fonction des résultats obtenus
             Me.AutoCompNumCmd.ItemsSource = commandes
             Me.AutoCompNumCmd.PopulateComplete()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -631,25 +411,31 @@ Public Class RechercheCommande
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
         Dim objects As New List(Of List(Of Object))
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Élargit la recherche
             Dim text As String = Me.AutoCompNContremarque.Text.Replace("'", "\'")
             text = text.Replace("""", "\""")
 
+            'Exécute la requête
             objects = connection.ExecuteQuery("SELECT Identifier, Nom FROM Contremarque WHERE Nom Like '%" + text.ToUpper() + "%' Order By Nom")
 
             Dim contremarques = New List(Of Contremarque)
 
+            'Traite les résultats
             For Each obj In objects
                 contremarques.Add(New Contremarque(obj(1).ToString(), Long.Parse(obj(0))))
             Next
 
+            'Modifie la source de l'autocompletebox en fonction des résultats obtenus
             Me.AutoCompNContremarque.ItemsSource = contremarques
             Me.AutoCompNContremarque.PopulateComplete()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -670,25 +456,31 @@ Public Class RechercheCommande
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
         Dim objects As New List(Of List(Of Object))
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Élargit la recherche
             Dim text As String = Me.AutoCompLMateriau.Text.Replace("'", "\'")
             text = text.Replace("""", "\""")
 
+            'Exécute la requête
             objects = connection.ExecuteQuery("SELECT Identifier, Label FROM Materiau WHERE Label Like '" + text.ToUpper() + "%' Order By Label")
 
             Dim materiaux = New List(Of Materiau)
 
+            'Traite les résultats
             For Each obj In objects
                 materiaux.Add(New Materiau(obj(1).ToString(), Long.Parse(obj(0))))
             Next
 
+            'Modifie la source de l'autocompletebox en fonction des résultats obtenus
             Me.AutoCompLMateriau.ItemsSource = materiaux
             Me.AutoCompLMateriau.PopulateComplete()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -803,6 +595,7 @@ Public Class RechercheCommande
     Private Sub AutoComp_PreviewKeyDown(ByVal sender As System.Object, ByVal e As System.Windows.Input.KeyEventArgs)
         Dim autoComp As AutoCompleteBox = sender
 
+        'Limite la saisie à 50 caractères
         If e.Key <> Key.Enter And e.Key <> Key.Return And e.Key <> Key.Back And e.Key <> Key.LeftCtrl <> e.Key <> Key.RightAlt Then
             If autoComp.Text.Length >= 50 Then
                 e.Handled = True
@@ -823,8 +616,504 @@ Public Class RechercheCommande
         Me.AutoCompNContremarque.SelectedItem = Nothing
         Me.AutoCompNumCmd.SelectedItem = Nothing
         Me.AutoCompLMateriau.SelectedItem = Nothing
-        Me.ChkEndCmd.IsChecked = False
+        Me.CbxEtat.SelectedIndex = 0
         Me.LbxSearchCmd.Items.Clear()
+    End Sub
+
+    ''' <summary>
+    ''' Fonction exécutant la recherche
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Sub search()
+        Application.Current.Dispatcher.Invoke(New Action(Sub()
+                                                             Dim whereEtat As String = String.Empty
+                                                             Dim param As String = String.Empty
+                                                             Dim ListCommandes As New List(Of Commande)
+                                                             Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
+
+                                                             Try
+
+                                                                 'Si l'item n'est pas sélectionné mais que le texte est saisi, fait la liaison entre ce qui est écrit manuelle et un item de l'autocompleteBox
+                                                                 If Me.AutoCompLMateriau.SelectedItem Is Nothing And Me.AutoCompLMateriau.Text <> "" Then
+                                                                     Dim mt As Materiau = Nothing
+
+                                                                     For Each item In Me.AutoCompLMateriau.ItemsSource
+                                                                         Dim m As Materiau = item
+                                                                         If m.Label = Me.AutoCompLMateriau.Text.ToUpper() Then
+                                                                             Me.AutoCompLMateriau.SelectedItem = item
+                                                                             mt = m
+                                                                             Exit For
+                                                                         End If
+                                                                     Next
+
+                                                                     If Me.AutoCompLMateriau.SelectedItem Is Nothing Then Exit Sub
+                                                                 End If
+
+                                                                 'Si l'item n'est pas sélectionné mais que le texte est saisi, fait la liaison entre ce qui est écrit manuelle et un item de l'autocompleteBox
+                                                                 If Me.AutoCompNClient.SelectedItem Is Nothing And Me.AutoCompNClient.Text <> "" Then
+                                                                     Dim cl As Client = Nothing
+
+                                                                     For Each item In Me.AutoCompNClient.ItemsSource
+                                                                         Dim c As Client = item
+                                                                         If c.Nom = Me.AutoCompNClient.Text.ToUpper() Then
+                                                                             Me.AutoCompNClient.SelectedItem = item
+                                                                             cl = c
+                                                                             Exit For
+                                                                         End If
+                                                                     Next
+                                                                 End If
+
+                                                                 'Si l'item n'est pas sélectionné mais que le texte est saisi, fait la liaison entre ce qui est écrit manuelle et un item de l'autocompleteBox
+                                                                 If Me.AutoCompNContremarque.SelectedItem Is Nothing And Me.AutoCompNContremarque.Text <> "" Then
+                                                                     Dim cm As Contremarque = Nothing
+
+                                                                     For Each item In Me.AutoCompNContremarque.ItemsSource
+                                                                         Dim c As Contremarque = item
+                                                                         If c.Nom = Me.AutoCompNContremarque.Text.ToUpper() Then
+                                                                             Me.AutoCompNContremarque.SelectedItem = item
+                                                                             cm = c
+                                                                             Exit For
+                                                                         End If
+                                                                     Next
+                                                                 End If
+
+                                                                 'Définit la date correspondant au 1er du mois précédant
+                                                                 Dim month As Integer = Date.Now.Month
+                                                                 Dim year As Integer = Date.Now.Year
+                                                                 If month < 2 Then
+                                                                     month = 12
+                                                                     year -= 1
+                                                                 Else
+                                                                     month -= 1
+                                                                 End If
+                                                                 Dim minDate As New DateTime(year, month, 1)
+
+                                                                 'Définit une partie de la clause WHERE de la requête en fonction de l'état sélectionné
+                                                                 If Me.CbxEtat.SelectedIndex = 0 Then
+                                                                     whereEtat = " WHERE c.IdentifierEtat = e.Identifier AND e.Label <> 'Terminée' AND e.Label <> 'Rendue' AND "
+                                                                 ElseIf Me.CbxEtat.SelectedIndex = 1 Then
+                                                                     whereEtat = " WHERE c.IdentifierEtat = e.Identifier AND e.Label = 'Terminée' AND "
+                                                                 ElseIf Me.CbxEtat.SelectedIndex = 2 Then
+                                                                     whereEtat = " WHERE c.IdentifierEtat = e.Identifier AND e.Label = 'Rendue' AND "
+                                                                 ElseIf Me.CbxEtat.SelectedIndex = 3 Then
+                                                                     whereEtat = " WHERE c.DelaiPrevu >= '" + year.ToString() + "-" + month.ToString() + "-1' AND "
+                                                                 End If
+
+                                                                 'Définit une partie de la clause WHERE de la requête en fonction du type de tri sélectionné
+                                                                 If CbxTri.SelectedIndex = 0 Then
+                                                                     param = " c.DelaiPrevu"
+                                                                 Else
+                                                                     param = " c.DateCommande"
+                                                                 End If
+
+                                                                 'Si Algorithme de recherche si un matériau est sélectionné
+                                                                 If Me.AutoCompLMateriau.SelectedItem IsNot Nothing Or Me.AutoCompLMateriau.Text <> "" Then
+                                                                     Dim Objects As List(Of List(Of Object))
+                                                                     Dim parameters As New List(Of MySqlParameter)
+                                                                     Dim query As String = String.Empty
+
+                                                                     'Si l'item n'est pas sélectionné mais que le text est saisi, fait la liaison entre ce qui est écrit manuelle et un item de l'autocompleteBox
+                                                                     If Me.AutoCompLMateriau.SelectedItem Is Nothing Then
+                                                                         Dim mt As Materiau = Nothing
+
+                                                                         For Each item In Me.AutoCompLMateriau.ItemsSource
+                                                                             Dim m As Materiau = item
+                                                                             If m.Label = Me.AutoCompLMateriau.Text.ToUpper() Then
+                                                                                 Me.AutoCompLMateriau.SelectedItem = item
+                                                                                 mt = m
+                                                                                 Exit For
+                                                                             End If
+                                                                         Next
+
+                                                                         If Me.AutoCompLMateriau.SelectedItem Is Nothing Then Exit Sub
+                                                                     End If
+
+
+                                                                     Dim materiau As Materiau = AutoCompLMateriau.SelectedItem
+
+                                                                     'Ouvre la connection
+                                                                     connection.Open()
+
+                                                                     Dim parIdMateriau As MySqlParameter = connection.Create("@IdMateriau", DbType.Int32, materiau.Identifier)
+
+                                                                     'S'exécute si un client et une contremarque sont sélectionnés
+                                                                     If (Me.AutoCompNClient.SelectedItem IsNot Nothing And Me.AutoCompNContremarque.SelectedItem IsNot Nothing) Then
+                                                                         Dim client As Client = AutoCompNClient.SelectedItem
+                                                                         Dim cm As Contremarque = AutoCompNContremarque.SelectedItem
+
+                                                                         'Défini les paramètres de la requête
+                                                                         parameters.Add(parIdMateriau)
+
+                                                                         Dim parIdClient As MySqlParameter = connection.Create("@IdClient", DbType.Int32, client.Identifier)
+                                                                         parameters.Add(parIdClient)
+
+                                                                         Dim parIdContremarque As MySqlParameter = connection.Create("@IdContremarque", DbType.Int32, cm.Identifier)
+                                                                         parameters.Add(parIdContremarque)
+
+                                                                         'Requête
+                                                                         query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEtat + "cm.identifier_commande = c.identifier and " +
+                                                                          "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau Order By" + param
+
+                                                                         'S'exécute si un client est sélectionné
+                                                                     ElseIf (AutoCompNClient.SelectedItem IsNot Nothing) Then
+                                                                         Dim client As Client = AutoCompNClient.SelectedItem
+
+                                                                         'Défini les paramètres de la requête
+                                                                         parameters.Add(parIdMateriau)
+
+                                                                         Dim parIdClient As MySqlParameter = connection.Create("@IdClient", DbType.Int32, client.Identifier)
+                                                                         parameters.Add(parIdClient)
+
+                                                                         'Requête
+                                                                         query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEtat + "cm.identifier_commande = c.identifier and " +
+                                                                            "cm.identifier_materiau = m.identifier and c.IdentifierClient = @IdClient and m.identifier = @IdMateriau Order By" + param
+
+                                                                         'S'exécute si une contremarque est sélectionnée
+                                                                     ElseIf (AutoCompNContremarque.SelectedItem IsNot Nothing) Then
+                                                                         Dim cm As Contremarque = AutoCompNContremarque.SelectedItem
+
+                                                                         'Défini les paramètres de la requête
+                                                                         parameters.Add(parIdMateriau)
+
+                                                                         Dim parIdContremarque As MySqlParameter = connection.Create("@IdContremarque", DbType.Int32, cm.Identifier)
+                                                                         parameters.Add(parIdContremarque)
+
+                                                                         'Requête
+                                                                         query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEtat + "cm.identifier_commande = c.identifier and " +
+                                                                            "cm.identifier_materiau = m.identifier and c.IdentifierContremarque = @IdContremarque and m.identifier = @IdMateriau Order By" + param
+
+                                                                         'S'exécute si seulement le matériau est sélectionné
+                                                                     Else
+                                                                         'Défini les paramètres de la requête
+                                                                         parameters.Add(parIdMateriau)
+
+                                                                         'Requête
+                                                                         query = "Select DISTINCT c.NumCmd, c.DelaiPrevu from Commande as c, commande_materiau as cm, materiau as m, Etat as e" + whereEtat + "cm.identifier_commande = c.identifier and " +
+                                                                                                "cm.identifier_materiau = m.identifier and m.identifier = @IdMateriau Order By" + param
+                                                                     End If
+
+                                                                     'Exécute la requête
+                                                                     Objects = connection.ExecuteQuery(query, parameters)
+
+                                                                     parameters.Clear()
+
+                                                                     'Ferme la connexion
+                                                                     connection.Close()
+
+                                                                     'Traite les résultats
+                                                                     For Each obj In Objects
+                                                                         Dim cmd As New Commande(Integer.Parse(obj(0)))
+                                                                         cmd = cmd.GetCommande()
+
+                                                                         'Tri les résultats
+                                                                         If Me.CbxEtat.SelectedIndex = 0 Then
+                                                                             If cmd.Etat.Label <> "Terminée" And cmd.Etat.Label <> "Rendue" Then
+                                                                                 ListCommandes.Add(cmd)
+                                                                             End If
+                                                                         ElseIf Me.CbxEtat.SelectedIndex = 1 Then
+                                                                             If cmd.Etat.Label = "Terminée" Then
+                                                                                 ListCommandes.Add(cmd)
+                                                                             End If
+                                                                         ElseIf Me.CbxEtat.SelectedIndex = 2 Then
+                                                                             If cmd.Etat.Label = "Rendue" Then
+                                                                                 ListCommandes.Add(cmd)
+                                                                             End If
+                                                                         ElseIf Me.CbxEtat.SelectedIndex = 3 Then
+                                                                             If cmd.DelaiPrevu >= minDate Then
+                                                                                 ListCommandes.Add(cmd)
+                                                                             End If
+                                                                         End If
+                                                                     Next
+
+                                                                     'S'exécute si un n° de commande est sélectionné
+                                                                 ElseIf (Me.AutoCompNumCmd.SelectedItem IsNot Nothing) Then
+                                                                     Dim cmd As New Commande(Integer.Parse(AutoCompNumCmd.SelectedItem))
+                                                                     'Récupère la commande correspondante au n° de commande
+                                                                     cmd = cmd.GetCommande()
+                                                                     ListCommandes.Add(cmd)
+                                                                     'L'affiche ou non suivant l'état sélectionné par l'utilisateur
+                                                                     If cmd.Etat.Label = "Terminée" Then
+                                                                         Me.CbxEtat.SelectedIndex = 1
+                                                                     ElseIf cmd.Etat.Label = "Rendue" Then
+                                                                         Me.CbxEtat.SelectedIndex = 2
+                                                                     Else
+                                                                         Me.CbxEtat.SelectedIndex = 0
+                                                                     End If
+
+                                                                     'S'exécute si un client est sélectionné
+                                                                 ElseIf Me.AutoCompNClient.SelectedItem IsNot Nothing Or Me.AutoCompNClient.Text <> "" Then
+                                                                     Dim Objects As New List(Of List(Of Object))
+                                                                     Dim parameters As New List(Of MySqlParameter)
+
+                                                                     'Ouvre la connection
+                                                                     connection.Open()
+
+                                                                     Dim cli As String
+                                                                     Dim cmq As String
+
+                                                                     ' Paramètre une partie de la clause WHERE avec l'identifiant de client sélectionné
+                                                                     If Me.AutoCompNClient.SelectedItem IsNot Nothing Then
+                                                                         Dim m As Client = Me.AutoCompNClient.SelectedItem
+                                                                         cli = "IdentifierClient=" + m.Identifier.ToString() + " "
+                                                                     Else
+                                                                         Dim cl As Client = Nothing
+
+                                                                         For Each item In Me.AutoCompNClient.ItemsSource
+                                                                             Dim c As Client = item
+                                                                             If c.Nom = Me.AutoCompNClient.Text.ToUpper() Then
+                                                                                 Me.AutoCompNClient.SelectedItem = item
+                                                                                 cl = c
+                                                                                 Exit For
+                                                                             End If
+                                                                         Next
+
+                                                                         If Me.AutoCompNClient.SelectedItem Is Nothing Then Exit Sub
+
+                                                                         cli = "IdentifierClient=" + cl.Identifier.ToString() + " "
+                                                                     End If
+
+                                                                     'Vérifie si une contremarque est sélectionnée
+                                                                     If Me.AutoCompNContremarque.SelectedItem IsNot Nothing Then
+                                                                         'Paramètre une partie de la clause WHERE avec l'identifier de la contremarque
+                                                                         Dim c As Contremarque = Me.AutoCompNContremarque.SelectedItem
+                                                                         If cli = String.Empty Then
+                                                                             cmq = "IdentifierContremarque=" + c.Identifier.ToString() + " "
+                                                                         Else
+                                                                             cmq = "AND IdentifierContremarque=" + c.Identifier.ToString() + " "
+                                                                         End If
+                                                                     Else
+                                                                         cmq = String.Empty
+                                                                     End If
+
+                                                                     Dim query As String
+
+                                                                     'Requête
+                                                                     query = "SELECT DISTINCT NumCmd, DateFinalisations, DelaiPrevu FROM Commande as c, Etat as e" + whereEtat + cli + cmq + "Order By" + param
+
+                                                                     'Exécute la requête
+                                                                     Objects = connection.ExecuteQuery(query, parameters)
+
+                                                                     parameters = Nothing
+
+                                                                     'Ferme la connection
+                                                                     connection.Close()
+
+                                                                     'Traite les résultats
+                                                                     For Each obj In Objects
+                                                                         Dim cmd As New Commande(Long.Parse(obj(0)))
+                                                                         cmd = cmd.GetCommande()
+
+                                                                         'Tri les résultats suivant l'état choisi par l'utilisateur
+                                                                         If Me.CbxEtat.SelectedIndex = 0 Then
+                                                                             If cmd.Etat.Label <> "Terminée" And cmd.Etat.Label <> "Rendue" Then
+                                                                                 ListCommandes.Add(cmd)
+                                                                             End If
+                                                                         ElseIf Me.CbxEtat.SelectedIndex = 1 Then
+                                                                             If cmd.Etat.Label = "Terminée" Then
+                                                                                 ListCommandes.Add(cmd)
+                                                                             End If
+                                                                         ElseIf Me.CbxEtat.SelectedIndex = 2 Then
+                                                                             If cmd.Etat.Label = "Rendue" Then
+                                                                                 ListCommandes.Add(cmd)
+                                                                             End If
+                                                                         ElseIf Me.CbxEtat.SelectedIndex = 3 Then
+                                                                             If cmd.DelaiPrevu >= minDate Then
+                                                                                 ListCommandes.Add(cmd)
+                                                                             End If
+                                                                         End If
+                                                                     Next
+
+                                                                     'S'exécute si seulement une contremarque est sélectionnée
+                                                                 ElseIf Me.AutoCompNContremarque.SelectedItem IsNot Nothing Or Me.AutoCompNContremarque.Text <> "" Then
+                                                                     Dim Objects As New List(Of List(Of Object))
+                                                                     Dim parameters As New List(Of MySqlParameter)
+
+                                                                     'Ouvre la connection
+                                                                     connection.Open()
+
+                                                                     Dim cmq As String
+
+                                                                     'Paramètre une partie de la clause WHERE de la requête avec l'identifier de la contremarque
+                                                                     If Me.AutoCompNContremarque.SelectedItem IsNot Nothing Then
+                                                                         Dim c As Contremarque = Me.AutoCompNContremarque.SelectedItem
+                                                                         cmq = "IdentifierContremarque=" + c.Identifier.ToString() + " "
+                                                                     Else
+                                                                         Dim cm As Contremarque = Nothing
+
+                                                                         For Each item In Me.AutoCompNContremarque.ItemsSource
+                                                                             Dim c As Contremarque = item
+                                                                             If c.Nom = Me.AutoCompNContremarque.Text.ToUpper() Then
+                                                                                 Me.AutoCompNContremarque.SelectedItem = item
+                                                                                 cm = c
+                                                                                 Exit For
+                                                                             End If
+                                                                         Next
+
+                                                                         If Me.AutoCompNContremarque.SelectedItem Is Nothing Then Exit Sub
+
+                                                                         cmq = "IdentifierContremarque=" + cm.Identifier.ToString() + " "
+                                                                     End If
+
+                                                                     Dim query As String
+
+                                                                     'Requête
+                                                                     query = "SELECT DISTINCT NumCmd, DateFinalisations, DelaiPrevu FROM Commande as c, Etat as e" + whereEtat + cmq + "Order By" + param
+
+                                                                     'Exécute la requête
+                                                                     Objects = connection.ExecuteQuery(query, parameters)
+
+                                                                     parameters = Nothing
+
+                                                                     'Ferme la connection
+                                                                     connection.Close()
+
+                                                                     'Traite les résultats
+                                                                     For Each obj In Objects
+                                                                         Dim cmd As New Commande(Long.Parse(obj(0)))
+                                                                         cmd = cmd.GetCommande()
+
+                                                                         'Trie les résultats en fonction de l'état choisi par l'utilisateur
+                                                                         If Me.CbxEtat.SelectedIndex = 0 Then
+                                                                             If cmd.Etat.Label <> "Terminée" And cmd.Etat.Label <> "Rendue" Then
+                                                                                 ListCommandes.Add(cmd)
+                                                                             End If
+                                                                         ElseIf Me.CbxEtat.SelectedIndex = 1 Then
+                                                                             If cmd.Etat.Label = "Terminée" Then
+                                                                                 ListCommandes.Add(cmd)
+                                                                             End If
+                                                                         ElseIf Me.CbxEtat.SelectedIndex = 2 Then
+                                                                             If cmd.Etat.Label = "Rendue" Then
+                                                                                 ListCommandes.Add(cmd)
+                                                                             End If
+                                                                         ElseIf Me.CbxEtat.SelectedIndex = 3 Then
+                                                                             If cmd.DelaiPrevu >= minDate Then
+                                                                                 ListCommandes.Add(cmd)
+                                                                             End If
+                                                                         End If
+                                                                     Next
+
+                                                                     'S'exécute si le client, la contremarque, le n° de commande et le matériau ne sont pas sélectionnés
+                                                                 ElseIf AutoCompNClient.Text = "" And AutoCompNContremarque.Text = "" And AutoCompNumCmd.Text = "" And AutoCompLMateriau.Text = "" Then
+                                                                     Dim Objects As New List(Of List(Of Object))
+                                                                     Dim parameters As New List(Of MySqlParameter)
+
+                                                                     'Ouvre la connection
+                                                                     connection.Open()
+
+                                                                     'Requête
+                                                                     Dim query As String
+                                                                     query = "SELECT DISTINCT NumCmd, DateFinalisations, DelaiPrevu FROM Commande as c, Etat as e" + whereEtat.Substring(0, whereEtat.Length - 4) + "Order By" + param
+
+                                                                     'Exécute la requête
+                                                                     Objects = connection.ExecuteQuery(query, parameters)
+
+                                                                     parameters = Nothing
+
+                                                                     'Ferme la connection
+                                                                     connection.Close()
+
+                                                                     'Traite les résultats
+                                                                     For Each obj In Objects
+                                                                         Dim cmd As Commande = New Commande(Long.Parse(obj(0))).GetCommande()
+                                                                         ListCommandes.Add(cmd)
+                                                                     Next
+                                                                 End If
+
+                                                                 Dim tempSem As Integer = 0
+                                                                 Dim sem As Integer = 0
+                                                                 Dim pl As New PlanningControl(True)
+                                                                 Dim cmdItem As cmdItem
+                                                                 Dim color As String = "Transparent"
+
+                                                                 For Each cmd In ListCommandes
+                                                                     If Me.CbxTri.SelectedIndex = 0 Then
+                                                                         sem = pl.GetWeekOfDate(cmd.DelaiPrevu)
+                                                                     Else
+                                                                         sem = pl.GetWeekOfDate(cmd.DateCommande)
+                                                                     End If
+
+                                                                     If tempSem = 0 Then
+                                                                         cmdItem = New cmdItem(cmd, color)
+                                                                         tempSem = sem
+                                                                     ElseIf tempSem = sem Then
+                                                                         cmdItem = New cmdItem(cmd, color)
+                                                                     Else
+                                                                         color = IIf(color = "Transparent", "#cdd4d4", "Transparent")
+                                                                         cmdItem = New cmdItem(cmd, color)
+                                                                         tempSem = sem
+                                                                     End If
+
+                                                                     Me.LbxSearchCmd.Items.Add(cmdItem)
+                                                                 Next
+
+                                                             Catch ex As Exception
+                                                                 MessageBox.Show(ex.Message, "Erreur")
+                                                             Finally
+                                                                 Try
+                                                                     'Assure la fermeture de la connection
+                                                                     connection.Close()
+                                                                 Catch ex As Exception
+                                                                 End Try
+                                                             End Try
+                                                         End Sub))
+
+    End Sub
+
+    ''' <summary>
+    ''' Se produit à la fin de la recherche, modifie l'image du bouton de recherhce
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Sub endSearch()
+        Try
+            Dim img As New Image()
+            Dim bmp As New BitmapImage(New Uri(System.IO.Path.GetFullPath(My.Settings.Search)))
+            img.Source = bmp
+            Me.BtnSearch.Content = img
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
+        End Try
+    End Sub
+
+#End Region
+
+End Class
+
+Public Class cmdItem
+
+#Region "Fields"
+
+    Private _Commande As Commande
+    Private _Color As String
+
+#End Region
+
+#Region "Properties"
+
+    Public Property Commande As Commande
+        Get
+            Return Me._Commande
+        End Get
+        Set(ByVal value As Commande)
+            Me._Commande = value
+        End Set
+    End Property
+
+    Public Property Color As String
+        Get
+            Return Me._Color
+        End Get
+        Set(ByVal value As String)
+            Me._Color = value
+        End Set
+    End Property
+
+#End Region
+
+#Region "Constructor"
+
+    Public Sub New(ByVal cmd As Commande, ByVal color As String)
+        Me.Commande = cmd
+        Me.Color = color
     End Sub
 
 #End Region

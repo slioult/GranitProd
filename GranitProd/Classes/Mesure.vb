@@ -8,6 +8,7 @@ Public Class Mesure
     Private _Identifier As Long
     Private _Label As String
     Private _Color As String
+    Private _Display As Boolean
 
 #End Region
 
@@ -42,6 +43,15 @@ Public Class Mesure
         End Set
     End Property
 
+    Public Property Display As Boolean
+        Get
+            Return Me._Display
+        End Get
+        Set(ByVal value As Boolean)
+            Me._Display = value
+        End Set
+    End Property
+
 #End Region
 
 #Region "Constructor"
@@ -55,9 +65,10 @@ Public Class Mesure
         Me.Identifier = identifier
     End Sub
 
-    Public Sub New(ByVal label As String, Optional ByVal color As String = "", Optional ByVal identifier As Long = 0)
+    Public Sub New(ByVal label As String, Optional ByVal color As String = "", Optional ByVal display As Boolean = False, Optional ByVal identifier As Long = 0)
         Me.Label = label
         Me.Color = color
+        Me.Display = display
         Me.Identifier = identifier
     End Sub
 
@@ -69,8 +80,8 @@ Public Class Mesure
     ''' <summary>
     ''' Surcharge de la méthode Equals permettant de comparer deux Mesures
     ''' </summary>
-    ''' <param name="obj"></param>
-    ''' <returns></returns>
+    ''' <param name="obj">Mesure à comparer</param>
+    ''' <returns>Retourne un booléen indiquant si les deux mesures sont identiques</returns>
     ''' <remarks></remarks>
     Public Overrides Function Equals(ByVal obj As Object) As Boolean
         If (Me IsNot Nothing And obj IsNot Nothing) Then
@@ -94,9 +105,9 @@ Public Class Mesure
 #Region "DataAccess"
 
     ''' <summary>
-    ''' Permet de récupérer les informations d'une mesure dans la base de données
+    ''' Permet de récupérer les informations d'une mesure dans la base de données à partir de son identifier
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un objet de la classe Mesure</returns>
     ''' <remarks></remarks>
     Public Function GetMesure() As Mesure
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -104,25 +115,32 @@ Public Class Mesure
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'ouvre la requête
             connection.Open()
 
+            'Défini les paramètres de la requêtes
             Dim parIdentifierMesure As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdentifierMesure)
 
-            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur FROM Mesure WHERE Identifier=@Identifier", parameters)
+            'Exécute la requête
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur, Display FROM Mesure WHERE Identifier=@Identifier", parameters)
 
             parameters = Nothing
 
+            'Ferme la requête
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Label = obj(1).ToString()
                 Me.Color = obj(2).ToString()
+                Me.Display = Boolean.Parse(obj(3))
             Next
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la requête
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -134,7 +152,7 @@ Public Class Mesure
     ''' <summary>
     ''' Permet de récupérer tous les type de mesure dans la base de données
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Mesure</returns>
     ''' <remarks></remarks>
     Public Shared Function GetMesures() As List(Of Mesure)
         Dim mesures As New List(Of Mesure)
@@ -142,19 +160,61 @@ Public Class Mesure
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
-            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur FROM Mesure Order By Label")
+            'Exécute la requête
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur, Display FROM Mesure Order By Label")
 
+            'Ferme la connection
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
-                mesures.Add(New Mesure(obj(1).ToString(), obj(2).ToString(), Long.Parse(obj(0))))
+                mesures.Add(New Mesure(obj(1).ToString(), obj(2).ToString(), Boolean.Parse(obj(3)), Long.Parse(obj(0))))
             Next
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la requête
+                connection.Close()
+            Catch ex As Exception
+            End Try
+        End Try
+
+        Return mesures
+    End Function
+
+    ''' <summary>
+    ''' Permet de récupérer tous les type de mesure devant être affichés dans le planning dans la base de données
+    ''' </summary>
+    ''' <returns>Retourne une liste d'objets de la classe Mesure</returns>
+    ''' <remarks></remarks>
+    Public Shared Function GetLegendMesures() As List(Of Mesure)
+        Dim mesures As New List(Of Mesure)
+        Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
+        Dim Objects As New List(Of List(Of Object))
+
+        Try
+            'Ouvre la connection
+            connection.Open()
+
+            'Exécute la requête
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur, Display FROM Mesure WHERE Display=1 Order By Label")
+
+            'Ferme la connection
+            connection.Close()
+
+            'Traite les résultats
+            For Each obj In Objects
+                mesures.Add(New Mesure(obj(1).ToString(), obj(2).ToString(), Boolean.Parse(obj(3)), Long.Parse(obj(0))))
+            Next
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        Finally
+            Try
+                'Assure la fermeture de la requête
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -166,6 +226,7 @@ Public Class Mesure
     ''' <summary>
     ''' Permet d'insérer une Mesure en base de données
     ''' </summary>
+    ''' <returns>Retourne l'identifier du type de relevé définit par la BDD</returns>
     ''' <remarks></remarks>
     Public Function Insert() As Long
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -173,19 +234,27 @@ Public Class Mesure
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
             Dim parCouleur As MySqlParameter = connection.Create("@Couleur", DbType.String, Me.Color)
             parameters.Add(parCouleur)
+            Dim parDisplay As MySqlParameter = connection.Create("@Display", DbType.Boolean, Me.Display)
+            parameters.Add(parDisplay)
 
-            Dim query As String = "INSERT INTO Mesure (Label, Couleur) VALUES (@Label, @Couleur)"
+            'Requête
+            Dim query As String = "INSERT INTO Mesure (Label, Couleur, Display) VALUES (@Label, @Couleur, @Display)"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
+            'Récupère l'identifier du dernier enregistrement
             Objects = connection.ExecuteQuery("SELECT Max(Identifier) FROM Mesure")
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Identifier = Long.Parse(obj(0))
             Next
@@ -196,6 +265,7 @@ Public Class Mesure
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -213,17 +283,23 @@ Public Class Mesure
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdMesure As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdMesure)
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
             Dim parCouleur As MySqlParameter = connection.Create("@Couleur", DbType.String, Me.Color)
             parameters.Add(parCouleur)
+            Dim parDisplay As MySqlParameter = connection.Create("@Display", DbType.Boolean, Me.Display)
+            parameters.Add(parDisplay)
 
-            Dim query As String = "UPDATE Mesure SET Label=@Label, Couleur=@Couleur WHERE Identifier=@Identifier"
+            'Requête
+            Dim query As String = "UPDATE Mesure SET Label=@Label, Couleur=@Couleur, Display=@Display WHERE Identifier=@Identifier"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
             parameters = Nothing
@@ -232,6 +308,7 @@ Public Class Mesure
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -248,20 +325,25 @@ Public Class Mesure
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la requête
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdMesure As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdMesure)
 
+            'Exécute la requête
             connection.ExecuteNonQuery("DELETE FROM Mesure WHERE Identifier=@Identifier", parameters)
 
-            parameters.Clear()
+            parameters = Nothing
 
+            'Ferme la requête
             connection.Close()
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error")
         Finally
             Try
+                'Ferme la requête
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -271,7 +353,7 @@ Public Class Mesure
     ''' <summary>
     ''' Permet de récupérer les couleurs utilisées dans las table Mesure
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste de string correspondantes aux couleurs utilisées</returns>
     ''' <remarks></remarks>
     Public Function GetColorsReleves() As List(Of String)
         Dim listColorsReleves As New List(Of String)
@@ -302,9 +384,9 @@ Public Class Mesure
     End Function
 
     ''' <summary>
-    ''' Permet de savoir si une mesure est utiliser dans une commande
+    ''' Permet de savoir si une mesure est utilisée dans une commande
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un booléen indiquant si une commande fait référence au type de relevé</returns>
     ''' <remarks></remarks>
     Public Function IsUsed() As Boolean
         Dim bool As Boolean = False
@@ -318,7 +400,7 @@ Public Class Mesure
             Dim parIdMesure As MySqlParameter = connection.Create("@IdentifierMesure", DbType.Int32, Me.Identifier)
             parameters.Add(parIdMesure)
 
-            Objects = connection.ExecuteQuery("SELECT COUNT Identifier FROM Commande WHERE IdentifierMesure=@IdentifierMesure", parameters)
+            Objects = connection.ExecuteQuery("SELECT COUNT(Identifier) FROM Commande WHERE IdentifierMesure=@IdentifierMesure", parameters)
 
             For Each obj In Objects
                 If Integer.Parse(obj(0)) > 0 Then

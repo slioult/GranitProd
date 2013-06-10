@@ -6,6 +6,7 @@ Public Class Enlevement
 #Region "Fields"
 
     Private _NumCmd As Integer
+    Private _Contremarque As Contremarque
     Private _DatePrest As DateTime
     Private _Heure As String
     Private _Prestations As List(Of Finalisation)
@@ -22,6 +23,15 @@ Public Class Enlevement
         End Get
         Set(ByVal value As Integer)
             Me._NumCmd = value
+        End Set
+    End Property
+
+    Public Property Contremarque As Contremarque
+        Get
+            Return Me._Contremarque
+        End Get
+        Set(ByVal value As Contremarque)
+            Me._Contremarque = value
         End Set
     End Property
 
@@ -78,6 +88,7 @@ Public Class Enlevement
         InitializeComponent()
 
         Me.NumCmd = cmd.NoCommande
+        Me.Contremarque = cmd.Contremarque
         Me.DatePrest = cmd.DateFinalisations
         Me.Prestations = cmd.Finalisations
         Dim m As String = IIf(Me.DatePrest.Minute > 9, Me.DatePrest.Minute.ToString(), "0" + Me.DatePrest.Minute.ToString())
@@ -99,7 +110,7 @@ Public Class Enlevement
         For i = 1 To 53
             CbxSemaine.Items.Add(i)
         Next
-        Dim pl As New PlanningControl()
+        Dim pl As New PlanningControl(True)
         CbxSemaine.SelectedIndex = pl.GetWeekOfDate(Date.Now) - 1
 
     End Sub
@@ -122,33 +133,43 @@ Public Class Enlevement
 
         If Me.CbxAnnee.SelectedItem IsNot Nothing And Me.CbxSemaine.SelectedItem IsNot Nothing Then
             Try
+                'Ouvre la connection
                 connection.Open()
 
-                Dim pl As New PlanningControl
+                Dim pl As New PlanningControl(True)
+
+                'Récupère la liste des jours de la semaine sélectionnée
                 Dim dates As List(Of Date) = pl.GetDaysOfWeek(Me.CbxSemaine.SelectedItem, Me.CbxAnnee.SelectedItem)
 
+                'Parcours cette liste
                 For Each d In dates
+                    'Défini le paramètre date de la requête
                     Dim parDate As MySqlParameter = connection.Create("@Date", DbType.DateTime, d)
                     parameters.Add(parDate)
 
+                    'Requête
                     Dim query As String = "SELECT NumCmd FROM Commande " +
                         "WHERE DAY(DateFinalisations)=DAY(@Date) And MONTH(DateFinalisations)=MONTH(@Date) And YEAR(DateFinalisations)=YEAR(@Date)"
 
+                    'Exécute la requête
                     Objects = connection.ExecuteQuery(query, parameters)
 
                     parameters.Clear()
 
+                    'Traite les résultats
                     For Each obj In Objects
                         Dim enlv As New Enlevement(New Commande(Integer.Parse(obj(0))).GetCommande())
                         Me.DgEnlevement.Items.Add(enlv)
                     Next
                 Next
 
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
                 MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
             Finally
                 Try
+                    'Assure la fermeture de la connection
                     connection.Close()
                 Catch
                 End Try
@@ -169,8 +190,15 @@ Public Class Enlevement
     Private Sub DgEnlevement_PreviewMouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Input.MouseButtonEventArgs)
         Dim comEnlevement As Enlevement = DgEnlevement.SelectedItem
         Dim cmd As New Commande(comEnlevement.NumCmd)
+
+        'Ouvre une consultation de commande
         Dim consult As New ConsultCommande(Me.Session, cmd.GetCommande(), Nothing, Me.Planning)
-        consult.Show()
+        If consult.ShowType = 0 Then
+            consult.ShowDialog()
+        Else
+            consult.Close()
+            consult = Nothing
+        End If
         e.Handled = True
     End Sub
 

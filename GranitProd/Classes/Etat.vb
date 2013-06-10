@@ -64,10 +64,10 @@ Public Class Etat
 #Region "Methods"
 
     ''' <summary>
-    ''' Surcharge de la méthode Equals permettant de comparer un deux Etats
+    ''' Surcharge de la méthode Equals permettant de comparer un deux états
     ''' </summary>
-    ''' <param name="obj"></param>
-    ''' <returns></returns>
+    ''' <param name="obj">État à comparer</param>
+    ''' <returns>Retourne un booléen indiquant si les deux états sont identiques</returns>
     ''' <remarks></remarks>
     Public Overrides Function Equals(ByVal obj As Object) As Boolean
         If (Me IsNot Nothing And obj IsNot Nothing) Then
@@ -91,9 +91,9 @@ Public Class Etat
 #Region "DataAccess"
 
     ''' <summary>
-    ''' Permet de récupérer les informations d'un état dans la base de données
+    ''' Permet de récupérer les informations d'un état dans la base de données à partir de son identifier
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un objet de la classe Etat</returns>
     ''' <remarks></remarks>
     Public Function GetEtat() As Etat
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -101,24 +101,31 @@ Public Class Etat
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdentifierEtat As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdentifierEtat)
 
-            Objects = connection.ExecuteQuery("SELECT Identifier, Label FROM Etat WHERE Identifier=@Identifier", parameters)
+            'Exécute la requête
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Position FROM Etat WHERE Identifier=@Identifier", parameters)
 
             parameters = Nothing
 
+            'Ferme la connection
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Label = obj(1).ToString()
+                Me.Position = Integer.Parse(obj(2))
             Next
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -130,7 +137,7 @@ Public Class Etat
     ''' <summary>
     ''' Permet de récupérer tous les états dans la base de données
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Etat</returns>
     ''' <remarks></remarks>
     Public Shared Function GetEtats() As List(Of Etat)
         Dim etats As New List(Of Etat)
@@ -138,12 +145,16 @@ Public Class Etat
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
-            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Position FROM Etat")
+            'Exécute la requête
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Position FROM Etat Order By Position")
 
+            'Ferme la conection
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
                 etats.Add(New Etat(obj(1).ToString(), Integer.Parse(obj(2)), Long.Parse(obj(0))))
             Next
@@ -151,6 +162,7 @@ Public Class Etat
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -162,6 +174,7 @@ Public Class Etat
     ''' <summary>
     ''' Permet d'insérer un état en base de données
     ''' </summary>
+    ''' <returns>Retourne son identifier définit par la BDD</returns>
     ''' <remarks></remarks>
     Public Function Insert() As Long
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -169,17 +182,26 @@ Public Class Etat
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
 
-            Dim query As String = "INSERT INTO Etat (Label) VALUES (@Label)"
+            Dim parPosition As MySqlParameter = connection.Create("@Position", DbType.String, Me.Position)
+            parameters.Add(parLabel)
 
+            'Requête
+            Dim query As String = "INSERT INTO Etat (Label, Position) VALUES (@Label, @Position)"
+
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
+            'Récupère l'identifier du dernier enregistrement
             Objects = connection.ExecuteQuery("SELECT Max(Identifier) FROM Etat")
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Identifier = Long.Parse(obj(0))
             Next
@@ -190,6 +212,7 @@ Public Class Etat
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -207,8 +230,10 @@ Public Class Etat
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdEtat As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdEtat)
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
@@ -216,8 +241,10 @@ Public Class Etat
             Dim parPosition As MySqlParameter = connection.Create("@Position", DbType.Int64, Me.Position)
             parameters.Add(parPosition)
 
+            'Requête
             Dim query As String = "UPDATE Etat SET Label=@Label, Position=@Position WHERE Identifier=@Identifier"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
             parameters = Nothing
@@ -226,6 +253,7 @@ Public Class Etat
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -242,20 +270,25 @@ Public Class Etat
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdEtat As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdEtat)
 
+            'Exécute la requête
             connection.ExecuteNonQuery("DELETE FROM Etat WHERE Identifier=@Identifier", parameters)
 
             parameters.Clear()
 
+            'Ferme la connection
             connection.Close()
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error")
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -263,9 +296,9 @@ Public Class Etat
     End Sub
 
     ''' <summary>
-    ''' Permet de savoir si un état est utiliser dans une commande
+    ''' Permet de savoir si un état est utilisé dans une commande
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un booléen indiquant si l'état est utilisé</returns>
     ''' <remarks></remarks>
     Public Function IsUsed() As Boolean
         Dim bool As Boolean = False
@@ -279,7 +312,7 @@ Public Class Etat
             Dim parIdEtat As MySqlParameter = connection.Create("@IdentifierEtat", DbType.Int32, Me.Identifier)
             parameters.Add(parIdEtat)
 
-            Objects = connection.ExecuteQuery("SELECT COUNT Identifier FROM Commande WHERE IdentifierEtat=@IdentifierEtat", parameters)
+            Objects = connection.ExecuteQuery("SELECT COUNT(Identifier) FROM Commande WHERE IdentifierEtat=@IdentifierEtat", parameters)
 
             For Each obj In Objects
                 If Integer.Parse(obj(0)) > 0 Then

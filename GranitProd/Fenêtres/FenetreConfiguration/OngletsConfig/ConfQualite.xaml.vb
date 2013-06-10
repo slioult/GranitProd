@@ -56,7 +56,7 @@ Public Class ConfQualite
         If Me.CbxConfQualite.SelectedIndex > 0 Then
             Dim qualite As Qualite = Me.CbxConfQualite.SelectedItem
             If Not qualite.IsUsed Then
-                Dim question As MessageBoxResult = MessageBox.Show("Voulez vous vraiment supprimer la qualité selectionnée ?", "Attention", MessageBoxButton.YesNo, MessageBoxImage.Warning)
+                Dim question As MessageBoxResult = MessageBox.Show("Voulez vous vraiment supprimer la qualité selectionnée ?", "Suppression d'une qualité", MessageBoxButton.YesNo, MessageBoxImage.Warning)
                 If question = MessageBoxResult.Yes Then
                     Me.CbxConfQualite.Items.Remove(Me.CbxConfQualite.SelectedItem)
                     qualite.Delete()
@@ -67,6 +67,8 @@ Public Class ConfQualite
                     Next
                     Me.NouvelleCommande.CbxQualite.ItemsSource = qualites
                     Me.CbxConfQualite.SelectedIndex = 0
+
+                    MessageBox.Show("La qualité a été supprimée.", "Qualité supprimée", MessageBoxButton.OK, MessageBoxImage.Information)
                 End If
             Else
                 MessageBox.Show("La qualité est utilisée dans une commande" + vbCrLf + "Vous ne pouvez donc pas la supprimer.", "Suppression impossible", MessageBoxButton.OK, MessageBoxImage.Exclamation)
@@ -124,19 +126,32 @@ Public Class ConfQualite
             Next
 
             If Not isExists Then
-                qualite.Type = TxtNomQualite.Text
-                qualite.Update()
+                Dim result As MessageBoxResult = MessageBox.Show("Voulez-vous vraiment modifier la qualité « " + qualite.Type + " » ?", "Modification d'une qualité",
+                                                                 MessageBoxButton.OK, MessageBoxImage.Question)
 
-                Me.CbxConfQualite.Items.RemoveAt(index)
-                Me.CbxConfQualite.Items.Insert(index, qualite)
+                If result = MessageBoxResult.Yes Then
+                    qualite.Type = TxtNomQualite.Text
+                    qualite.Update()
 
-                Me.CbxConfQualite.SelectedIndex = index
-                MessageBox.Show("La qualité a été modifiée avec succès.", "Qualité modifiée", MessageBoxButton.OK, MessageBoxImage.Information)
+                    Me.CbxConfQualite.Items.RemoveAt(index)
+                    Me.CbxConfQualite.Items.Insert(index, qualite)
+
+                    Dim selected As Integer = Me.NouvelleCommande.CbxQualite.SelectedIndex
+                    Dim qualites As New List(Of Qualite)
+                    For Each q In CbxConfQualite.Items
+                        qualites.Add(q)
+                    Next
+                    Me.NouvelleCommande.CbxQualite.ItemsSource = qualites
+                    Me.NouvelleCommande.CbxQualite.SelectedIndex = selected
+
+                    Me.CbxConfQualite.SelectedIndex = index
+                    MessageBox.Show("La qualité a été modifiée avec succès.", "Qualité modifiée", MessageBoxButton.OK, MessageBoxImage.Information)
+                End If
             Else
                 MessageBox.Show("La qualité existe déjà.", "Qualité existante", MessageBoxButton.OK, MessageBoxImage.Information)
             End If
 
-        End If
+            End If
     End Sub
 
 #End Region

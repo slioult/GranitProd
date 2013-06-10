@@ -82,7 +82,7 @@ Public Class TempsFabrication
             CbxChoixWeek.Items.Add(i)
         Next
 
-        Dim pl As New PlanningControl()
+        Dim pl As New PlanningControl(True)
         CbxChoixWeek.SelectedIndex = pl.GetWeekOfDate(Date.Now) - 1
         pl = Nothing
 
@@ -107,6 +107,7 @@ Public Class TempsFabrication
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub CbxChoix_SelectionChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
+        'Met à jour l'interface graphique suivant le choix de l'utilisateur
         If (CbxChoix.SelectedIndex = 0) Then
             CbxChoixWeek.Visibility = Windows.Visibility.Visible
             CbxChoixMonth.Visibility = Windows.Visibility.Collapsed
@@ -116,7 +117,7 @@ Public Class TempsFabrication
         ElseIf (CbxChoix.SelectedIndex = 1) Then
             CbxChoixMonth.Visibility = Windows.Visibility.Visible
             CbxChoixWeek.Visibility = Windows.Visibility.Collapsed
-            Dim pl As New PlanningControl()
+            Dim pl As New PlanningControl(True)
             CbxChoixWeek.SelectedIndex = pl.GetWeekOfDate(Date.Now) - 1
             pl = Nothing
             CbxChoixYear.SelectedItem = Date.Now.Year
@@ -125,13 +126,14 @@ Public Class TempsFabrication
             CbxChoixWeek.Visibility = Windows.Visibility.Collapsed
             CbxChoixMonth.Visibility = Windows.Visibility.Collapsed
             CbxChoixMonth.SelectedIndex = Date.Now.Month - 1
-            Dim pl As New PlanningControl()
+            Dim pl As New PlanningControl(True)
             CbxChoixWeek.SelectedIndex = pl.GetWeekOfDate(Date.Now) - 1
             pl = Nothing
             CbxChoixYear.SelectedItem = Date.Now.Year
             DgTpsFab.Columns(0).Header = "Mois"
         End If
 
+        'Met à jour les données contenues dans les DataGrid
         Me.CbxParam_SelectionChanged(Nothing, Nothing)
     End Sub
 
@@ -148,28 +150,38 @@ Public Class TempsFabrication
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Choix d'affichage par semaine
             If CbxChoix.SelectedIndex = 0 Then
-                Dim pl As New PlanningControl()
+                Dim pl As New PlanningControl(True)
                 Dim total As Integer = 0
 
+                'Récupère les jours de la semaine
                 Dim semaine As List(Of Date) = pl.GetDaysOfWeek(CbxChoixWeek.SelectedItem, CbxChoixYear.SelectedItem)
+
+                'Parcours les jours de la semaine
                 For Each d In semaine
+                    'Défini les paramètres de la requête
                     Dim parDate As MySqlParameter = connection.Create("@Date", DbType.DateTime, d)
                     parameters.Add(parDate)
 
+                    'Exécute la requête
                     Objects = connection.ExecuteQuery("SELECT NumCmd, TpsDebit + TpsCmdNumerique + TpsFinition + TpsAutres FROM Commande WHERE DelaiPrevu=@Date", parameters)
 
+                    'Vérifie que la requête a retourné au moins 1 résultat
                     If Objects.Count > 0 Then
                         Dim tps As Integer
                         Dim listCmd As New List(Of Commande)
 
+                        'Traite les résultats
                         For Each obj In Objects
                             tps += Integer.Parse(obj(1))
                             listCmd.Add(New Commande(Long.Parse(obj(0))))
                         Next
 
+                        'Ajoute l'item dans le DataGrid et ajoute le temps au temps total et la liste des n° de commande correspondant à chaque commande concernée
                         Dim tpsFabItem As New TempsFabrication(d.ToString("dddd dd MMMM", New CultureInfo("fr-FR")), tps, listCmd)
                         DgTpsFab.Items.Add(tpsFabItem)
                         total += tpsFabItem.TpsFab
@@ -181,6 +193,7 @@ Public Class TempsFabrication
                     parameters.Clear()
                 Next
 
+                'Affiche le temps total
                 If total > 0 Then
                     Dim tf As New TpsFabricationConverter
                     TxtTotal.Text = tf.Convert(total, Nothing, Nothing, Nothing)
@@ -188,9 +201,11 @@ Public Class TempsFabrication
                     TxtTotal.Text = "Rien de programmé"
                 End If
 
+                'Choix d'affichage par mois
             ElseIf CbxChoix.SelectedIndex = 1 And CbxChoixYear.SelectedItem IsNot Nothing Then
                 Dim cal As New GregorianCalendar
-                Dim pl As New PlanningControl
+                Dim pl As New PlanningControl(True)
+                'Récupère le nombre de jours dans le mois sélectionné
                 Dim days As Integer = cal.GetDaysInMonth(CbxChoixYear.SelectedItem, CbxChoixMonth.SelectedIndex + 1)
                 Dim month As Integer = CbxChoixMonth.SelectedIndex + 1
                 Dim year As Integer = CbxChoixYear.SelectedItem
@@ -199,24 +214,39 @@ Public Class TempsFabrication
                 Dim total As Integer = 0
                 Dim listCmd As New List(Of Commande)
 
+                'Parcours la liste des jours concernés par la requête
                 For i = 1 To days
                     Dim d As New DateTime(year, month, i)
+                    'Récupère la semaine correspondant à la date afin de séparer les différentes semaines du mois
                     Dim sem As Integer = pl.GetWeekOfDate(d)
+
+                    'Défini les paramètres de la requête
                     Dim parDate As MySqlParameter = connection.Create("@Date", DbType.DateTime, d)
                     parameters.Add(parDate)
 
+                    'Exécute la requête
                     Objects = connection.ExecuteQuery("SELECT NumCmd, TpsDebit + TpsCmdNumerique + TpsFinition + TpsAutres FROM Commande WHERE DelaiPrevu=@Date", parameters)
 
-                    If i = days Then
-                        Dim tpsFabItem As New TempsFabrication(tempSem, tps, listCmd)
-                        DgTpsFab.Items.Add(tpsFabItem)
-                        total += tps
-                        listCmd = New List(Of Commande)
-                    ElseIf sem = tempSem And tempSem <> 0 Then
+                    'Ajoute un item par semaine en additionnant les temps de production
+                    'If i = days Then
+                    '    Dim tpsFabItem As New TempsFabrication(tempSem, tps, listCmd)
+                    '    DgTpsFab.Items.Add(tpsFabItem)
+                    '    total += tps
+                    '    tps = 0
+                    '    listCmd = New List(Of Commande)
+                    If sem = tempSem And tempSem <> 0 Then
                         For Each obj In Objects
                             tps += Integer.Parse(obj(1))
                             listCmd.Add(New Commande(Integer.Parse(obj(0))))
                         Next
+
+                        If i = days Then
+                            Dim tpsFabItem As New TempsFabrication(tempSem, tps, listCmd)
+                            DgTpsFab.Items.Add(tpsFabItem)
+                            total += tps
+                            tps = 0
+                            listCmd = New List(Of Commande)
+                        End If
                     ElseIf tempSem <> 0 Then
                         Dim tpsFabItem As New TempsFabrication(tempSem, tps, listCmd)
                         DgTpsFab.Items.Add(tpsFabItem)
@@ -231,7 +261,7 @@ Public Class TempsFabrication
                         Next
                     Else
                         For Each obj In Objects
-                            tps = Integer.Parse(obj(1))
+                            tps += Integer.Parse(obj(1))
                             listCmd.Add(New Commande(Integer.Parse(obj(0))))
                         Next
                         tempSem = sem
@@ -240,31 +270,39 @@ Public Class TempsFabrication
                     parameters.Clear()
                 Next
 
+                'Affiche le total de temps de fabrication du mois
                 If total > 0 Then
                     Dim tf As New TpsFabricationConverter
                     TxtTotal.Text = tf.Convert(total, Nothing, Nothing, Nothing)
                 Else
                     TxtTotal.Text = "Rien de programmé"
                 End If
+
+                'Choix d'affichage par année
             ElseIf CbxChoix.SelectedIndex = 2 Then
                 Dim year = CbxChoixYear.SelectedItem
                 Dim total As Integer = 0
                 Dim tps As Integer = 0
                 Dim listCmd As New List(Of Commande)
 
+                'Parcours les mois de l'année
                 For i = 1 To 12
                     Dim d As New DateTime(year, i, 1)
+                    'Défini les paramètres de la requête
                     Dim parDate As MySqlParameter = connection.Create("@Date", DbType.DateTime, d)
                     parameters.Add(parDate)
 
+                    'Exécute la requête
                     Objects = connection.ExecuteQuery("SELECT NumCmd, TpsDebit + TpsCmdNumerique + TpsFinition + TpsAutres FROM Commande WHERE YEAR(DelaiPrevu)=YEAR(@Date) And MONTH(DelaiPrevu)=MONTH(@Date)",
                                                       parameters)
 
+                    'Traite les résultats
                     For Each obj In Objects
                         tps += Integer.Parse(obj(1))
                         listCmd.Add(New Commande(Integer.Parse(obj(0))))
                     Next
 
+                    'Ajoute un item par mois dans le DataGrid avec le temps de production calculé
                     Dim tpsFabItem As New TempsFabrication(MonthName(i), tps, listCmd)
                     Me.DgTpsFab.Items.Add(tpsFabItem)
                     total += tps
@@ -274,6 +312,7 @@ Public Class TempsFabrication
                     parameters.Clear()
                 Next
 
+                'Affiche le total de temps de production de l'année
                 If total > 0 Then
                     Dim tf As New TpsFabricationConverter
                     TxtTotal.Text = tf.Convert(total, Nothing, Nothing, Nothing)
@@ -287,6 +326,7 @@ Public Class TempsFabrication
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -306,10 +346,12 @@ Public Class TempsFabrication
     Private Sub DgTpsFab_MouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Input.MouseButtonEventArgs)
 
         If DgTpsFab.SelectedItem IsNot Nothing Then
+            'Récupère l'item sélectionné dans le DataGrid
             Dim tpsFabItem As TempsFabrication = DgTpsFab.SelectedItem
 
             Me.ListCommandes.Items.Clear()
 
+            'Ajoute les commandes correspondant à l'item sélectionné dans la liste du tableau de bord
             For Each tpsItem In tpsFabItem.NumCmds
                 Me.ListCommandes.Items.Add(tpsItem.GetCommande())
             Next

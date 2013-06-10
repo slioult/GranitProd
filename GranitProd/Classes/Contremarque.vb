@@ -41,6 +41,11 @@ Public Class Contremarque
         Me.Identifier = 0
     End Sub
 
+    Public Sub New(ByVal identifier As Long)
+        Me.Nom = String.Empty
+        Me.Identifier = identifier
+    End Sub
+
     Public Sub New(ByVal nom As String, Optional ByVal identifier As Long = 0)
         Me.Nom = nom
         Me.Identifier = identifier
@@ -125,7 +130,7 @@ Public Class Contremarque
     ''' </summary>
     ''' <remarks></remarks>
     Public Sub Delete()
-
+        
     End Sub
 
     ''' <summary>
@@ -139,15 +144,19 @@ Public Class Contremarque
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdentifierContremarque As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdentifierContremarque)
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Nom FROM Contremarque WHERE Identifier=@Identifier", parameters)
 
             parameters = Nothing
 
+            'Ferme la requête
             connection.Close()
 
             For Each obj In Objects
@@ -165,16 +174,6 @@ Public Class Contremarque
         Return Me
     End Function
 
-    ''' <summary>
-    ''' Permet de récupérer la liste de toutes les contremarques contenues dans la base de données
-    ''' </summary>
-    ''' <returns></returns>
-    ''' <remarks></remarks>
-    Public Function GetContremarques() As List(Of Contremarque)
-        Dim contremarques As New List(Of Contremarque)
-
-        Return contremarques
-    End Function
-
 #End Region
+
 End Class

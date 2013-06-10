@@ -1,12 +1,9 @@
-﻿Imports MGranitDALcsharp
-Imports MySql.Data.MySqlClient
-Imports System.Data
-
-Public Class ConfReleves
+﻿Public Class ConfReleves
 
 #Region "Fields"
 
     Private _NouvelleCommande As NouvelleCommande
+    Private _Planning As PlanningControl
 
 #End Region
 
@@ -21,6 +18,15 @@ Public Class ConfReleves
         End Set
     End Property
 
+    Public Property Planning As PlanningControl
+        Get
+            Return Me._Planning
+        End Get
+        Set(ByVal value As PlanningControl)
+            Me._Planning = value
+        End Set
+    End Property
+
 #End Region
 
 #Region "Constructor"
@@ -30,7 +36,7 @@ Public Class ConfReleves
         InitializeComponent()
 
         'Remplir la CmbConfMesure
-        Me.CbxConfReleves.Items.Add(New Mesure("Nouveau"))
+        Me.CbxConfReleves.Items.Add(New Mesure("Nouveau", "", True))
 
         Dim releves As New List(Of Mesure)
         releves = Mesure.GetMesures()
@@ -56,7 +62,7 @@ Public Class ConfReleves
         If Me.CbxConfReleves.SelectedIndex > 0 Then
             Dim mesure As Mesure = Me.CbxConfReleves.SelectedItem
             If Not mesure.IsUsed Then
-                Dim question As MessageBoxResult = MessageBox.Show("Voulez vous vraiment supprimer le type de relevé selectionné ?", "Attention", MessageBoxButton.YesNo, MessageBoxImage.Warning)
+                Dim question As MessageBoxResult = MessageBox.Show("Voulez vous vraiment supprimer le type de relevé selectionné ?", "Suppresion d'un type de relevé", MessageBoxButton.YesNo, MessageBoxImage.Warning)
                 If question = MessageBoxResult.Yes Then
                     Me.CbxConfReleves.Items.Remove(Me.CbxConfReleves.SelectedItem)
                     mesure.Delete()
@@ -65,7 +71,11 @@ Public Class ConfReleves
                         mesures.Add(mes)
                     Next
                     Me.NouvelleCommande.CbxMesure.ItemsSource = mesures
+
+                    If Me.Planning IsNot Nothing Then Me.Planning.Fill()
                     Me.CbxConfReleves.SelectedIndex = 0
+
+                    MessageBox.Show("Le type de mesure a été supprimé", "Type de mesure supprimé", MessageBoxButton.OK, MessageBoxImage.Information)
                 End If
             Else
                 MessageBox.Show("Le type de relevé est utilisé dans une commande." + vbCrLf + "Vous ne pouvez donc pas le supprimer", "Suppression impossible", MessageBoxButton.OK, MessageBoxImage.Exclamation)
@@ -86,27 +96,36 @@ Public Class ConfReleves
 
         If Me.CbxConfReleves.SelectedIndex = 0 And TxtNomReleves.Text <> "" Then
 
-            Dim mesure As New Mesure(TxtNomReleves.Text, CPReleves.SelectedColor.ToString())
+            Dim mesure As New Mesure(TxtNomReleves.Text) ''Creation d'un nouveau relevé
             Dim isExistsLabel As Boolean = False
             Dim isExistsColor As Boolean = False
 
+            If ChkDisplayColor.IsChecked Then
+                mesure.Color = CPReleves.SelectedColorText
+                mesure.Display = ChkDisplayColor.IsChecked
+            End If
+
             For Each item In Me.CbxConfReleves.Items
                 Dim tempMesure As Mesure = item
-                If Not item.Equals(Me.CbxConfReleves.SelectedItem) Then
+                If Not tempMesure.Equals(Me.CbxConfReleves.SelectedItem) Then
                     If tempMesure.Label.ToUpper() = mesure.Label.ToUpper() Then
                         isExistsLabel = True
                     End If
-                    If tempMesure.Color = mesure.Color Then
-                        isExistsColor = True
+                    If mesure.Display Then
+                        If tempMesure.Color = mesure.Color Then
+                            isExistsColor = True
+                        End If
                     End If
                 End If
             Next
 
-            For Each c In finalisation.GetColorsFinalisation
-                If c = mesure.Color Then
-                    isExistsColor = True
-                End If
-            Next
+            If mesure.Display Then
+                For Each c In finalisation.GetColorsFinalisation
+                    If c = mesure.Color Then
+                        isExistsColor = True
+                    End If
+                Next
+            End If
 
             If Not isExistsLabel And Not isExistsColor Then
                 mesure.Identifier = mesure.Insert()
@@ -117,6 +136,7 @@ Public Class ConfReleves
                     mesures.Add(mes)
                 Next
                 Me.NouvelleCommande.CbxMesure.ItemsSource = mesures
+                If Me.Planning IsNot Nothing Then Me.Planning.Fill()
                 MessageBox.Show("Le type de relevé a été ajouté avec succès.", "Nouveau type de relevé ajouté", MessageBoxButton.OK, MessageBoxImage.Information)
             Else
                 If isExistsLabel Then
@@ -133,34 +153,61 @@ Public Class ConfReleves
             Dim isExistsLabel As Boolean = False
             Dim isExistsColor As Boolean = False
 
+            mesure.Display = ChkDisplayColor.IsChecked
+
+            If Not mesure.Display Then
+                mesure.Color = ""
+            Else
+                mesure.Color = CPReleves.SelectedColorText
+            End If
+
             For Each item In Me.CbxConfReleves.Items
                 Dim tempMesure As Mesure = item
-                If Not item.Equals(Me.CbxConfReleves.SelectedItem) Then
+                If Not tempMesure.Equals(Me.CbxConfReleves.SelectedItem) Then
                     If tempMesure.Label.ToUpper() = TxtNomReleves.Text.ToUpper() Then
                         isExistsLabel = True
                     End If
-                    If tempMesure.Color = CPReleves.SelectedColor.ToString() Then
-                        isExistsColor = True
+                    If mesure.Display Then
+                        If tempMesure.Color = CPReleves.SelectedColorText Then
+                            isExistsColor = True
+                        End If
                     End If
                 End If
             Next
 
-            For Each c In finalisation.GetColorsFinalisation
-                If c = mesure.Color Then
-                    isExistsColor = True
-                End If
-            Next
+            If mesure.Display Then
+                Dim listColorsFinalisation As List(Of String) = finalisation.GetColorsFinalisation
+
+                For Each c In listColorsFinalisation
+                    If c = CPReleves.SelectedColorText Then
+                        isExistsColor = True
+                    End If
+                Next
+            End If
 
             If Not isExistsLabel And Not isExistsColor Then
-                mesure.Label = TxtNomReleves.Text
-                mesure.Color = CPReleves.SelectedColor.ToString()
-                mesure.Update()
+                Dim result As MessageBoxResult = MessageBox.Show("Voulez-vous modifier le type de mesure « " + mesure.Label + " » ?", "Modification d'un type de mesure",
+                                                                 MessageBoxButton.OK, MessageBoxImage.Question)
 
-                Me.CbxConfReleves.Items.RemoveAt(index)
-                Me.CbxConfReleves.Items.Insert(index, mesure)
+                If result = MessageBoxResult.Yes Then
+                    mesure.Label = TxtNomReleves.Text
+                    mesure.Update()
 
-                Me.CbxConfReleves.SelectedIndex = index
-                MessageBox.Show("Le type de relevé a été modifié avec succès.", "Type de relevé modifié", MessageBoxButton.OK, MessageBoxImage.Information)
+                    Me.CbxConfReleves.Items.RemoveAt(index)
+                    Me.CbxConfReleves.Items.Insert(index, mesure)
+
+                    Dim selected As Integer = Me.NouvelleCommande.CbxMesure.SelectedIndex
+                    Dim mesures As New List(Of Mesure)
+                    For Each mes In CbxConfReleves.Items
+                        mesures.Add(mes)
+                    Next
+                    Me.NouvelleCommande.CbxMesure.ItemsSource = mesures
+                    Me.NouvelleCommande.CbxMesure.SelectedIndex = selected
+                    If Me.Planning IsNot Nothing Then Me.Planning.Fill()
+
+                    Me.CbxConfReleves.SelectedIndex = index
+                    MessageBox.Show("Le type de relevé a été modifié avec succès.", "Type de relevé modifié", MessageBoxButton.OK, MessageBoxImage.Information)
+                End If
             Else
                 If isExistsLabel Then
                     MessageBox.Show("Le type de relevé existe déjà.", "Type de relevé existant", MessageBoxButton.OK, MessageBoxImage.Information)
@@ -170,15 +217,15 @@ Public Class ConfReleves
                 End If
             End If
 
-        End If
+            End If
     End Sub
 
 #End Region
 
-#Region "SelectionChanged"
+#Region "Events"
 
     ''' <summary>
-    ''' Évènement se produisant lorsque l'item sélectionné dans CbxConfReleves change
+    ''' Permettre de changer la couleur afficher par rapport au relevé selectionné dans la combobox
     ''' </summary>
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
@@ -187,15 +234,34 @@ Public Class ConfReleves
         If CbxConfReleves.SelectedItem IsNot Nothing Then
             Dim m As Mesure = CbxConfReleves.SelectedItem
             If CbxConfReleves.SelectedIndex <> 0 Then
-                CPReleves.SelectedColor = ColorConverter.ConvertFromString(m.Color)
+                If Not m.Display Then
+                    CPReleves.SelectedColor = ColorConverter.ConvertFromString("#FF000000")
+                    CPReleves.Visibility = Windows.Visibility.Hidden
+                Else
+                    CPReleves.SelectedColor = ColorConverter.ConvertFromString(m.Color)
+                    CPReleves.Visibility = Windows.Visibility.Visible
+                End If
             Else
                 CPReleves.SelectedColor = ColorConverter.ConvertFromString("#FF000000")
+                CPReleves.Visibility = Windows.Visibility.Hidden
             End If
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Changement lors que la chkbox est check ou pas
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub ChkDisplayColor_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
+        If ChkDisplayColor.IsChecked Then
+            CPReleves.Visibility = Windows.Visibility.Visible
+        Else
+            CPReleves.Visibility = Windows.Visibility.Hidden
         End If
     End Sub
 
 #End Region
 
 End Class
-
-

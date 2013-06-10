@@ -23,6 +23,7 @@
         Me.Identifier = finalisation.Identifier
         Me.Label = finalisation.Label
         Me.Color = finalisation.Color
+        Me.Display = finalisation.Display
     End Sub
 
 #End Region

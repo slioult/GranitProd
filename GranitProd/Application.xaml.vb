@@ -3,7 +3,12 @@
     ' Les événements de niveau application, par exemple Startup, Exit et DispatcherUnhandledException
     ' peuvent être gérés dans ce fichier.
 
-
+    ''' <summary>
+    ''' Permet renseigner toutes les épaisseurs existantes dans les combobox correspondant à l'épaisseur de chaque matériau d'une commande
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
     Private Sub CbxEpaisseur_Initialized(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim cbx As ComboBox = sender
         Dim Objects As New List(Of List(Of Object))

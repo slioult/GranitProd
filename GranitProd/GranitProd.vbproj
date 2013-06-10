@@ -109,6 +109,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BindingConverter\ChiffreConverter.vb" />
+    <Compile Include="BindingConverter\PlVisibilityConverter.vb" />
     <Compile Include="Classes\Client.vb" />
     <Compile Include="Classes\Commande.vb" />
     <Compile Include="Classes\CommandeWork.vb" />
@@ -139,8 +140,12 @@
     <Compile Include="Fenêtres\FenetreConfiguration\OngletsConfig\ConfQualite.xaml.vb">
       <DependentUpon>ConfQualite.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Fenêtres\FenetreConfiguration\OngletsConfig\ConfSession.xaml.vb" />
     <Compile Include="Fenêtres\Panel.xaml.vb">
       <DependentUpon>Panel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Fenêtres\PlanningView.xaml.vb">
+      <DependentUpon>PlanningView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Fenêtres\Version.xaml.vb">
       <DependentUpon>Version.xaml</DependentUpon>
@@ -156,9 +161,6 @@
     <Compile Include="BindingConverter\BackgroundRemarquesConverter.vb" />
     <Compile Include="BindingConverter\WarningRemarquesConverter.vb" />
     <Compile Include="BindingConverter\WorkBackgroundConverter.vb" />
-    <Compile Include="Composants\NumericUpDown.xaml.vb">
-      <DependentUpon>NumericUpDown.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Fenêtres\ConsultCommande.xaml.vb">
       <DependentUpon>ConsultCommande.xaml</DependentUpon>
     </Compile>
@@ -179,9 +181,6 @@
     </Compile>
     <Compile Include="Fenêtres\FenetreConfiguration\OngletsConfig\ConfReleves.xaml.vb">
       <DependentUpon>ConfReleves.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Fenêtres\FenetreConfiguration\OngletsConfig\ConfSession.xaml.vb">
-      <DependentUpon>ConfSession.xaml</DependentUpon>
     </Compile>
     <Compile Include="Fenêtres\OngletsPrincipaux\CA.xaml.vb">
       <DependentUpon>CA.xaml</DependentUpon>
@@ -207,10 +206,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Composants\Enlevement.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Composants\NumericUpDown.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -298,6 +293,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Fenêtres\Panel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Fenêtres\PlanningView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -422,22 +421,10 @@
     <Resource Include="Images\up.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="gprod.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="granit.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Images\granit.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="prod.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Images\prod.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="icone.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
@@ -460,6 +447,15 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Version.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\sablier.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\zoom.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

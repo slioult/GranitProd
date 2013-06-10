@@ -54,36 +54,31 @@ Public Class ConfEpaisseur
     Private Sub BtnDelete_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
         If Me.CbxConfEpaisseur.SelectedIndex >= 0 Then
             Dim epaisseur As Epaisseur = Me.CbxConfEpaisseur.SelectedItem
-            Dim question As MessageBoxResult = MessageBox.Show("Voulez vous vraiment supprimer l'épaisseur selectionnée ?", "Attention", MessageBoxButton.YesNo, MessageBoxImage.Warning)
-            If question = MessageBoxResult.Yes Then
-                Me.CbxConfEpaisseur.Items.Remove(Me.CbxConfEpaisseur.SelectedItem)
-                epaisseur.Delete()
-                Me.NouvelleCommande.ListMateriaux = Materiau.GetMateriaux()
-                For Each m In Me.NouvelleCommande.ListMateriaux
-                    Dim isExists As Boolean = False
+            If Not epaisseur.IsUsed Then
+                Dim question As MessageBoxResult = MessageBox.Show("Voulez vous vraiment supprimer l'épaisseur selectionnée ?", "Suppression d'une épaisseur", MessageBoxButton.YesNo, MessageBoxImage.Warning)
+                If question = MessageBoxResult.Yes Then
+                    Me.CbxConfEpaisseur.Items.Remove(Me.CbxConfEpaisseur.SelectedItem)
+                    epaisseur.Delete()
+                    Dim listMTT As New List(Of MateriauTemplate)
 
-                    If Me.NouvelleCommande.Commande IsNot Nothing Then
-                        For Each Mat In Me.NouvelleCommande.Commande.Materiaux
-                            If (Mat.Identifier = m.Identifier) Then
-                                isExists = True
-                                m = Mat
-                                Exit For
-                            End If
-                        Next
-                    Else
-                        For Each mat In Me.NouvelleCommande.ListMateriaux
-                            Dim matT As New MateriauTemplate(mat)
-                            Me.NouvelleCommande.LbxMateriaux.Items.Add(matT)
-                        Next
-                    End If
+                    For Each item In Me.NouvelleCommande.LbxMateriaux.Items
+                        Dim matT As MateriauTemplate = item
+                        listMTT.Add(matT)
+                    Next
 
-                    Dim mt As New MateriauTemplate(m, isExists)
-                    Me.NouvelleCommande.LbxMateriaux.Items.Add(mt)
-                Next
-                Me.CbxConfEpaisseur.SelectedIndex = 0
+                    Me.NouvelleCommande.LbxMateriaux.Items.Clear()
+
+                    For Each m In listMTT
+                        Me.NouvelleCommande.LbxMateriaux.Items.Add(m)
+                    Next
+                    Me.CbxConfEpaisseur.SelectedIndex = 0
+                    MessageBox.Show("L'épaisseur a été supprimée.", "Épaisseur supprimée", MessageBoxButton.OK, MessageBoxImage.Information)
+                End If
+            Else
+                MessageBox.Show("L'épaisseur est utilisée dans une commande et ne peut pas être supprimée.", "Suppression impossible", MessageBoxButton.OK, MessageBoxImage.Stop)
             End If
         Else
-            MessageBox.Show("Veuillez sélectionner une épaisseur a supprimer.", "Épaisseur non sélectionnée", MessageBoxButton.OK, MessageBoxImage.Warning)
+            MessageBox.Show("Veuillez sélectionner une épaisseur à supprimer.", "Épaisseur non sélectionnée", MessageBoxButton.OK, MessageBoxImage.Warning)
         End If
     End Sub
 
@@ -111,25 +106,19 @@ Public Class ConfEpaisseur
                 Me.CbxConfEpaisseur.Items.Add(epaisseur)
                 Me.CbxConfEpaisseur.SelectedItem = epaisseur
                 TxtNomEpaisseur.Clear()
-                Me.NouvelleCommande.ListMateriaux = Materiau.GetMateriaux()
-                Me.NouvelleCommande.LbxMateriaux.Items.Clear()
-                For Each m In Me.NouvelleCommande.ListMateriaux
-                    Dim isExist As Boolean = False
+                Dim listMTT As New List(Of MateriauTemplate)
 
-                    If Me.NouvelleCommande.Commande IsNot Nothing Then
-                        For Each Mat In Me.NouvelleCommande.Commande.Materiaux
-                            If (Mat.Identifier = m.Identifier) Then
-                                isExist = True
-                                m = Mat
-                                Exit For
-                            End If
-                        Next
-                    End If
-
-                    Dim mt As New MateriauTemplate(m, isExist)
-                    Me.NouvelleCommande.LbxMateriaux.Items.Add(mt)
+                For Each item In Me.NouvelleCommande.LbxMateriaux.Items
+                    Dim matT As MateriauTemplate = item
+                    listMTT.Add(matT)
                 Next
-                MessageBox.Show("L'épaisseur a été ajoutée avec succès.", "Nouvelle épaisseur ajoutée", MessageBoxButton.OK, MessageBoxImage.Information)
+
+                Me.NouvelleCommande.LbxMateriaux.Items.Clear()
+
+                For Each m In listMTT
+                    Me.NouvelleCommande.LbxMateriaux.Items.Add(m)
+                Next
+                MessageBox.Show("L'épaisseur a été ajoutée.", "Nouvelle épaisseur ajoutée", MessageBoxButton.OK, MessageBoxImage.Information)
             Else
                 MessageBox.Show("L'épaisseur existe déjà.", "Épaisseur existante", MessageBoxButton.OK, MessageBoxImage.Information)
             End If

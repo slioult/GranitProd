@@ -54,8 +54,8 @@ Public Class Nature
     ''' <summary>
     ''' Surcharge de la méthode Equals permettant de comparer deux natures
     ''' </summary>
-    ''' <param name="obj"></param>
-    ''' <returns></returns>
+    ''' <param name="obj">Nature à comparer</param>
+    ''' <returns>Retourne un booléen indiquant si les deux natures sont identiques</returns>
     ''' <remarks></remarks>
     Public Overrides Function Equals(ByVal obj As Object) As Boolean
         If (Me IsNot Nothing And obj IsNot Nothing) Then
@@ -79,9 +79,9 @@ Public Class Nature
 #Region "DataAccess"
 
     ''' <summary>
-    ''' Permet de récupérer les informations de la nature
+    ''' Permet de récupérer les informations de la nature à partir de son identifier
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un objet de la classe Nature</returns>
     ''' <remarks></remarks>
     Public Function GetNature() As Nature
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -89,16 +89,21 @@ Public Class Nature
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdentifier As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdentifier)
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Label FROM Nature WHERE Identifier=@Identifier", parameters)
 
+            'Ferme la connection
             connection.Close()
             parameters = Nothing
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Label = obj(1).ToString()
             Next
@@ -107,6 +112,7 @@ Public Class Nature
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -118,7 +124,7 @@ Public Class Nature
     ''' <summary>
     ''' Permet de récupérer les natures dans la base de données
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Nature</returns>
     ''' <remarks></remarks>
     Public Shared Function GetNatures() As List(Of Nature)
         Dim natures As New List(Of Nature)
@@ -126,12 +132,16 @@ Public Class Nature
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Label FROM Nature Order By Label")
 
+            'Ferme la connection
             connection.Close()
 
+            'Traite la requête
             For Each obj In Objects
                 natures.Add(New Nature(obj(1).ToString(), Long.Parse(obj(0))))
             Next
@@ -140,6 +150,7 @@ Public Class Nature
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -151,6 +162,7 @@ Public Class Nature
     ''' <summary>
     ''' Permet d'insérer une nature en base de données
     ''' </summary>
+    ''' <returns>Retourne l'identifier de la nature définit par la BDD</returns>
     ''' <remarks></remarks>
     Public Function Insert() As Long
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -158,17 +170,23 @@ Public Class Nature
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
 
+            'Requête
             Dim query As String = "INSERT INTO Nature (Label) VALUES (@Label)"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
+            'Récupère l'identifier du dernier enregistrement
             Objects = connection.ExecuteQuery("SELECT Max(Identifier) FROM Nature")
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Identifier = Long.Parse(obj(0))
             Next
@@ -179,6 +197,7 @@ Public Class Nature
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -196,16 +215,20 @@ Public Class Nature
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdNature As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdNature)
 
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
 
+            'Requête
             Dim query As String = "UPDATE Nature SET Label=@Label WHERE Identifier=@Identifier"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
             parameters = Nothing
@@ -214,6 +237,7 @@ Public Class Nature
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -230,20 +254,25 @@ Public Class Nature
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdNature As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdNature)
 
+            'Exécute la requête
             connection.ExecuteNonQuery("DELETE FROM Nature WHERE Identifier=@Identifier", parameters)
 
             parameters.Clear()
 
+            'Ferme la connection
             connection.Close()
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error")
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -251,9 +280,9 @@ Public Class Nature
     End Sub
 
     ''' <summary>
-    ''' Permet de savoir si une nature est utiliser dans une commande
+    ''' Permet de savoir si une nature est utilisée dans une commande
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un booléen indiquant si une commande fait référence à la nature</returns>
     ''' <remarks></remarks>
     Public Function IsUsed() As Boolean
         Dim bool As Boolean = False
@@ -267,7 +296,7 @@ Public Class Nature
             Dim parIdNature As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdNature)
 
-            Objects = connection.ExecuteQuery("SELECT COUNT Identifier_Commande FROM Commande_nature WHERE Identifier_Nature=@Identifier", parameters)
+            Objects = connection.ExecuteQuery("SELECT COUNT(Identifier_Commande) FROM Commande_nature WHERE Identifier_Nature=@Identifier", parameters)
 
             For Each obj In Objects
                 If Integer.Parse(obj(0)) > 0 Then

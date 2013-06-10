@@ -1,5 +1,6 @@
 ﻿Imports MGranitDALcsharp
 Imports System.IO
+Imports System.Runtime.InteropServices
 
 Public Class Connexion
 
@@ -15,6 +16,8 @@ Public Class Connexion
 
         ' Cet appel est requis par le concepteur.
         InitializeComponent()
+
+        TbVersion.Text = "2013 GranitProd - Version " + My.Application.Info.Version.ToString().Substring(0, My.Application.Info.Version.ToString().Length - 2)
 
         ' Ajoutez une initialisation quelconque après l'appel InitializeComponent().
         TxtLogin.Focus()
@@ -44,19 +47,20 @@ Public Class Connexion
 #Region "Button"
 
     ''' <summary>
-    ''' Action de l'évènement de clique sur le bouton Connexion
+    ''' Action de l'évènement de click sur le bouton Connexion
     ''' </summary>
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub BtnConnexion_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
 
-        If (TxtLogin.Text <> "") Then
-            If (PsxPassword.Password <> "") Then
-                Dim login As String = TxtLogin.Text
-                Dim password As String = PsxPassword.Password
+        Try
+            If (TxtLogin.Text <> "") Then
+                If (PsxPassword.Password <> "") Then
+                    Dim login As String = TxtLogin.Text
+                    Dim password As String = PsxPassword.Password
 
-                Try
+                    'Récupère les différentes sessions existantes.
                     Dim Sessions As List(Of Session) = Session.GetSessions(True)
 
                     Dim isExists As Boolean = False
@@ -80,32 +84,33 @@ Public Class Connexion
                         isOk = False
                     End If
 
-                Catch ex As Exception
-                    MessageBox.Show(ex.Message)
-                    Dim sw As New StreamWriter(My.Settings.ConfigFiles + "\log.txt")
-
-                    Dim content As String = "BTNCONNEXION" + vbCrLf + ex.StackTrace.ToString() + vbCrLf + vbCrLf + ex.Source.ToString()
-                    If ex.InnerException IsNot Nothing Then
-                        content = content + vbCrLf + vbCrLf + ex.InnerException.ToString()
-                    End If
-
-                    content = content + vbCrLf + "/BTNCONNEXION"
-
-                    sw.Write(content)
-
-                    sw.Close()
-                End Try
-
+                Else
+                    MessageBox.Show("Veuillez entrer mot de passe.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
+                    PsxPassword.Focus()
+                    isOk = False
+                End If
             Else
-                MessageBox.Show("Veuillez entrer mot de passe.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
-                PsxPassword.Focus()
+                MessageBox.Show("Veuillez entrer un identifiant.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
                 isOk = False
+                TxtLogin.Focus()
             End If
-        Else
-            MessageBox.Show("Veuillez entrer un identifiant.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
-            isOk = False
-            TxtLogin.Focus()
-        End If
+
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+            Dim sw As New StreamWriter(My.Settings.ConfigFiles + "\log.txt")
+
+            Dim content As String = "BTNCONNEXION" + vbCrLf + ex.StackTrace.ToString() + vbCrLf + vbCrLf + ex.Source.ToString()
+            If ex.InnerException IsNot Nothing Then
+                content = content + vbCrLf + vbCrLf + ex.InnerException.ToString()
+            End If
+
+            content = content + vbCrLf + "/BTNCONNEXION"
+
+            sw.Write(content)
+
+            sw.Close()
+        End Try
     End Sub
 
 #End Region
@@ -151,6 +156,7 @@ Public Class Connexion
     ''' <summary>
     ''' Sauvegarde le login utilisé dans le fichier conf.ini
     ''' </summary>
+    ''' <param name="login">Login de connexion de l'utilisateur</param>
     ''' <remarks></remarks>
     Public Sub SaveLogin(ByVal login As String)
 

@@ -23,7 +23,7 @@
             <TabItem Header="Prestation">
                 <local:ConfFinalisation x:Name="confFinalisation" />
             </TabItem>
-            <TabItem Header="Relevés">
+            <TabItem Header="Relevé">
                 <local:ConfReleves x:Name="confReleves" />
             </TabItem>
             <TabItem Header="Qualité">

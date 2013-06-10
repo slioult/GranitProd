@@ -65,8 +65,8 @@ Public Class Materiau
     ''' <summary>
     ''' Surcharge de la méthode Equals permettant de comparer deux materiaux
     ''' </summary>
-    ''' <param name="obj"></param>
-    ''' <returns></returns>
+    ''' <param name="obj">Matériau à comparer</param>
+    ''' <returns>Retourne un booléen indiquant si les deux matéiaux sont identiques</returns>
     ''' <remarks></remarks>
     Public Overrides Function Equals(ByVal obj As Object) As Boolean
         If (Me IsNot Nothing And obj IsNot Nothing) Then
@@ -90,9 +90,9 @@ Public Class Materiau
 #Region "DataAccess"
 
     ''' <summary>
-    ''' Permet de récupérer les informations du matériau
+    ''' Permet de récupérer les informations du matériau à partir de son identifier
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un objet de la classe Materiau</returns>
     ''' <remarks></remarks>
     Public Function GetMateriau() As Materiau
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -100,16 +100,21 @@ Public Class Materiau
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdentifier As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdentifier)
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Label FROM Materiau WHERE Identifier=@Identifier", parameters)
 
+            'Ferme la connection
             connection.Close()
             parameters = Nothing
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Label = obj(1).ToString()
             Next
@@ -118,6 +123,7 @@ Public Class Materiau
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -129,7 +135,7 @@ Public Class Materiau
     ''' <summary>
     ''' Permet de récupérer les matériaux dans la base de données
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Materiau</returns>
     ''' <remarks></remarks>
     Public Shared Function GetMateriaux() As List(Of Materiau)
         Dim materiaux As New List(Of Materiau)
@@ -137,12 +143,16 @@ Public Class Materiau
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Exécute la requête
             Objects = connection.ExecuteQuery("SELECT Identifier, Label FROM Materiau Order By Label")
 
+            'Ferme la connection
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
                 materiaux.Add(New Materiau(obj(1).ToString(), Long.Parse(obj(0))))
             Next
@@ -151,6 +161,7 @@ Public Class Materiau
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la conneciton
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -162,6 +173,7 @@ Public Class Materiau
     ''' <summary>
     ''' Permet d'insérer un matériau en base de données
     ''' </summary>
+    ''' <returns>Retourne l'identifier du matériau définit par la BDD</returns>
     ''' <remarks></remarks>
     Public Function Insert() As Long
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -169,17 +181,23 @@ Public Class Materiau
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
 
+            'Requête
             Dim query As String = "INSERT INTO Materiau (Label) VALUES (@Label)"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
+            'Récupère l'identifier du dernier enregistrement
             Objects = connection.ExecuteQuery("SELECT Max(Identifier) FROM Materiau")
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Identifier = Long.Parse(obj(0))
             Next
@@ -190,6 +208,7 @@ Public Class Materiau
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -207,16 +226,20 @@ Public Class Materiau
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdMateriau As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdMateriau)
 
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
 
+            'Requête
             Dim query As String = "UPDATE Materiau SET Label=@Label WHERE Identifier=@Identifier"
 
+            'Exécution de la requête
             connection.ExecuteNonQuery(query, parameters)
 
             parameters = Nothing
@@ -225,6 +248,7 @@ Public Class Materiau
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -241,20 +265,25 @@ Public Class Materiau
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdMateriau As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdMateriau)
 
+            'Exécute la requête
             connection.ExecuteNonQuery("DELETE FROM Materiau WHERE Identifier=@Identifier", parameters)
 
             parameters.Clear()
 
+            'Ferme la requête
             connection.Close()
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error")
         Finally
             Try
+                'Ferme la requête
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -262,9 +291,9 @@ Public Class Materiau
     End Sub
 
     ''' <summary>
-    ''' Permet de savoir si un materiau est utiliser dans une commande
+    ''' Permet de savoir si un materiau est utilisé dans une commande
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un booléen indiquant si une commande fait référence au matériau</returns>
     ''' <remarks></remarks>
     Public Function IsUsed() As Boolean
         Dim bool As Boolean = False
@@ -278,7 +307,7 @@ Public Class Materiau
             Dim parIdMateriau As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdMateriau)
 
-            Objects = connection.ExecuteQuery("SELECT COUNT Identifier_Commande FROM Commande_materiau WHERE Identifier_Materiau=@Identifier", parameters)
+            Objects = connection.ExecuteQuery("SELECT COUNT(Identifier_Commande) FROM Commande_materiau WHERE Identifier_Materiau=@Identifier", parameters)
 
             For Each obj In Objects
                 If Integer.Parse(obj(0)) > 0 Then

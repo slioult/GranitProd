@@ -112,6 +112,30 @@ Partial Friend NotInheritable Class MySettings
             Me("ConfigFile") = value
         End Set
     End Property
+    
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute(".\Images\sablier.png")>  _
+    Public Property Sablier() As String
+        Get
+            Return CType(Me("Sablier"),String)
+        End Get
+        Set
+            Me("Sablier") = value
+        End Set
+    End Property
+    
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute(".\Images\search.png")>  _
+    Public Property Search() As String
+        Get
+            Return CType(Me("Search"),String)
+        End Get
+        Set
+            Me("Search") = value
+        End Set
+    End Property
 End Class
 
 Namespace My

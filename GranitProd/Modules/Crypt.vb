@@ -4,8 +4,12 @@ Imports System.Text
 
 Module Crypt
 
-    ' Hash an input string and return the hash as
-    ' a 32 character hexadecimal string.
+    ''' <summary>
+    ''' Convertit une chaîne en MD5
+    ''' </summary>
+    ''' <param name="input">Chaîne à convertir</param>
+    ''' <returns>Retourne la chaîne convertie</returns>
+    ''' <remarks></remarks>
     Function getMd5Hash(ByVal input As String) As String
         ' Create a new instance of the MD5 object.
         Dim md5Hasher As MD5 = MD5.Create()
@@ -29,8 +33,13 @@ Module Crypt
 
     End Function
 
-
-    ' Verify a hash against a string.
+    ''' <summary>
+    ''' Compare une chaîne MD5 à une chaîne simple
+    ''' </summary>
+    ''' <param name="input">Chaîne simple saisie par l'utilisateur</param>
+    ''' <param name="hash">Chaîne MD5</param>
+    ''' <returns>Retourne un booléen indiquant si les deux chaînes sont identiques</returns>
+    ''' <remarks></remarks>
     Function verifyMd5Hash(ByVal input As String, ByVal hash As String) As Boolean
         ' Hash the input.
         Dim hashOfInput As String = getMd5Hash(input)

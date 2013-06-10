@@ -37,7 +37,7 @@
             <DataGrid x:Name="DgEnlevement" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Disabled" Grid.Row="2" Background="Transparent"
                       Style="{StaticResource DataGridItemStyle}" PreviewMouseDoubleClick="DgEnlevement_PreviewMouseDoubleClick" IsReadOnly="True" >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="N°cmd" Width="Auto" Binding="{Binding NumCmd}" />
+                    <DataGridTextColumn Header="Contremarque" Width="Auto" Binding="{Binding Contremarque.Nom}" />
                     <DataGridTextColumn Header="Date" Width="Auto" Binding="{Binding DatePrest, StringFormat=dd/MM/yyyy}" />
                     <DataGridTextColumn Header="Heure" Width="Auto" Binding="{Binding Heure}" />
                     <DataGridTextColumn Header="Prestations" Width="*" Binding="{Binding Prestations, Converter={StaticResource finConverter}}" />

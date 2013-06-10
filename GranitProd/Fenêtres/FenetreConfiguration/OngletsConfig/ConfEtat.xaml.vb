@@ -54,14 +54,14 @@ Public Class ConfEtat
     ''' <remarks></remarks>
     Private Sub BtnDelete_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
         Dim etat As Etat = Me.LstEtat.SelectedItem
-        If etat.Label <> "Terminé" Then
+        If etat.Label <> "Terminée" And etat.Label <> "Rendue" Then
             If Me.LstEtat.SelectedIndex > 0 Then
                 If Not etat.IsUsed Then
-                    Dim question As MessageBoxResult = MessageBox.Show("Voulez vous vraiment supprimer l'état selectionné", "Caution", MessageBoxButton.YesNo, MessageBoxImage.Warning)
+                    Dim question As MessageBoxResult = MessageBox.Show("Voulez vous vraiment supprimer l'état selectionné ?", "Supression d'un état", MessageBoxButton.YesNo, MessageBoxImage.Warning)
                     If question = MessageBoxResult.Yes Then
                         Dim indexDel As Integer = LstEtat.SelectedIndex
 
-                        
+
                         etat.Delete()
 
                         Me.LstEtat.Items.Remove(Me.LstEtat.SelectedItem)
@@ -79,15 +79,17 @@ Public Class ConfEtat
                         Next
 
                         Me.LstEtat.SelectedIndex = 0
+                        MessageBox.Show("L'état a été supprimé.", "État supprimé", MessageBoxButton.OK, MessageBoxImage.Information)
                     End If
                 Else
-                    MessageBox.Show("L'état est utilisé dans une commande et ne peut pas etre supprimer")
+                    MessageBox.Show("L'état est utilisé dans une commande et ne peut pas être supprimé.", "Suppression impossible", MessageBoxButton.OK, MessageBoxImage.Error)
                 End If
             Else
-                MessageBox.Show("Selectionnez un état a supprimé")
+                MessageBox.Show("Veuillez sélectionner un état à supprimer.", "Suppression d'un état", MessageBoxButton.OK, MessageBoxImage.Exclamation)
             End If
         Else
-            MessageBox.Show("Vous ne pouvez pas supprimer cette Etat")
+            MessageBox.Show("Désolé, cet état ne peut être supprimé." + vbCrLf + "Pour plus d'informations, veuillez contacter les créateur du logiciel.",
+                                "Suppression impossible", MessageBoxButton.OK, MessageBoxImage.Information)
         End If
 
     End Sub
@@ -119,13 +121,13 @@ Public Class ConfEtat
                     etats.Add(eta)
                 Next
                 Me.NouvelleCommande.CbxEtat.ItemsSource = etats
-                MessageBox.Show("L'état a été ajouté")
+                MessageBox.Show("L'état a été ajouté avec succès", "Nouvel état ajouté", MessageBoxButton.OK, MessageBoxImage.Information)
             Else
-                MessageBox.Show("L'état existe")
+                MessageBox.Show("L'état existe déjà", "État existant", MessageBoxButton.OK, MessageBoxImage.Information)
             End If
         ElseIf Me.LstEtat.SelectedIndex > 0 And TxtNomEtat.Text <> "" Then
             Dim etat As Etat = Me.LstEtat.SelectedItem
-            If etat.Label <> "Terminé" Then
+            If etat.Label <> "Terminée" And etat.Label <> "Rendue" Then
                 Dim index = Me.LstEtat.SelectedIndex
 
                 Dim isExists As Boolean = False
@@ -138,19 +140,32 @@ Public Class ConfEtat
                 Next
 
                 If Not isExists Then
-                    etat.Label = TxtNomEtat.Text
-                    etat.Update()
+                    Dim result As MessageBoxResult = MessageBox.Show("Voulez-vous modifié l'état « " + etat.Label + " » ?", "Modifier un état",
+                                                                     MessageBoxButton.YesNo, MessageBoxImage.Question)
+                    If result = MessageBoxResult.Yes Then
+                        etat.Label = TxtNomEtat.Text
+                        etat.Update()
 
-                    Me.LstEtat.Items.RemoveAt(index)
-                    Me.LstEtat.Items.Insert(index, etat)
+                        Me.LstEtat.Items.RemoveAt(index)
+                        Me.LstEtat.Items.Insert(index, etat)
 
-                    Me.LstEtat.SelectedIndex = index
-                    MessageBox.Show("L'état a été modifié")
+                        Dim selected = Me.NouvelleCommande.CbxEtat.SelectedIndex
+                        Dim etats As New List(Of Etat)
+                        For Each eta In LstEtat.Items
+                            etats.Add(eta)
+                        Next
+                        Me.NouvelleCommande.CbxEtat.ItemsSource = etats
+                        Me.NouvelleCommande.CbxEtat.SelectedIndex = selected
+
+                        Me.LstEtat.SelectedIndex = index
+                        MessageBox.Show("L'état a été modifié avec succès", "État modifié", MessageBoxButton.OK, MessageBoxImage.Information)
+                    End If
                 Else
-                    MessageBox.Show("L'état existe")
+                    MessageBox.Show("L'état existe déjà", "État existant", MessageBoxButton.OK, MessageBoxImage.Information)
                 End If
             Else
-                MessageBox.Show("L'état Terminé ne peut pas etre modifier")
+                MessageBox.Show("Désolé, cet état ne peut être modifié." + vbCrLf + "Pour plus d'informations, veuillez contacter les créateur du logiciel.",
+                                "Modification impossible", MessageBoxButton.OK, MessageBoxImage.Information)
             End If
 
         End If
@@ -179,15 +194,19 @@ Public Class ConfEtat
             Me.LstEtat.Items.RemoveAt(index)
             Me.LstEtat.Items.Insert(index - 1, upEtat)
 
-
             Me.LstEtat.SelectedIndex = index - 1
 
+            Dim etats As New List(Of Etat)
+            For Each eta In LstEtat.Items
+                etats.Add(eta)
+            Next
+            Me.NouvelleCommande.CbxEtat.ItemsSource = etats
         End If
 
     End Sub
 
     ''' <summary>
-    ''' Faire descende d'une position l'état selectioné
+    ''' Faire descendre d'une position l'état selectioné
     ''' </summary>
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
@@ -211,6 +230,11 @@ Public Class ConfEtat
 
             Me.LstEtat.SelectedIndex = index + 1
 
+            Dim etats As New List(Of Etat)
+            For Each eta In LstEtat.Items
+                etats.Add(eta)
+            Next
+            Me.NouvelleCommande.CbxEtat.ItemsSource = etats
         End If
     End Sub
 

@@ -4,7 +4,6 @@ Imports System.Data
 
 Public Class ConfNature
 
-
     Dim connection As New MGConnection(My.Settings.DBSource)
 
 #Region "Fields"
@@ -60,19 +59,21 @@ Public Class ConfNature
         If Me.CbxConfNature.SelectedIndex > 0 Then
             Dim nature As Nature = Me.CbxConfNature.SelectedItem
             If Not nature.IsUsed Then
-                Dim question As MessageBoxResult = MessageBox.Show("Voulez vous vraiment supprimer la nature selectionnée", "Caution", MessageBoxButton.YesNo, MessageBoxImage.Warning)
+                Dim question As MessageBoxResult = MessageBox.Show("Voulez vous vraiment supprimer la nature selectionnée ?", "Suppression d'une nature", MessageBoxButton.YesNo, MessageBoxImage.Warning)
                 If question = MessageBoxResult.Yes Then
                     Me.CbxConfNature.Items.Remove(Me.CbxConfNature.SelectedItem)
                     nature.Delete()
                     Dim nt As New NatureTemplate(nature, False)
                     Me.NouvelleCommande.LbxNatures.Items.Remove(nt)
                     Me.CbxConfNature.SelectedIndex = 0
+
+                    MessageBox.Show("La nature a été supprimée", "Nature supprimée", MessageBoxButton.OK, MessageBoxImage.Information)
                 End If
             Else
-                MessageBox.Show("La nature est utilisée dans une commande et ne peut pas etre supprimer")
+                MessageBox.Show("La nature est utilisée dans une commande et ne peut pas être supprimée", "Suppression impossible", MessageBoxButton.OK, MessageBoxImage.Exclamation)
             End If
         Else
-            MessageBox.Show("Selectionnez une nature a supprimé")
+            MessageBox.Show("Veuillez sélectionner une nature à supprimer.", "Suppression d'une nature", MessageBoxButton.OK, MessageBoxImage.Exclamation)
         End If
     End Sub
 
@@ -101,9 +102,9 @@ Public Class ConfNature
                 Me.CbxConfNature.SelectedItem = nature
                 Dim nt As New NatureTemplate(nature, False)
                 Me.NouvelleCommande.LbxNatures.Items.Add(nt)
-                MessageBox.Show("La nature a été ajouté")
+                MessageBox.Show("La nature a été ajoutée.", "Nouvelle nature ajoutée", MessageBoxButton.OK, MessageBoxImage.Information)
             Else
-                MessageBox.Show("La nature existe")
+                MessageBox.Show("La nature existe déjà.", "Nature existante", MessageBoxButton.OK, MessageBoxImage.Exclamation)
             End If
         ElseIf Me.CbxConfNature.SelectedIndex > 0 And TxtNomNature.Text <> "" Then
             Dim index = Me.CbxConfNature.SelectedIndex
@@ -119,16 +120,33 @@ Public Class ConfNature
             Next
 
             If Not isExists Then
-                nature.Label = TxtNomNature.Text
-                nature.Update()
+                Dim result As MessageBoxResult = MessageBox.Show("Voulez-vous modifier la nature « " + nature.Label + " » ?", "Modification d'une nature",
+                                                                 MessageBoxButton.OK, MessageBoxImage.Question)
 
-                Me.CbxConfNature.Items.RemoveAt(index)
-                Me.CbxConfNature.Items.Insert(index, nature)
+                If result = MessageBoxResult.Yes Then
+                    nature.Label = TxtNomNature.Text
+                    nature.Update()
 
-                Me.CbxConfNature.SelectedIndex = index
-                MessageBox.Show("La nature a été modifié")
+                    Me.CbxConfNature.Items.RemoveAt(index)
+                    Me.CbxConfNature.Items.Insert(index, nature)
+
+                    Dim natT As New List(Of NatureTemplate)
+                    For Each item In Me.NouvelleCommande.LbxNatures.Items
+                        Dim nt As NatureTemplate = item
+                        If nt.Identifier = nature.Identifier Then nt.Label = nature.Label
+                        natT.Add(nt)
+                    Next
+                    Me.NouvelleCommande.LbxNatures.Items.Clear()
+
+                    For Each n In natT
+                        Me.NouvelleCommande.LbxNatures.Items.Add(n)
+                    Next
+
+                    Me.CbxConfNature.SelectedIndex = index
+                    MessageBox.Show("La nature a été modifiée.", "Nature modifiée", MessageBoxButton.OK, MessageBoxImage.Information)
+                End If
             Else
-                MessageBox.Show("La nature existe")
+                MessageBox.Show("La nature existe déjà.", "Nature existante", MessageBoxButton.OK, MessageBoxImage.Exclamation)
             End If
 
         End If

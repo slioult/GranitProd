@@ -61,11 +61,19 @@
     ''' <remarks></remarks>
     Private Sub LbxDisplayCommandes_MouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Input.MouseButtonEventArgs)
         If LbxDisplayCommandes.SelectedItem IsNot Nothing Then
+            'Récupère la commande sélectionnée
             Dim commande As Commande = LbxDisplayCommandes.SelectedItem
 
+            'Ouvre une fenêtre de consultation de commande
             Dim consult As New ConsultCommande(Me.Session, commande, Nothing, Me.Planning)
-            consult.ShowDialog()
+            If consult.ShowType = 0 Then
+                consult.ShowDialog()
+            Else
+                consult.Close()
+                consult = Nothing
+            End If
 
+            'Rafraîchit toutes les donnée du tableau de bord
             Me.BtnRefresh_Click(Nothing, Nothing)
         End If
     End Sub
@@ -75,17 +83,23 @@
 #Region "Button"
 
     ''' <summary>
-    ''' Évènement se produisant lors du clique sur le bouton refresh
+    ''' Évènement se produisant lors du click sur le bouton refresh, permettant de mettre à jour le contenu de la fenêtre
     ''' </summary>
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub BtnRefresh_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
+        'Rafraîchit les données du chiffre d'affaire
         Me.CAffaire.CbxParam_SelectionChanged(Nothing, Nothing)
+        'Rafraîchit les données sur les temps de production
         Me.TpsFabrication.CbxParam_SelectionChanged(Nothing, Nothing)
+        'Rafraîchit les données des problèmes de qualité
         Me.SqQualite.CbxParam_SelectionChanged(Nothing, Nothing)
+        'Rafraîchit la liste des 10 derniers commentaires
         Me.Commentaire.LoadRemarques()
+        'Rafraîchit la liste des enlèvements de la semaine
         Me.Enlevement.CbxDate_SelectionChanged(Nothing, Nothing)
+
         Me.LbxDisplayCommandes.Items.Clear()
     End Sub
 

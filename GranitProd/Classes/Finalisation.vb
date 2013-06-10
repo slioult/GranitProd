@@ -8,6 +8,7 @@ Public Class Finalisation
     Private _Identifier As Long
     Private _Label As String
     Private _Color As String
+    Private _Display As Boolean
 
 #End Region
 
@@ -42,6 +43,15 @@ Public Class Finalisation
         End Set
     End Property
 
+    Public Property Display As Boolean
+        Get
+            Return Me._Display
+        End Get
+        Set(ByVal value As Boolean)
+            Me._Display = value
+        End Set
+    End Property
+
 #End Region
 
 #Region "Constructor"
@@ -56,9 +66,10 @@ Public Class Finalisation
         Me.Identifier = identifier
     End Sub
 
-    Public Sub New(ByVal label As String, Optional ByVal color As String = "", Optional ByVal identifier As Long = 0)
+    Public Sub New(ByVal label As String, Optional ByVal color As String = "", Optional ByVal display As Boolean = False, Optional ByVal identifier As Long = 0)
         Me.Label = label
         Me.Color = color
+        Me.Display = display
         Me.Identifier = identifier
     End Sub
 
@@ -70,8 +81,8 @@ Public Class Finalisation
     ''' <summary>
     ''' Surcharge de la méthode Equals permettant de comparer deux finalisations
     ''' </summary>
-    ''' <param name="obj"></param>
-    ''' <returns></returns>
+    ''' <param name="obj">Finalisation à comparer</param>
+    ''' <returns>Retourne un booléen indiquant si les deux finalisations sont identiques</returns>
     ''' <remarks></remarks>
     Public Overrides Function Equals(ByVal obj As Object) As Boolean
         If (Me IsNot Nothing And obj IsNot Nothing) Then
@@ -95,9 +106,9 @@ Public Class Finalisation
 #Region "DataAccess"
 
     ''' <summary>
-    ''' Permet de récupérer les informations de la finalisation
+    ''' Permet de récupérer les informations de la finalisation à partir de son identifier
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un objet de la classe Finalisation</returns>
     ''' <remarks></remarks>
     Public Function GetFinalisation() As Finalisation
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -105,25 +116,32 @@ Public Class Finalisation
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdentifier As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdentifier)
 
-            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur FROM Finalisation WHERE Identifier=@Identifier", parameters)
+            'Exécute la requête
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur, Display FROM Finalisation WHERE Identifier=@Identifier", parameters)
 
+            'Ferme la connection
             connection.Close()
             parameters = Nothing
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Label = obj(1).ToString()
                 Me.Color = obj(2).ToString()
+                Me.Display = Boolean.Parse(obj(3))
             Next
 
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -143,19 +161,61 @@ Public Class Finalisation
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
-            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur FROM Finalisation")
+            'Exécute la requête
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur, Display FROM Finalisation Order By Label")
 
+            'Ferme la connection
             connection.Close()
 
+            'Traite les résultats
             For Each obj In Objects
-                finalisations.Add(New Finalisation(obj(1).ToString(), obj(2).ToString(), Long.Parse(obj(0))))
+                finalisations.Add(New Finalisation(obj(1).ToString(), obj(2).ToString(), Boolean.Parse(obj(3)), Long.Parse(obj(0))))
             Next
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la requête
+                connection.Close()
+            Catch ex As Exception
+            End Try
+        End Try
+
+        Return finalisations
+    End Function
+
+    ''' <summary>
+    ''' Permet de récupérer toutes les finalisations devant être affichées dans le planning dans la base de données
+    ''' </summary>
+    ''' <returns>Retourne une liste d'objets de la classe Finalisation</returns>
+    ''' <remarks></remarks>
+    Public Shared Function GetLegendFinalisations() As List(Of Finalisation)
+        Dim finalisations As New List(Of Finalisation)
+        Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
+        Dim Objects As New List(Of List(Of Object))
+
+        Try
+            'Ouvre la connection
+            connection.Open()
+
+            'Exécute la requête
+            Objects = connection.ExecuteQuery("SELECT Identifier, Label, Couleur, Display FROM Finalisation WHERE Display=1 Order By Label")
+
+            'Ferme la connection
+            connection.Close()
+
+            'Traite les résultats
+            For Each obj In Objects
+                finalisations.Add(New Finalisation(obj(1).ToString(), obj(2).ToString(), Boolean.Parse(obj(3)), Long.Parse(obj(0))))
+            Next
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        Finally
+            Try
+                'Ferme la requête
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -167,6 +227,7 @@ Public Class Finalisation
     ''' <summary>
     ''' Permet d'insérer une finalisation en base de données
     ''' </summary>
+    ''' <returns>Retourne l'identifier de la finalisation définit par la BDD</returns>
     ''' <remarks></remarks>
     Public Function Insert() As Long
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -174,19 +235,27 @@ Public Class Finalisation
         Dim Objects As New List(Of List(Of Object))
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
             Dim parCouleur As MySqlParameter = connection.Create("@Couleur", DbType.String, Me.Color)
             parameters.Add(parCouleur)
+            Dim parDisplay As MySqlParameter = connection.Create("@Display", DbType.Boolean, Me.Display)
+            parameters.Add(parDisplay)
 
-            Dim query As String = "INSERT INTO Finalisation (Label, Couleur) VALUES (@Label, @Couleur)"
+            'Requête
+            Dim query As String = "INSERT INTO Finalisation (Label, Couleur, Display) VALUES (@Label, @Couleur, @Display)"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
+            'Récupère l'identifier du dernier enregistrement
             Objects = connection.ExecuteQuery("SELECT Max(Identifier) FROM Finalisation")
 
+            'Traite les résultats
             For Each obj In Objects
                 Me.Identifier = Long.Parse(obj(0))
             Next
@@ -197,6 +266,7 @@ Public Class Finalisation
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -214,17 +284,23 @@ Public Class Finalisation
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Définit les paramètres de la requête
             Dim parIdFinalisation As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdFinalisation)
             Dim parLabel As MySqlParameter = connection.Create("@Label", DbType.String, Me.Label)
             parameters.Add(parLabel)
             Dim parCouleur As MySqlParameter = connection.Create("@Couleur", DbType.String, Me.Color)
             parameters.Add(parCouleur)
+            Dim parDisplay As MySqlParameter = connection.Create("@Display", DbType.Boolean, Me.Display)
+            parameters.Add(parDisplay)
 
-            Dim query As String = "UPDATE Finalisation SET Label=@Label, Couleur=@Couleur WHERE Identifier=@Identifier"
+            'Requête
+            Dim query As String = "UPDATE Finalisation SET Label=@Label, Couleur=@Couleur, Display=@Display WHERE Identifier=@Identifier"
 
+            'Exécute la requête
             connection.ExecuteNonQuery(query, parameters)
 
             parameters = Nothing
@@ -233,6 +309,7 @@ Public Class Finalisation
             MessageBox.Show(ex.Message)
         Finally
             Try
+                'Ferme la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -249,20 +326,25 @@ Public Class Finalisation
         Dim parameters As New List(Of MySqlParameter)
 
         Try
+            'Ouvre la connection
             connection.Open()
 
+            'Défini les paramètres de la requête
             Dim parIdFinalisation As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdFinalisation)
 
+            'Exécute la requête
             connection.ExecuteNonQuery("DELETE FROM Finalisation WHERE Identifier=@Identifier", parameters)
 
             parameters.Clear()
 
+            'Ferme la connection
             connection.Close()
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error")
         Finally
             Try
+                'Assure la fermeture de la connection
                 connection.Close()
             Catch ex As Exception
             End Try
@@ -272,7 +354,7 @@ Public Class Finalisation
     ''' <summary>
     ''' Récupère les couleurs utilisées dans la table Finalisation
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste de string correspondantes aux couleurs utilisées</returns>
     ''' <remarks></remarks>
     Public Function GetColorsFinalisation() As List(Of String)
         Dim listColorsFinalisation As New List(Of String)
@@ -303,9 +385,9 @@ Public Class Finalisation
     End Function
 
     ''' <summary>
-    ''' Permet de savoir si une finalisation est utiliser dans une commande
+    ''' Permet de savoir si une finalisation est utilisée dans une commande
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un booléen indiquant si une commande fait référence à la finalisation</returns>
     ''' <remarks></remarks>
     Public Function IsUsed() As Boolean
         Dim bool As Boolean = False
@@ -319,7 +401,7 @@ Public Class Finalisation
             Dim parIdFinalisation As MySqlParameter = connection.Create("@Identifier", DbType.Int32, Me.Identifier)
             parameters.Add(parIdFinalisation)
 
-            Objects = connection.ExecuteQuery("SELECT COUNT Identifier_Commande FROM Commande_finalisation WHERE Identifier_Finalisation=@Identifier", parameters)
+            Objects = connection.ExecuteQuery("SELECT COUNT(Identifier_Commande) FROM Commande_finalisation WHERE Identifier_Finalisation=@Identifier", parameters)
 
             For Each obj In Objects
                 If Integer.Parse(obj(0)) > 0 Then
