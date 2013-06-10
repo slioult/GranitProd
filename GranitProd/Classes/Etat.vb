@@ -64,10 +64,10 @@ Public Class Etat
 #Region "Methods"
 
     ''' <summary>
-    ''' Surcharge de la méthode Equals permettant de comparer un deux Etats
+    ''' Surcharge de la méthode Equals permettant de comparer un deux états
     ''' </summary>
-    ''' <param name="obj"></param>
-    ''' <returns></returns>
+    ''' <param name="obj">État à comparer</param>
+    ''' <returns>Retourne un booléen indiquant si les deux états sont identiques</returns>
     ''' <remarks></remarks>
     Public Overrides Function Equals(ByVal obj As Object) As Boolean
         If (Me IsNot Nothing And obj IsNot Nothing) Then
@@ -91,9 +91,9 @@ Public Class Etat
 #Region "DataAccess"
 
     ''' <summary>
-    ''' Permet de récupérer les informations d'un état dans la base de données
+    ''' Permet de récupérer les informations d'un état dans la base de données à partir de son identifier
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un objet de la classe Etat</returns>
     ''' <remarks></remarks>
     Public Function GetEtat() As Etat
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -137,7 +137,7 @@ Public Class Etat
     ''' <summary>
     ''' Permet de récupérer tous les états dans la base de données
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Etat</returns>
     ''' <remarks></remarks>
     Public Shared Function GetEtats() As List(Of Etat)
         Dim etats As New List(Of Etat)
@@ -174,6 +174,7 @@ Public Class Etat
     ''' <summary>
     ''' Permet d'insérer un état en base de données
     ''' </summary>
+    ''' <returns>Retourne son identifier définit par la BDD</returns>
     ''' <remarks></remarks>
     Public Function Insert() As Long
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -295,9 +296,9 @@ Public Class Etat
     End Sub
 
     ''' <summary>
-    ''' Permet de savoir si un état est utiliser dans une commande
+    ''' Permet de savoir si un état est utilisé dans une commande
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un booléen indiquant si l'état est utilisé</returns>
     ''' <remarks></remarks>
     Public Function IsUsed() As Boolean
         Dim bool As Boolean = False

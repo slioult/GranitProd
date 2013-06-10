@@ -18,7 +18,6 @@
 
         Me.CbxConfSession.SelectedIndex = 0
         Me.CbxConfSession_SelectionChanged(Nothing, Nothing)
-
     End Sub
 #End Region
 
@@ -56,7 +55,7 @@
         If Me.CbxConfSession.SelectedIndex = 0 And TxtIdSession.Text <> "" Then
             If PwdBxMdpSession.Password <> "" Then
                 If Me.PwdBxMdpSession.Password.ToUpper = Me.PwdBxConfirmationMdpSession.Password.ToUpper Then
-                    Dim session As New Session(TxtIdSession.Text, PwdBxMdpSession.Password, ChkAddCmd.IsChecked, ChkUpdCmd.IsChecked, ChkDelCmd.IsChecked, ChkDispCA.IsChecked, ChkDispPaneld.IsChecked, ChkUpdConfig.IsChecked, ChkUpdSession.IsChecked)
+                    Dim session As New Session(TxtIdSession.Text, PwdBxMdpSession.Password, ChkAddCmd.IsChecked, ChkUpdCmd.IsChecked, ChkDelCmd.IsChecked, ChkDispCA.IsChecked, ChkDispPanel.IsChecked, ChkUpdConfig.IsChecked, ChkUpdSession.IsChecked)
                     Dim isExists As Boolean = False
                     For Each item In Me.CbxConfSession.Items
                         Dim tempSession As Session = item
@@ -106,12 +105,12 @@
 
                         If result = MessageBoxResult.Yes Then
                             session.Login = TxtIdSession.Text
-                            session.Password = PwdBxMdpSession.Password
+                            session.Password = Crypt.getMd5Hash(PwdBxMdpSession.Password)
                             session.IsAddCmd = ChkAddCmd.IsChecked
                             session.IsUpdCmd = ChkUpdCmd.IsChecked
                             session.IsDelCmd = ChkDelCmd.IsChecked
                             session.IsDispCA = ChkDispCA.IsChecked
-                            session.IsDispPanel = ChkDispPaneld.IsChecked
+                            session.IsDispPanel = ChkDispPanel.IsChecked
                             session.IsUpdConfig = ChkUpdConfig.IsChecked
                             session.IsUpdSession = ChkUpdSession.IsChecked
                             session.Update()
@@ -149,27 +148,31 @@
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub CbxConfSession_SelectionChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
-        If CbxConfSession.SelectedItem IsNot Nothing Then
-            PwdBxMdpSession.Clear()
-            PwdBxConfirmationMdpSession.Clear()
-        End If
 
         If Me.CbxConfSession.SelectedIndex = 0 Then
             Me.ChkAddCmd.IsChecked = False
             Me.ChkDelCmd.IsEnabled = False
             Me.ChkDelCmd.IsChecked = False
-            Me.ChkDispCA.IsEnabled = False
             Me.ChkDispCA.IsChecked = False
-            Me.ChkDispPaneld.IsEnabled = False
-            Me.ChkDispPaneld.IsChecked = False
+            Me.ChkDispPanel.IsEnabled = False
+            Me.ChkDispPanel.IsChecked = False
 
             Me.ChkDispCA.IsChecked = False
-            Me.ChkDispPaneld.IsEnabled = False
-            Me.ChkDispPaneld.IsChecked = False
+            Me.ChkDispPanel.IsEnabled = False
+            Me.ChkDispPanel.IsChecked = False
 
             Me.ChkUpdConfig.IsChecked = False
             Me.ChkUpdSession.IsEnabled = False
             Me.ChkUpdSession.IsChecked = False
+        ElseIf (Me.CbxConfSession.SelectedItem IsNot Nothing) Then
+            Dim s As Session = Me.CbxConfSession.SelectedItem
+            Me.ChkAddCmd.IsChecked = s.IsAddCmd
+            Me.ChkUpdCmd.IsChecked = s.IsUpdCmd
+            Me.ChkDelCmd.IsChecked = s.IsDelCmd
+            Me.ChkDispCA.IsChecked = s.IsDispCA
+            Me.ChkDispPanel.IsChecked = s.IsDispPanel
+            Me.ChkUpdConfig.IsChecked = s.IsUpdConfig
+            Me.ChkUpdSession.IsChecked = s.IsUpdSession
         End If
     End Sub
 
@@ -181,7 +184,6 @@
     ''' <remarks></remarks>
     Private Sub ChkAddCmd_Checked(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
         Me.ChkDelCmd.IsEnabled = True
-        Me.ChkDispCA.IsEnabled = True
         Me.ChkUpdCmd.IsChecked = True
     End Sub
 
@@ -194,10 +196,6 @@
     Private Sub ChkAddCmd_Unchecked(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
         Me.ChkDelCmd.IsEnabled = False
         Me.ChkDelCmd.IsChecked = False
-        Me.ChkDispCA.IsEnabled = False
-        Me.ChkDispCA.IsChecked = False
-        Me.ChkDispPaneld.IsEnabled = False
-        Me.ChkDispPaneld.IsChecked = False
     End Sub
 
     ''' <summary>
@@ -207,7 +205,8 @@
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub ChkDispCA_Checked(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
-        Me.ChkDispPaneld.IsEnabled = True
+        Me.ChkDispCA.IsEnabled = True
+        Me.ChkDispPanel.IsEnabled = True
     End Sub
 
     ''' <summary>
@@ -217,8 +216,8 @@
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub ChkDispCA_Unchecked(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
-        Me.ChkDispPaneld.IsEnabled = False
-        Me.ChkDispPaneld.IsChecked = False
+        Me.ChkDispPanel.IsEnabled = False
+        Me.ChkDispPanel.IsChecked = False
     End Sub
 
     ''' <summary>

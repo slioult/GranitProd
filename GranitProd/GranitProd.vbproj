@@ -140,8 +140,12 @@
     <Compile Include="Fenêtres\FenetreConfiguration\OngletsConfig\ConfQualite.xaml.vb">
       <DependentUpon>ConfQualite.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Fenêtres\FenetreConfiguration\OngletsConfig\ConfSession.xaml.vb" />
     <Compile Include="Fenêtres\Panel.xaml.vb">
       <DependentUpon>Panel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Fenêtres\PlanningView.xaml.vb">
+      <DependentUpon>PlanningView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Fenêtres\Version.xaml.vb">
       <DependentUpon>Version.xaml</DependentUpon>
@@ -177,9 +181,6 @@
     </Compile>
     <Compile Include="Fenêtres\FenetreConfiguration\OngletsConfig\ConfReleves.xaml.vb">
       <DependentUpon>ConfReleves.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Fenêtres\FenetreConfiguration\OngletsConfig\ConfSession.xaml.vb">
-      <DependentUpon>ConfSession.xaml</DependentUpon>
     </Compile>
     <Compile Include="Fenêtres\OngletsPrincipaux\CA.xaml.vb">
       <DependentUpon>CA.xaml</DependentUpon>
@@ -292,6 +293,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Fenêtres\Panel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Fenêtres\PlanningView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -448,6 +453,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\sablier.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\zoom.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

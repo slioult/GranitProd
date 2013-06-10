@@ -82,8 +82,8 @@ Public Class Qualite
     ''' <summary>
     ''' Surcharge de la méthode Equals permettant de comparer deux qualités
     ''' </summary>
-    ''' <param name="obj"></param>
-    ''' <returns></returns>
+    ''' <param name="obj">Qualité à comparer</param>
+    ''' <returns>Retourne un booléen indiquant si deux qualités sont identiques</returns>
     ''' <remarks></remarks>
     Public Overrides Function Equals(ByVal obj As Object) As Boolean
         If (Me IsNot Nothing And obj IsNot Nothing) Then
@@ -112,9 +112,9 @@ Public Class Qualite
 #Region "DataAccess"
 
     ''' <summary>
-    ''' Permet de récupérer les informations de la qualité
+    ''' Permet de récupérer les informations de la qualité à partir de sont identifier
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un objet de la classe Qualite</returns>
     ''' <remarks></remarks>
     Public Function GetQualite() As Qualite
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -157,7 +157,7 @@ Public Class Qualite
     ''' <summary>
     ''' Permet de récupérer les type de qualité dans la base de données
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Qualite</returns>
     ''' <remarks></remarks>
     Public Shared Function GetQualites() As List(Of Qualite)
         Dim qualites As New List(Of Qualite)
@@ -195,6 +195,7 @@ Public Class Qualite
     ''' <summary>
     ''' Met à jour les problèmes de qualité d'une commande
     ''' </summary>
+    ''' <param name="idCmd">Identifier de la commande à laquelle se réfèrent les problèmes</param>
     ''' <remarks></remarks>
     Public Sub UpdateQualitiesProblems(ByVal idCmd As Long)
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -270,7 +271,7 @@ Public Class Qualite
     ''' Récupère tous les problèmes de qualité d'une commande
     ''' </summary>
     ''' <param name="idCmd">Identifier de la commande</param>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Qualite</returns>
     ''' <remarks></remarks>
     Public Shared Function GetCommandeQualites(ByVal idCmd As Long) As List(Of Qualite)
         Dim qualites As New List(Of Qualite)
@@ -321,7 +322,7 @@ Public Class Qualite
     ''' <summary>
     ''' Permet de savoir si une qualité est utiliser dans une commande
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un booléen indiquant si le problème est référencé pour une commande</returns>
     ''' <remarks></remarks>
     Public Function IsUsed() As Boolean
         Dim bool As Boolean = False
@@ -360,6 +361,7 @@ Public Class Qualite
     ''' <summary>
     ''' Permet d'insérer une qualité en base de données
     ''' </summary>
+    ''' <returns>Retourne l'identifier du problème de qualité définit par la base de données</returns>
     ''' <remarks></remarks>
     Public Function Insert() As Long
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -476,10 +478,10 @@ Public Class Qualite
     End Sub
 
     ''' <summary>
-    ''' Permet d'insérer un problème de qualité en base de données
+    ''' Permet d'insérer un problème de qualité relatif à une commande en base de données
     ''' </summary>
     ''' <param name="idCmd">Identifier de la commande à laquelle se rapporte le problème de qualité</param>
-    ''' <returns></returns>
+    ''' <returns>Retourne l'identifier du problème signalé définit par la BDD</returns>
     ''' <remarks></remarks>
     Public Function InsertPb(ByVal idCmd As Long) As Long
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -526,7 +528,7 @@ Public Class Qualite
     End Function
 
     ''' <summary>
-    ''' Permet de supprimer un problème de qualité en base de données
+    ''' Permet de supprimer un problème de qualité relatif à une commande en base de données
     ''' </summary>
     ''' <param name="idCmd">Identifier de la commande à laquelle se rapporte le problème de qualité</param>
     ''' <remarks></remarks>

@@ -712,10 +712,10 @@ Public Class NouvelleCommande
         Try
             If (CbxSemainePrevue.IsDropDownOpen Or CbxDelaiPrevuYear.IsDropDownOpen) Then
                 If (CbxSemainePrevue.SelectedIndex <> 0 AndAlso CbxDelaiPrevuYear.SelectedIndex <> 0) Then
-                    Dim pl As New PlanningControl()
+                    Dim pl As New PlanningControl(True)
                     DpkDelaiPrevu.SelectedDate = pl.GetDaysOfWeek(CbxSemainePrevue.SelectedItem, CbxDelaiPrevuYear.SelectedItem).ElementAt(0)
                 ElseIf (CbxDelaiPrevuYear.SelectedIndex = 0 And CbxSemainePrevue.SelectedIndex <> 0) Then
-                    Dim pl As New PlanningControl()
+                    Dim pl As New PlanningControl(True)
                     DpkDelaiPrevu.SelectedDate = pl.GetDaysOfWeek(CbxSemainePrevue.SelectedItem, Date.Now.Year).ElementAt(0)
                 ElseIf (CbxSemainePrevue.SelectedIndex = 0 AndAlso CbxDelaiPrevuYear.SelectedIndex = 0) Then
                     DpkDelaiPrevu.SelectedDate = Nothing
@@ -744,10 +744,10 @@ Public Class NouvelleCommande
         Try
             If (CbxSemaineFinalisation.IsDropDownOpen Or CbxFinalisationYear.IsDropDownOpen) Then
                 If (CbxSemaineFinalisation.SelectedIndex <> 0 AndAlso CbxFinalisationYear.SelectedIndex <> 0) Then
-                    Dim pl As New PlanningControl()
+                    Dim pl As New PlanningControl(True)
                     DpkFinalisation.SelectedDate = pl.GetDaysOfWeek(CbxSemaineFinalisation.SelectedItem, CbxFinalisationYear.SelectedItem).ElementAt(0)
                 ElseIf (CbxFinalisationYear.SelectedIndex = 0 And CbxSemaineFinalisation.SelectedIndex <> 0) Then
-                    Dim pl As New PlanningControl()
+                    Dim pl As New PlanningControl(True)
                     DpkFinalisation.SelectedDate = pl.GetDaysOfWeek(CbxSemaineFinalisation.SelectedItem, Date.Now.Year).ElementAt(0)
                 ElseIf (CbxSemaineFinalisation.SelectedIndex = 0 AndAlso CbxFinalisationYear.SelectedIndex = 0) Then
                     DpkFinalisation.SelectedDate = Nothing
@@ -776,10 +776,10 @@ Public Class NouvelleCommande
         Try
             If (CbxSemaineMesure.IsDropDownOpen Or CbxMesureYear.IsDropDownOpen) Then
                 If (CbxSemaineMesure.SelectedIndex <> 0 AndAlso CbxMesureYear.SelectedIndex <> 0) Then
-                    Dim pl As New PlanningControl()
+                    Dim pl As New PlanningControl(True)
                     DpkMesure.SelectedDate = pl.GetDaysOfWeek(CbxSemaineMesure.SelectedItem, CbxMesureYear.SelectedItem).ElementAt(0)
                 ElseIf (CbxMesureYear.SelectedIndex = 0 And CbxSemaineMesure.SelectedIndex <> 0) Then
-                    Dim pl As New PlanningControl()
+                    Dim pl As New PlanningControl(True)
                     DpkMesure.SelectedDate = pl.GetDaysOfWeek(CbxSemaineMesure.SelectedItem, Date.Now.Year).ElementAt(0)
                 ElseIf (CbxSemaineMesure.SelectedIndex = 0 AndAlso CbxMesureYear.SelectedIndex = 0) Then
                     DpkMesure.SelectedDate = Nothing
@@ -808,10 +808,10 @@ Public Class NouvelleCommande
         Try
             If (CbxSemaineCommande.IsDropDownOpen Or CbxCommandeYear.IsDropDownOpen) Then
                 If (CbxSemaineCommande.SelectedIndex <> 0 AndAlso CbxCommandeYear.SelectedIndex <> 0) Then
-                    Dim pl As New PlanningControl()
+                    Dim pl As New PlanningControl(True)
                     DpkDateCommande.SelectedDate = pl.GetDaysOfWeek(CbxSemaineCommande.SelectedItem, CbxCommandeYear.SelectedItem).ElementAt(0)
                 ElseIf (CbxCommandeYear.SelectedIndex = 0 And CbxSemaineCommande.SelectedIndex <> 0) Then
-                    Dim pl As New PlanningControl()
+                    Dim pl As New PlanningControl(True)
                     DpkDateCommande.SelectedDate = pl.GetDaysOfWeek(CbxSemaineCommande.SelectedItem, Date.Now.Year).ElementAt(0)
                 ElseIf (CbxSemaineCommande.SelectedIndex = 0 AndAlso CbxCommandeYear.SelectedIndex = 0) Then
                     DpkDateCommande.SelectedDate = Nothing
@@ -837,7 +837,7 @@ Public Class NouvelleCommande
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub DpkDelaiPrevu_SelectedDateChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
-        Dim pl As New PlanningControl()
+        Dim pl As New PlanningControl(True)
         If (IsNothing(DpkDelaiPrevu) = False And DpkDelaiPrevu IsNot Nothing AndAlso DpkDelaiPrevu.SelectedDate IsNot Nothing) Then
             Try
                 CbxSemainePrevue.SelectedItem = pl.GetWeekOfDate(DpkDelaiPrevu.SelectedDate)
@@ -859,7 +859,7 @@ Public Class NouvelleCommande
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub DpkFinalisation_SelectedDateChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
-        Dim pl As New PlanningControl()
+        Dim pl As New PlanningControl(True)
         If (IsNothing(DpkFinalisation) = False And DpkFinalisation IsNot Nothing AndAlso DpkFinalisation.SelectedDate IsNot Nothing) Then
             Try
                 CbxSemaineFinalisation.SelectedItem = pl.GetWeekOfDate(DpkFinalisation.SelectedDate)
@@ -880,7 +880,7 @@ Public Class NouvelleCommande
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub DpkMesure_SelectedDateChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
-        Dim pl As New PlanningControl()
+        Dim pl As New PlanningControl(True)
         If (IsNothing(DpkMesure) = False And DpkMesure.SelectedDate IsNot Nothing AndAlso DpkMesure.SelectedDate IsNot Nothing) Then
             Try
                 CbxSemaineMesure.SelectedItem = pl.GetWeekOfDate(DpkMesure.SelectedDate)
@@ -901,7 +901,7 @@ Public Class NouvelleCommande
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub DpkDateCommande_SelectedDateChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
-        Dim pl As New PlanningControl()
+        Dim pl As New PlanningControl(True)
         If (IsNothing(DpkDateCommande) = False And DpkDateCommande.SelectedDate IsNot Nothing AndAlso DpkDateCommande.SelectedDate IsNot Nothing) Then
             Try
                 CbxSemaineCommande.SelectedItem = pl.GetWeekOfDate(DpkDateCommande.SelectedDate)
@@ -1838,7 +1838,7 @@ Public Class NouvelleCommande
     ''' Convertit un nombre de minutes en Heure et Minute.
     ''' </summary>
     ''' <param name="min">Nombre de minutes à convertir</param>
-    ''' <returns>Retourne une chaîne de caracère contenant les heures et les minutes séparées par le caractères ';'</returns>
+    ''' <returns>Retourne une chaîne de caracère contenant les heures et les minutes séparées par le caractère ';'</returns>
     ''' <remarks></remarks>
     Private Function convertMinuteToHourMinute(ByVal min As Integer) As String
         Dim result As String = String.Empty

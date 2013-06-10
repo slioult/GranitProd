@@ -33,7 +33,7 @@
                 <RowDefinition Height="30*"/>
                 <RowDefinition Height="35*"/>
             </Grid.RowDefinitions>
-            <ComboBox Name="CbxConfSession" Grid.Column="1" Grid.Row="1" FontFamily="Calibri" FontSize="15" MinHeight="22" 
+            <ComboBox Name="CbxConfSession" Grid.Column="1" Grid.Row="1" FontFamily="Calibri" FontSize="15" MinHeight="22" SelectionChanged="CbxConfSession_SelectionChanged"
                 MinWidth="100" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <ComboBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type local:Session}" >
@@ -89,7 +89,7 @@
                       IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsDelCmd, Mode=OneWay, Converter={StaticResource configConverter}}"/>
             <CheckBox Name="ChkDispCA" Grid.Row="6" VerticalAlignment="Center" Content="Afficher le chiffre d'affaire" Checked="ChkDispCA_Checked" Unchecked="ChkDispCA_Unchecked"
                       IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsDispCA, Mode=OneWay, Converter={StaticResource configConverter}}"/>
-            <CheckBox Name="ChkDispPaneld" Grid.Row="7" VerticalAlignment="Center" Content="Afficher le tableau de bord"
+            <CheckBox Name="ChkDispPanel" Grid.Row="7" VerticalAlignment="Center" Content="Afficher le tableau de bord"
                       IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsDispPanel, Mode=OneWay, Converter={StaticResource configConverter}}"/>
             <CheckBox Name="ChkUpdConfig" Grid.Row="8" VerticalAlignment="Center" Content="Modifier la configuration" Checked="ChkUpdConfig_Checked" Unchecked="ChkUpdConfig_Unchecked"
                       IsChecked="{Binding ElementName=CbxConfSession, Path=SelectedItem.IsUpdConfig, Mode=OneWay, Converter={StaticResource configConverter}}"/>

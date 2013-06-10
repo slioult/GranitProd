@@ -4,7 +4,7 @@
 
     Public Function Convert(ByVal value As Object, ByVal targetType As System.Type, ByVal parameter As Object, ByVal culture As System.Globalization.CultureInfo) As Object Implements System.Windows.Data.IValueConverter.Convert
         Dim d As DateTime = CType(value, DateTime)
-        Dim p As New PlanningControl()
+        Dim p As New PlanningControl(True)
         Dim sem As Integer = p.GetWeekOfDate(d)
         Dim day As String = IIf(d.Day < 10, "0" + d.Day.ToString(), d.Day.ToString())
         Dim month As String = IIf(d.Month < 10, "0" + d.Month.ToString(), d.Month.ToString())

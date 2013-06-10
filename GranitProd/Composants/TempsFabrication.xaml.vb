@@ -82,7 +82,7 @@ Public Class TempsFabrication
             CbxChoixWeek.Items.Add(i)
         Next
 
-        Dim pl As New PlanningControl()
+        Dim pl As New PlanningControl(True)
         CbxChoixWeek.SelectedIndex = pl.GetWeekOfDate(Date.Now) - 1
         pl = Nothing
 
@@ -117,7 +117,7 @@ Public Class TempsFabrication
         ElseIf (CbxChoix.SelectedIndex = 1) Then
             CbxChoixMonth.Visibility = Windows.Visibility.Visible
             CbxChoixWeek.Visibility = Windows.Visibility.Collapsed
-            Dim pl As New PlanningControl()
+            Dim pl As New PlanningControl(True)
             CbxChoixWeek.SelectedIndex = pl.GetWeekOfDate(Date.Now) - 1
             pl = Nothing
             CbxChoixYear.SelectedItem = Date.Now.Year
@@ -126,7 +126,7 @@ Public Class TempsFabrication
             CbxChoixWeek.Visibility = Windows.Visibility.Collapsed
             CbxChoixMonth.Visibility = Windows.Visibility.Collapsed
             CbxChoixMonth.SelectedIndex = Date.Now.Month - 1
-            Dim pl As New PlanningControl()
+            Dim pl As New PlanningControl(True)
             CbxChoixWeek.SelectedIndex = pl.GetWeekOfDate(Date.Now) - 1
             pl = Nothing
             CbxChoixYear.SelectedItem = Date.Now.Year
@@ -155,7 +155,7 @@ Public Class TempsFabrication
 
             'Choix d'affichage par semaine
             If CbxChoix.SelectedIndex = 0 Then
-                Dim pl As New PlanningControl()
+                Dim pl As New PlanningControl(True)
                 Dim total As Integer = 0
 
                 'Récupère les jours de la semaine
@@ -204,7 +204,7 @@ Public Class TempsFabrication
                 'Choix d'affichage par mois
             ElseIf CbxChoix.SelectedIndex = 1 And CbxChoixYear.SelectedItem IsNot Nothing Then
                 Dim cal As New GregorianCalendar
-                Dim pl As New PlanningControl
+                Dim pl As New PlanningControl(True)
                 'Récupère le nombre de jours dans le mois sélectionné
                 Dim days As Integer = cal.GetDaysInMonth(CbxChoixYear.SelectedItem, CbxChoixMonth.SelectedIndex + 1)
                 Dim month As Integer = CbxChoixMonth.SelectedIndex + 1

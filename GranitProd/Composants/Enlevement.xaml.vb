@@ -110,7 +110,7 @@ Public Class Enlevement
         For i = 1 To 53
             CbxSemaine.Items.Add(i)
         Next
-        Dim pl As New PlanningControl()
+        Dim pl As New PlanningControl(True)
         CbxSemaine.SelectedIndex = pl.GetWeekOfDate(Date.Now) - 1
 
     End Sub
@@ -136,7 +136,7 @@ Public Class Enlevement
                 'Ouvre la connection
                 connection.Open()
 
-                Dim pl As New PlanningControl
+                Dim pl As New PlanningControl(True)
 
                 'Récupère la liste des jours de la semaine sélectionnée
                 Dim dates As List(Of Date) = pl.GetDaysOfWeek(Me.CbxSemaine.SelectedItem, Me.CbxAnnee.SelectedItem)

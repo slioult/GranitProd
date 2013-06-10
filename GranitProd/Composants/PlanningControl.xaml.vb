@@ -9,6 +9,8 @@ Public Class PlanningControl
 
     Private ListOfDays As List(Of Date)
     Private _SelectDate As Date
+    Private _Session As Session
+    Private _Search As RechercheCommande
 
 #End Region
 
@@ -24,6 +26,24 @@ Public Class PlanningControl
         End Set
     End Property
 
+    Public Property Session As Session
+        Get
+            Return Me._Session
+        End Get
+        Set(ByVal value As Session)
+            Me._Session = value
+        End Set
+    End Property
+
+    Public Property Search As RechercheCommande
+        Get
+            Return Me._Search
+        End Get
+        Set(ByVal value As RechercheCommande)
+            Me._Search = value
+        End Set
+    End Property
+
 #End Region
 
 #Region "Constructor"
@@ -35,7 +55,13 @@ Public Class PlanningControl
 
         ' Ajoutez une initialisation quelconque après l'appel InitializeComponent().
         ListOfDays = New List(Of Date)
+        Me.cal.SelectedDate = Date.Now
 
+    End Sub
+
+    Public Sub New(ByVal constructVide As Boolean)
+        ' Cet appel est requis par le concepteur.
+        InitializeComponent()
     End Sub
 
 #End Region
@@ -53,11 +79,9 @@ Public Class PlanningControl
 
         If lbx.SelectedItem IsNot Nothing Then
             Dim commande As Commande = lbx.SelectedItem
-            Dim grid As Grid = Me.Parent
-            Dim main As MainWindow = grid.Parent
 
             'Ouvre une consultation de commande
-            Dim consult As New ConsultCommande(main.Session, commande, main.SearchCommande, Me)
+            Dim consult As New ConsultCommande(Me.Session, commande, Me.Search, Me)
             If consult.ShowType = 0 Then
                 consult.Show()
             Else
@@ -82,6 +106,17 @@ Public Class PlanningControl
         Me.Fill()
     End Sub
 
+    ''' <summary>
+    ''' Bouton permettant d'agrandir le planning
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub BtnExtend_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
+        Dim pv As New PlanningView(Me, Me.Session, Me.SelectDate)
+        pv.Show()
+    End Sub
+
 #End Region
 
 #Region "SelectionChanged"
@@ -96,6 +131,16 @@ Public Class PlanningControl
         If Me.ListOfDays IsNot Nothing Then
             Me.Fill()
         End If
+    End Sub
+
+    ''' <summary>
+    ''' Action se produisant lorsque la date sélectionnée dans le calendrier change
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub cal_SelectedDatesChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
+        Me.SelectDate = cal.SelectedDate
     End Sub
 
 #End Region
@@ -152,10 +197,10 @@ Public Class PlanningControl
     End Sub
 
     ''' <summary>
-    ''' Permet le numéro d'une semaine à partir d'une date
+    ''' Permet de récupérer le numéro d'une semaine à partir d'une date
     ''' </summary>
     ''' <param name="d">Date contenue dans la semaine</param>
-    ''' <returns></returns>
+    ''' <returns>Retourne un numéro de semaine</returns>
     ''' <remarks></remarks>
     Public Function GetWeekOfDate(ByVal d As Date) As Integer
         Dim semaine As Integer = DatePart(DateInterval.WeekOfYear, d)
@@ -173,7 +218,7 @@ Public Class PlanningControl
     ''' </summary>
     ''' <param name="semaine">Numéro de la semaine</param>
     ''' <param name="year">Année de la semaine</param>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste de dates</returns>
     ''' <remarks></remarks>
     Public Function GetDaysOfWeek(ByVal semaine As Integer, ByVal year As Integer) As List(Of Date)
         GetDaysOfWeek = New List(Of Date)
@@ -250,11 +295,41 @@ Public Class PlanningControl
         Try
             Dim Dates As New List(Of Date)
             ' Récupère les n° de jour de la semaine
-            Dim lundi As Integer = IIf(Integer.TryParse(TxtLundi.Text, 0), Integer.Parse(TxtLundi.Text), 0)
-            Dim mardi As Integer = IIf(Integer.TryParse(TxtMardi.Text, 0), Integer.Parse(TxtMardi.Text), 0)
-            Dim mercredi As Integer = IIf(Integer.TryParse(TxtMercredi.Text, 0), Integer.Parse(TxtMercredi.Text), 0)
-            Dim jeudi As Integer = IIf(Integer.TryParse(TxtJeudi.Text, 0), Integer.Parse(TxtJeudi.Text), 0)
-            Dim vendredi As Integer = IIf(Integer.TryParse(TxtVendredi.Text, 0), Integer.Parse(TxtVendredi.Text), 0)
+            Dim lundi As Integer
+            Dim mardi As Integer
+            Dim mercredi As Integer
+            Dim jeudi As Integer
+            Dim vendredi As Integer
+
+            If Integer.TryParse(TxtLundi.Text, 0) Then
+                lundi = Integer.Parse(TxtLundi.Text)
+            Else
+                lundi = 0
+            End If
+
+            If Integer.TryParse(TxtMardi.Text, 0) Then
+                mardi = Integer.Parse(TxtMardi.Text)
+            Else
+                mardi = 0
+            End If
+
+            If Integer.TryParse(TxtMercredi.Text, 0) Then
+                mercredi = Integer.Parse(TxtMercredi.Text)
+            Else
+                mercredi = 0
+            End If
+
+            If Integer.TryParse(TxtJeudi.Text, 0) Then
+                jeudi = Integer.Parse(TxtJeudi.Text)
+            Else
+                jeudi = 0
+            End If
+
+            If Integer.TryParse(TxtVendredi.Text, 0) Then
+                vendredi = Integer.Parse(TxtVendredi.Text)
+            Else
+                vendredi = 0
+            End If
             Me.LbxLundi.Items.Clear()
             Me.LbxMardi.Items.Clear()
             Me.LbxMercredi.Items.Clear()

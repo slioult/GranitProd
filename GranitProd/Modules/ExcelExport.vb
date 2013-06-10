@@ -10,7 +10,7 @@ Public Module ExcelExport
     ''' <param name="cmds">Liste des commandes à exporter</param>
     ''' <param name="search">Différents critères de la recherches ayant abouti à ces résultats</param>
     ''' <param name="etatCmd">État des commandes (Terminée, Rendue ou en cours)</param>
-    ''' <param name="format"></param>
+    ''' <param name="format">Format de l'export (PDF ou EXCEL)</param>
     ''' <remarks></remarks>
     Public Sub ExportCommande(ByVal cmds As List(Of Commande), ByVal search As String, ByVal etatCmd As String, ByVal format As String)
         'Instancie une nouvelle application EXCEL
@@ -53,7 +53,7 @@ Public Module ExcelExport
                 If cmd.DateCommande.Day < 10 Then jour = "0" + cmd.DateCommande.Day.ToString() Else jour = cmd.DateCommande.Day.ToString()
                 If cmd.DateCommande.Month < 10 Then mois = "0" + cmd.DateCommande.Month.ToString() Else mois = cmd.DateCommande.Month.ToString()
                 xlWorkSheet.Cells(l, 2) = jour + "/" + mois + "/" + cmd.DateCommande.Year.ToString() + Environment.NewLine +
-                    " sem " + New PlanningControl().GetWeekOfDate(cmd.DateCommande).ToString()
+                    " sem " + New PlanningControl(True).GetWeekOfDate(cmd.DateCommande).ToString()
                 xlWorkSheet.Cells(l, 3) = cmd.Client.Nom
                 If cmd.Contremarque IsNot Nothing Then
                     xlWorkSheet.Cells(l, 4) = cmd.Contremarque.Nom
@@ -93,7 +93,7 @@ Public Module ExcelExport
                 If cmd.DelaiPrevu.Hour < 10 Then heure = "0" + cmd.DelaiPrevu.Hour.ToString() Else heure = cmd.DelaiPrevu.Hour.ToString()
                 If cmd.DelaiPrevu.Minute < 10 Then minute = "0" + cmd.DelaiPrevu.Minute.ToString() Else minute = cmd.DelaiPrevu.Minute.ToString()
 
-                xlWorkSheet.Cells(l, 9) = jour + "/" + mois + "/" + cmd.DelaiPrevu.Year.ToString() + Environment.NewLine + " sem " + New PlanningControl().GetWeekOfDate(cmd.DelaiPrevu).ToString()
+                xlWorkSheet.Cells(l, 9) = jour + "/" + mois + "/" + cmd.DelaiPrevu.Year.ToString() + Environment.NewLine + " sem " + New PlanningControl(True).GetWeekOfDate(cmd.DelaiPrevu).ToString()
                 Dim prestations As String = String.Empty
                 For Each fin In cmd.Finalisations
                     If prestations = String.Empty Then
@@ -111,7 +111,7 @@ Public Module ExcelExport
 
                 xlWorkSheet.Cells(l, 11) = jour + "/" + mois + "/" + cmd.DateFinalisations.Year.ToString() + Environment.NewLine +
                     heure + "h" + minute + Environment.NewLine +
-                    " sem " + New PlanningControl().GetWeekOfDate(cmd.DateFinalisations).ToString()
+                    " sem " + New PlanningControl(True).GetWeekOfDate(cmd.DateFinalisations).ToString()
             Next
 
             'Renseigne les noms de colonne
@@ -237,7 +237,7 @@ Public Module ExcelExport
     ''' </summary>
     ''' <param name="Process1">Liste des processus avant la création du processus Excel</param>
     ''' <param name="Process2">Liste des processus après la création du processus Excel</param>
-    ''' <returns></returns>
+    ''' <returns>Retourne l'id du processus Excel créé</returns>
     ''' <remarks></remarks>
     Public Function GetProcId(ByVal Process1 As Process(), ByVal Process2 As Process()) As Integer
         Dim ProcId% = 0

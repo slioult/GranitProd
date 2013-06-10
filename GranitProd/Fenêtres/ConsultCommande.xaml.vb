@@ -113,7 +113,7 @@ Public Class ConsultCommande
 #Region "Events"
 
     ''' <summary>
-    ''' Évènement se produisant lors de la fermeture de la fenêtre
+    ''' Évènement se produisant lors de la fermeture de la fenêtre. Indique que la commande n'est plus verrouillée en modification
     ''' </summary>
     ''' <param name="sender"></param>
     ''' <param name="e"></param>

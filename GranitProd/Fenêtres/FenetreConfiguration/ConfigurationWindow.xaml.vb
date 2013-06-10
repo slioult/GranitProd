@@ -29,7 +29,6 @@
         Me.confEpaisseur.NouvelleCommande = Me.NouvelleCommande
         Me.confFinalisation.Planning = Me.Planning
         Me.confReleves.Planning = Me.Planning
-
     End Sub
 
 #End Region

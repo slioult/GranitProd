@@ -65,8 +65,8 @@ Public Class Materiau
     ''' <summary>
     ''' Surcharge de la méthode Equals permettant de comparer deux materiaux
     ''' </summary>
-    ''' <param name="obj"></param>
-    ''' <returns></returns>
+    ''' <param name="obj">Matériau à comparer</param>
+    ''' <returns>Retourne un booléen indiquant si les deux matéiaux sont identiques</returns>
     ''' <remarks></remarks>
     Public Overrides Function Equals(ByVal obj As Object) As Boolean
         If (Me IsNot Nothing And obj IsNot Nothing) Then
@@ -90,9 +90,9 @@ Public Class Materiau
 #Region "DataAccess"
 
     ''' <summary>
-    ''' Permet de récupérer les informations du matériau
+    ''' Permet de récupérer les informations du matériau à partir de son identifier
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un objet de la classe Materiau</returns>
     ''' <remarks></remarks>
     Public Function GetMateriau() As Materiau
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -135,7 +135,7 @@ Public Class Materiau
     ''' <summary>
     ''' Permet de récupérer les matériaux dans la base de données
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Materiau</returns>
     ''' <remarks></remarks>
     Public Shared Function GetMateriaux() As List(Of Materiau)
         Dim materiaux As New List(Of Materiau)
@@ -173,6 +173,7 @@ Public Class Materiau
     ''' <summary>
     ''' Permet d'insérer un matériau en base de données
     ''' </summary>
+    ''' <returns>Retourne l'identifier du matériau définit par la BDD</returns>
     ''' <remarks></remarks>
     Public Function Insert() As Long
         Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
@@ -290,9 +291,9 @@ Public Class Materiau
     End Sub
 
     ''' <summary>
-    ''' Permet de savoir si un materiau est utiliser dans une commande
+    ''' Permet de savoir si un materiau est utilisé dans une commande
     ''' </summary>
-    ''' <returns></returns>
+    ''' <returns>Retourne un booléen indiquant si une commande fait référence au matériau</returns>
     ''' <remarks></remarks>
     Public Function IsUsed() As Boolean
         Dim bool As Boolean = False

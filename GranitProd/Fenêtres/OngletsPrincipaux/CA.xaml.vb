@@ -53,7 +53,7 @@ Public Class CA
             CbxChoixWeek.Items.Add(i)
         Next
 
-        Dim pl As New PlanningControl()
+        Dim pl As New PlanningControl(True)
         CbxChoixWeek.SelectedIndex = pl.GetWeekOfDate(Date.Now) - 1
         pl = Nothing
     End Sub
@@ -79,7 +79,7 @@ Public Class CA
         ElseIf (CbxChoix.SelectedIndex = 1) Then
             CbxChoixMonth.Visibility = Windows.Visibility.Visible
             CbxChoixWeek.Visibility = Windows.Visibility.Collapsed
-            Dim pl As New PlanningControl()
+            Dim pl As New PlanningControl(True)
             CbxChoixWeek.SelectedIndex = pl.GetWeekOfDate(Date.Now) - 1
             pl = Nothing
             CbxChoixYear.SelectedItem = Date.Now.Year
@@ -88,7 +88,7 @@ Public Class CA
             CbxChoixWeek.Visibility = Windows.Visibility.Collapsed
             CbxChoixMonth.Visibility = Windows.Visibility.Collapsed
             CbxChoixMonth.SelectedIndex = Date.Now.Month - 1
-            Dim pl As New PlanningControl()
+            Dim pl As New PlanningControl(True)
             CbxChoixWeek.SelectedIndex = pl.GetWeekOfDate(Date.Now) - 1
             pl = Nothing
             CbxChoixYear.SelectedItem = Date.Now.Year
@@ -117,7 +117,7 @@ Public Class CA
 
             'Choix par semaine
             If CbxChoix.SelectedIndex = 0 Then
-                Dim pl As New PlanningControl()
+                Dim pl As New PlanningControl(True)
                 Dim total As Decimal = 0
 
                 'Récupère les jours de la semaine sélectionnée
@@ -165,7 +165,7 @@ Public Class CA
                 'Choix d'affichage par mois
             ElseIf CbxChoix.SelectedIndex = 1 And CbxChoixYear.SelectedItem IsNot Nothing Then
                 Dim cal As New GregorianCalendar
-                Dim pl As New PlanningControl
+                Dim pl As New PlanningControl(True)
                 'Récupère le nombre du jours dans le mois sélectionné
                 Dim days As Integer = cal.GetDaysInMonth(CbxChoixYear.SelectedItem, CbxChoixMonth.SelectedIndex + 1)
                 Dim month As Integer = CbxChoixMonth.SelectedIndex + 1

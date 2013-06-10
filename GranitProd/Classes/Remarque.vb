@@ -74,8 +74,8 @@ Public Class Remarque
     ''' <summary>
     ''' Surcharge de la méthode Equals permettant de comparer deux remarques
     ''' </summary>
-    ''' <param name="obj"></param>
-    ''' <returns></returns>
+    ''' <param name="obj">Remarque à comparer</param>
+    ''' <returns>Retourne un booléen indiquant si les deux remarques sont identiques</returns>
     ''' <remarks></remarks>
     Public Overrides Function Equals(ByVal obj As Object) As Boolean
         If (Me IsNot Nothing And obj IsNot Nothing) Then
@@ -101,7 +101,7 @@ Public Class Remarque
     ''' <summary>
     ''' Permet d'insérer une remarque dans la base de données
     ''' </summary>
-    ''' <param name="idCmd"></param>
+    ''' <param name="idCmd">Identifier de la commande à laquelle se réfère la remarque</param>
     ''' <remarks></remarks>
     Public Sub Insert(ByVal idCmd As Long)
         If (idCmd <> 0) Then
@@ -188,7 +188,7 @@ Public Class Remarque
     ''' Permet de récupérer toutes les remarques relatives à une commande
     ''' </summary>
     ''' <param name="idCmd">Identifier de la commande</param>
-    ''' <returns></returns>
+    ''' <returns>Retourne une liste d'objets de la classe Remarque</returns>
     ''' <remarks></remarks>
     Public Shared Function GetRemarques(ByVal idCmd As Long) As List(Of Remarque)
         Dim parameters As New List(Of MySqlParameter)

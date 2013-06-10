@@ -10,13 +10,13 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="35*" />
-            <ColumnDefinition Width="65*" />
+            <ColumnDefinition Width="50*" />
+            <ColumnDefinition Width="50*" />
         </Grid.ColumnDefinitions>
 
         <ToolBar Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right">
@@ -41,9 +41,8 @@
             </Button>
         </ToolBar>
 
-        <Calendar Grid.Row="1" Grid.Column="0" x:Name="cal" Language="fr-FR" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center"
-                  SelectedDatesChanged="cal_SelectedDatesChanged" />
-        <local:PlanningControl x:Name="planning" Grid.Row="2" Grid.Column="0" Margin="10" />
+    
+        <local:PlanningControl x:Name="planning" Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Margin="10"  />
 
         <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" >
             <TabControl Background="Transparent">
