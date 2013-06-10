@@ -32,14 +32,10 @@
         <TextBlock x:Name="TxtVersion" Grid.Row="3" Grid.Column="1" Height="20" Width="Auto" FontSize="13" Foreground="#ffca0f" Background="Transparent"
                        VerticalAlignment="center" HorizontalAlignment="Left" Margin="5,0,0,0" TextAlignment="center" />
 
-        <TextBlock Grid.Row="4" Grid.Column="0" Height="20" Width="Auto" FontSize="13" Foreground="#ffca0f" Background="Transparent" Text="Développeurs :"
+        <TextBlock Grid.Row="4" Grid.Column="0" Height="20" Width="Auto" FontSize="13" Foreground="#ffca0f" Background="Transparent" Text="Développeur :"
                        VerticalAlignment="center" HorizontalAlignment="Right" Margin="0,0,5,0" TextAlignment="center" />
 
-        <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Bottom" >
-            <TextBlock Height="20" Width="Auto" FontSize="13" Foreground="#ffca0f" Background="Transparent" Text="LIOULT Samuel"
-                       VerticalAlignment="center" HorizontalAlignment="Left" Margin="5,0,0,0" TextAlignment="center" />
-            <TextBlock Height="20" Width="Auto" FontSize="13" Foreground="#ffca0f" Background="Transparent" Text="PACHECO Luis Alberto"
-                       VerticalAlignment="center" HorizontalAlignment="Left" Margin="5,0,0,0" TextAlignment="center" />
-        </StackPanel>
+        <TextBlock Height="20" Width="Auto" FontSize="13" Foreground="#ffca0f" Background="Transparent" Text="LIOULT Samuel"
+                       VerticalAlignment="center" HorizontalAlignment="Left" Margin="5,0,0,0" TextAlignment="center" Grid.Row="4" Grid.Column="1" />
     </Grid>
 </Window>
