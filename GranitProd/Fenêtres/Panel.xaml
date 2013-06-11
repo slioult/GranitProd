@@ -33,8 +33,19 @@
                         </Image.Source>
                     </Image>
                 </Button.Content>
+                <Button.ToolTip>
+                    <ToolTip>
+                        <TextBlock>Actualiser le tableau de bord</TextBlock>
+                    </ToolTip>
+                </Button.ToolTip>
             </Button>
-            <Button Content="X" HorizontalAlignment="right" Click="Close" Background="Red" Foreground="White" FontWeight="Bold" Width="25" Height="25" Margin="2,2,20,2" />
+            <Button Content="X" HorizontalAlignment="right" Click="Close" Background="Red" Foreground="White" FontWeight="Bold" Width="25" Height="25" Margin="2,2,20,2" >
+                <Button.ToolTip>
+                    <ToolTip>
+                        <TextBlock>Fermer le tableau de bord</TextBlock>
+                    </ToolTip>
+                </Button.ToolTip>
+            </Button>
         </StackPanel>
 
         <ScrollViewer Grid.Row="1" Grid.Column="0" Margin="10, 0, 10, 10" VerticalScrollBarVisibility="Hidden">

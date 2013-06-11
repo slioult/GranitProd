@@ -196,6 +196,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_7DF1756EC07FDB55D1D519D0B99AD5BB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_5ABB1DA7A8DA717FE086EC3BED2468DC"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -208,7 +214,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_7DF1756EC07FDB55D1D519D0B99AD5BB"
+        "OwnerKey" = "8:_7D59A4791E7949D688E6D00F5AAB4672"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -940,15 +946,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:GranitProd"
-        "ProductCode" = "8:{8C99BBAD-EEC4-4627-9214-9D882137C7E2}"
-        "PackageCode" = "8:{2A9EDA4C-1DBD-4CA6-897F-C35F94E201FD}"
+        "ProductCode" = "8:{B26F385E-BD05-424B-88FB-508903769685}"
+        "PackageCode" = "8:{8A1A8764-B002-408A-A959-D974E713BED7}"
         "UpgradeCode" = "8:{FCC7D729-CD1D-49C0-ADC1-9F64131440F4}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:2.0.0"
+        "ProductVersion" = "8:2.1.0"
         "Manufacturer" = "8:LIOULT Samuel"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1476,7 +1482,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7D59A4791E7949D688E6D00F5AAB4672"
             {
-            "SourcePath" = "8:..\\GranitProd\\obj\\x86\\Debug\\GranitProd.exe"
+            "SourcePath" = "8:..\\GranitProd\\obj\\x86\\Release\\GranitProd.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F1E0E8048DDF421689E47EC03C62F6D9"

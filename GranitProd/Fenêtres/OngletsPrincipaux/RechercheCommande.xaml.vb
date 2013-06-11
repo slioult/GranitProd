@@ -84,9 +84,6 @@ Public Class RechercheCommande
         Dim count As Integer = ds.Count
         Me.DpkDateDebut.SelectedDate = ds(0)
         Me.DpkDateFin.SelectedDate = ds(count - 1)
-
-        Me.CbxSemaine.SelectedIndex = sem
-        Me.CbxAnnee.SelectedItem = Date.Now.Year
     End Sub
 
 #End Region
@@ -650,7 +647,7 @@ Public Class RechercheCommande
     ''' <param name="e"></param>
     ''' <remarks></remarks>
     Private Sub CbxSemaine_SelectionChanged(ByVal sender As System.Object, ByVal e As System.Windows.Controls.SelectionChangedEventArgs)
-        If Me.CbxSemaine.SelectedIndex > 0 And Me.CbxAnnee.SelectedIndex > 0 Then
+        If Me.CbxSemaine.SelectedIndex > 0 AndAlso Me.CbxAnnee.SelectedIndex > 0 Then
             Dim pl As New PlanningControl(True)
             Dim ds As New List(Of Date)
             ds = pl.GetDaysOfWeek(Me.CbxSemaine.SelectedIndex, Me.CbxAnnee.SelectedItem)
@@ -818,10 +815,8 @@ Public Class RechercheCommande
                                                                      Dim fMonth As Integer = dFin.Month
                                                                      Dim fYear As Integer = dFin.Year
 
-                                                                     whereEtat = whereEtat + "DAY(c.DelaiPrevu) >= " + dDay.ToString() + " AND MONTH(c.DelaiPrevu) >= " +
-                                                                         dMonth.ToString() + " AND YEAR(c.DelaiPrevu) >= " + dYear.ToString() +
-                                                                         " AND DAY(c.DelaiPrevu) <= " + fDay.ToString() + " AND MONTH(c.DelaiPrevu) <= " +
-                                                                         fMonth.ToString() + " AND YEAR(c.DelaiPrevu) <= " + fYear.ToString() + " AND "
+                                                                     whereEtat = whereEtat + "DATE_FORMAT(c.DelaiPrevu, '%Y-%m-%d' ) >= DATE_FORMAT('" & dYear & "-" & dMonth & "-" & dDay & "', '%Y-%m-%d' )" +
+                                                                         " AND DATE_FORMAT(c.DelaiPrevu, '%Y-%m-%d' ) <= DATE_FORMAT('" & fYear & "-" & fMonth & "-" & fDay & "', '%Y-%m-%d' ) AND "
                                                                  ElseIf Me.DpkDateDebut.SelectedDate IsNot Nothing Then
                                                                      Dim dDeb As Date = Me.DpkDateDebut.SelectedDate
                                                                      Dim dDay As Integer = dDeb.Day
@@ -832,10 +827,8 @@ Public Class RechercheCommande
                                                                      Dim fMonth As Integer = dFin.Month
                                                                      Dim fYear As Integer = dFin.Year
 
-                                                                     whereEtat = " WHERE DAY(c.DelaiPrevu) >= " + dDay.ToString() + " AND MONTH(c.DelaiPrevu) >= " +
-                                                                         dMonth.ToString() + " AND YEAR(c.DelaiPrevu) >= " + dYear.ToString() +
-                                                                         " AND DAY(c.DelaiPrevu) <= " + fDay + " AND MONTH(c.DelaiPrevu) <= " +
-                                                                         fMonth.ToString() + " AND YEAR(c.DelaiPrevu) <= " + fYear.ToString() + " AND "
+                                                                     whereEtat = " WHERE DATE_FORMAT(c.DelaiPrevu, '%Y-%m-%d' ) >= DATE_FORMAT('" & dYear & "-" & dMonth & "-" & dDay & "', '%Y-%m-%d' )" +
+                                                                         " AND DATE_FORMAT(c.DelaiPrevu, '%Y-%m-%d' ) <= DATE_FORMAT('" & fYear & "-" & fMonth & "-" & fDay & "', '%Y-%m-%d' ) AND "
                                                                  End If
 
                                                                  'Définit une partie de la clause WHERE de la requête en fonction du type de tri sélectionné

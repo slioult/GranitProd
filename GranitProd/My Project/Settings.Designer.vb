@@ -148,6 +148,18 @@ Partial Friend NotInheritable Class MySettings
             Me("Help") = value
         End Set
     End Property
+    
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute(".\ExportFile\planning.xps")>  _
+    Public Property XPSPlanning() As String
+        Get
+            Return CType(Me("XPSPlanning"),String)
+        End Get
+        Set
+            Me("XPSPlanning") = value
+        End Set
+    End Property
 End Class
 
 Namespace My

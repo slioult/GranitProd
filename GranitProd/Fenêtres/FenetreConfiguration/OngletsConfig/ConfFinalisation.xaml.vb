@@ -183,6 +183,12 @@
 
                 If result = MessageBoxResult.Yes Then
                     finalisation.Label = TxtNomFinalisation.Text
+                    finalisation.Display = ChkDisplayColor.IsChecked
+                    If finalisation.Display Then
+                        finalisation.Color = CPFinalisation.SelectedColor.ToString()
+                    Else
+                        finalisation.Color = ""
+                    End If
                     finalisation.Update()
 
                     Me.CbxConfFinalisation.Items.RemoveAt(index)

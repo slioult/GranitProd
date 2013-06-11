@@ -69,16 +69,17 @@
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MGranitDALcsharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\MGranitDALcsharp.dll</HintPath>
+    <Reference Include="MGranitDALcsharp">
+      <HintPath>..\..\..\..\..\Visual Studio 2010\Projects\MGranitDALcsharp\MGranitDALcsharp\bin\Release\MGranitDALcsharp.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.6.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\TestPrjGranit\TestPrjGranit\bin\Debug\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="ReachFramework" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Printing" />
     <Reference Include="System.Windows.Controls.Input.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\WPF Toolkit\v3.5.50211.1\System.Windows.Controls.Input.Toolkit.dll</HintPath>
@@ -408,9 +409,6 @@
     <Resource Include="Images\oeil.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\search.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\stats.png" />
   </ItemGroup>
   <ItemGroup>
@@ -455,7 +453,16 @@
     <Resource Include="Images\sablier.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\print.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Images\zoom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\zoom_512.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\search.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

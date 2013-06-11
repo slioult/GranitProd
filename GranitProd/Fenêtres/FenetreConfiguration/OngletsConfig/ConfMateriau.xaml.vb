@@ -122,7 +122,7 @@ Public Class ConfMateriau
 
             If Not isExists Then
                 Dim result As MessageBoxResult = MessageBox.Show("Voulez-vous modifier le matériau « " + materiau.Label + " » ?", "Modification d'un matériau",
-                                                                 MessageBoxButton.OK, MessageBoxImage.Question)
+                                                                 MessageBoxButton.YesNo, MessageBoxImage.Question)
 
                 If result = MessageBoxResult.Yes Then
                     Dim newMateriau As New Materiau(materiau.Label, materiau.Identifier)

@@ -190,7 +190,7 @@ Public Class Etat
             parameters.Add(parLabel)
 
             Dim parPosition As MySqlParameter = connection.Create("@Position", DbType.String, Me.Position)
-            parameters.Add(parLabel)
+            parameters.Add(parPosition)
 
             'Requête
             Dim query As String = "INSERT INTO Etat (Label, Position) VALUES (@Label, @Position)"

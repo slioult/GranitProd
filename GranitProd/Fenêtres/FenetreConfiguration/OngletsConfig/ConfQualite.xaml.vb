@@ -127,7 +127,7 @@ Public Class ConfQualite
 
             If Not isExists Then
                 Dim result As MessageBoxResult = MessageBox.Show("Voulez-vous vraiment modifier la qualité « " + qualite.Type + " » ?", "Modification d'une qualité",
-                                                                 MessageBoxButton.OK, MessageBoxImage.Question)
+                                                                 MessageBoxButton.YesNo, MessageBoxImage.Question)
 
                 If result = MessageBoxResult.Yes Then
                     qualite.Type = TxtNomQualite.Text

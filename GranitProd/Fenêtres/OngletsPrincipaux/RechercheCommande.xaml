@@ -117,18 +117,18 @@
         </StackPanel>
 
         <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left" Margin="2" >
-            <CheckBox x:Name="ChkSemaine" VerticalAlignment="Center" Margin="2" IsChecked="True" Checked="ChkSemaine_Checked" Unchecked="ChkSemaine_Unchecked" />
-            <ComboBox x:Name="CbxSemaine" VerticalAlignment="Center" SelectionChanged="CbxSemaine_SelectionChanged" >
+            <CheckBox x:Name="ChkSemaine" VerticalAlignment="Center" Margin="2" IsChecked="False" Checked="ChkSemaine_Checked" Unchecked="ChkSemaine_Unchecked" />
+            <ComboBox x:Name="CbxSemaine" VerticalAlignment="Center" SelectionChanged="CbxSemaine_SelectionChanged" IsEnabled="False" SelectedIndex="0"  >
                 <ComboBoxItem>Sem</ComboBoxItem>
             </ComboBox>
-            <ComboBox x:Name="CbxAnnee" VerticalAlignment="Center" SelectionChanged="CbxSemaine_SelectionChanged" >
+            <ComboBox x:Name="CbxAnnee" VerticalAlignment="Center" SelectionChanged="CbxSemaine_SelectionChanged" IsEnabled="False" SelectedIndex="0" >
                 <ComboBoxItem>Année</ComboBoxItem>
             </ComboBox>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" >
             <Button x:Name="BtnPdf" Height="50" Width="50" HorizontalAlignment="Right" Margin="2" VerticalAlignment="Center"
-                Click="BtnPdf_Click" >
+                Click="BtnPdf_Click" Background="#af4fa2" >
                 <Button.Content>
                     <Image>
                         <Image.Source>
@@ -136,9 +136,14 @@
                         </Image.Source>
                     </Image>
                 </Button.Content>
+                <Button.ToolTip>
+                    <ToolTip>
+                        <TextBlock>Exporter la liste au format PDF</TextBlock>
+                    </ToolTip>
+                </Button.ToolTip>
             </Button>
             <Button x:Name="BtnExcel" Height="50" Width="50" HorizontalAlignment="Right" Margin="2" VerticalAlignment="Center"
-                Click="BtnExcel_Click" >
+                Click="BtnExcel_Click" Background="#af4fa2" >
                 <Button.Content>
                     <Image>
                         <Image.Source>
@@ -146,9 +151,14 @@
                         </Image.Source>
                     </Image>
                 </Button.Content>
+                <Button.ToolTip>
+                    <ToolTip>
+                        <TextBlock>Exporter la liste au format Excel</TextBlock>
+                    </ToolTip>
+                </Button.ToolTip>
             </Button>
             <Button x:Name="BtnOpenCmd" Width="50" Height="50" Grid.Row="5" Grid.Column="2" HorizontalAlignment="Right" Margin="2" VerticalAlignment="Center"
-                Click="BtnOpenCmd_Click" >
+                Click="BtnOpenCmd_Click" Background="#af4fa2" >
                 <Button.Content>
                     <Image>
                         <Image.Source>
@@ -156,11 +166,16 @@
                         </Image.Source>
                     </Image>
                 </Button.Content>
+                <Button.ToolTip>
+                    <ToolTip>
+                        <TextBlock>Ouvrir la commande sélectionnée</TextBlock>
+                    </ToolTip>
+                </Button.ToolTip>
             </Button>
         </StackPanel>
 
         <Button x:Name="BtnSearch" Width="50" Height="50" Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" VerticalAlignment="Center" Margin="2" Click="BtnSearch_Click"
-                                HorizontalAlignment="Right" >
+                                HorizontalAlignment="Right" Background="#af4fa2" >
             <Button.Content>
                 <Image>
                     <Image.Source>
@@ -168,6 +183,11 @@
                     </Image.Source>
                 </Image>
             </Button.Content>
+            <Button.ToolTip>
+                <ToolTip>
+                    <TextBlock>Lancer la recherche</TextBlock>
+                </ToolTip>
+            </Button.ToolTip>
         </Button>
 
         <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" >

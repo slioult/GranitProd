@@ -63,7 +63,7 @@
                         </Grid.RowDefinitions>
 
                         <Button x:Name="BtnPanel" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10" Click="BtnPanel_Click" Visibility="Collapsed"
-                                Height="50" Width="50">
+                                Height="50" Width="50" Background="#af4fa2">
                             <Button.Content>
                                 <Image>
                                     <Image.Source>
@@ -71,6 +71,11 @@
                                     </Image.Source>
                                 </Image>
                             </Button.Content>
+                            <Button.ToolTip>
+                                <ToolTip>
+                                    <TextBlock>Ouvrir le tableau de bord</TextBlock>
+                                </ToolTip>
+                            </Button.ToolTip>
                         </Button>
                         
                         <local:CA Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="10" />

@@ -187,10 +187,16 @@
 
             If Not isExistsLabel And Not isExistsColor Then
                 Dim result As MessageBoxResult = MessageBox.Show("Voulez-vous modifier le type de mesure « " + mesure.Label + " » ?", "Modification d'un type de mesure",
-                                                                 MessageBoxButton.OK, MessageBoxImage.Question)
+                                                                 MessageBoxButton.YesNo, MessageBoxImage.Question)
 
                 If result = MessageBoxResult.Yes Then
                     mesure.Label = TxtNomReleves.Text
+                    mesure.Display = ChkDisplayColor.IsChecked
+                    If mesure.Display Then
+                        mesure.Color = CPReleves.SelectedColor.ToString()
+                    Else
+                        mesure.Color = ""
+                    End If
                     mesure.Update()
 
                     Me.CbxConfReleves.Items.RemoveAt(index)
@@ -208,14 +214,14 @@
                     Me.CbxConfReleves.SelectedIndex = index
                     MessageBox.Show("Le type de relevé a été modifié avec succès.", "Type de relevé modifié", MessageBoxButton.OK, MessageBoxImage.Information)
                 End If
-            Else
-                If isExistsLabel Then
-                    MessageBox.Show("Le type de relevé existe déjà.", "Type de relevé existant", MessageBoxButton.OK, MessageBoxImage.Information)
                 Else
-                    MessageBox.Show("La couleur " + finalisation.Color + " est déjà utilisée." + vbCrLf + "Veuillez en choisir une autre.", "Couleur déjà utilisée", MessageBoxButton.OK,
-                                    MessageBoxImage.Information)
+                    If isExistsLabel Then
+                        MessageBox.Show("Le type de relevé existe déjà.", "Type de relevé existant", MessageBoxButton.OK, MessageBoxImage.Information)
+                    Else
+                        MessageBox.Show("La couleur " + finalisation.Color + " est déjà utilisée." + vbCrLf + "Veuillez en choisir une autre.", "Couleur déjà utilisée", MessageBoxButton.OK,
+                                        MessageBoxImage.Information)
+                    End If
                 End If
-            End If
 
             End If
     End Sub

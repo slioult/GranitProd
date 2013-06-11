@@ -2,6 +2,10 @@
 Imports System.Globalization
 Imports MySql.Data.MySqlClient
 Imports System.Data
+Imports System.IO
+Imports System.Windows.Xps.Packaging
+Imports System.Printing
+Imports System.Drawing.Printing
 
 Public Class PlanningControl
 
@@ -115,6 +119,16 @@ Public Class PlanningControl
     Private Sub BtnExtend_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
         Dim pv As New PlanningView(Me, Me.Session, Me.SelectDate)
         pv.Show()
+    End Sub
+
+    ''' <summary>
+    ''' Bouton permettant d'imprimer le planning
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub BtnPrint_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
+        Me.saveCurrentDocument()
     End Sub
 
 #End Region
@@ -432,6 +446,84 @@ Public Class PlanningControl
 
         Catch ex As Exception
             MessageBox.Show("Les commandes n'ont pas pu être chargées", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Retourne le composant à imprimer
+    ''' </summary>
+    ''' <returns>Retourne un FixedDocument permettant de créer un fichier XPS</returns>
+    ''' <remarks></remarks>
+    Public Function getFixedDoc() As FixedDocument
+        Dim fixedDoc As New FixedDocument()
+        Dim pageContent As New PageContent()
+        Dim fixedPage As New FixedPage()
+
+        fixedPage.Width = 11.69 * 96
+        fixedPage.Height = 8.27 * 96
+
+        Dim pl As New PlanningControl()
+        pl.SelectDate = Me.SelectDate
+        pl.cal.Visibility = System.Windows.Visibility.Collapsed
+        pl.Width = 11.69 * 96 - 100
+        pl.Height = 8.27 * 96 - 100
+        pl.Margin = New Thickness(50, 50, 50, 50)
+        pl.BtnRefresh.Visibility = System.Windows.Visibility.Collapsed
+        pl.BtnExtend.Visibility = System.Windows.Visibility.Collapsed
+        pl.BtnPrint.Visibility = System.Windows.Visibility.Collapsed
+
+        fixedPage.Children.Add(pl)
+        Dim iad As System.Windows.Markup.IAddChild = pageContent
+        iad.AddChild(fixedPage)
+        fixedDoc.Pages.Add(iad)
+
+        Return fixedDoc
+    End Function
+
+    ''' <summary>
+    ''' Sauvegarde le planning dans un fichier .xps puis l'imprime
+    ''' </summary>
+    ''' <remarks></remarks>
+    Public Sub saveCurrentDocument()
+        Try
+            If File.Exists(My.Settings.XPSPlanning) Then File.Delete(My.Settings.XPSPlanning)
+
+            Dim filename As String = My.Settings.XPSPlanning
+            Dim doc As FixedDocument = Me.getFixedDoc()
+            Dim xpsd As New XpsDocument(filename, FileAccess.Write)
+            Dim xw As System.Windows.Xps.XpsDocumentWriter = XpsDocument.CreateXpsDocumentWriter(xpsd)
+            xw.Write(doc)
+
+            xpsd.Close()
+
+            Me.print(My.Settings.XPSPlanning)
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Imprime un document
+    ''' </summary>
+    ''' <param name="fileName">Chemin du document à imprimer</param>
+    ''' <remarks></remarks>
+    Public Sub print(ByVal fileName As String)
+        Try
+            Dim pdial As New PrintDialog()
+            pdial.PageRangeSelection = PageRangeSelection.AllPages
+            pdial.UserPageRangeEnabled = True
+            Dim print? As Boolean = pdial.ShowDialog()
+
+            If print Then
+                Dim xpsDoc As New XpsDocument(Path.GetFullPath(fileName), FileAccess.ReadWrite)
+                Dim fixedDocSeq As FixedDocumentSequence = xpsDoc.GetFixedDocumentSequence()
+                pdial.PrintDocument(fixedDocSeq.DocumentPaginator, "GProd_planning")
+                xpsDoc.Close()
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
         End Try
     End Sub
 

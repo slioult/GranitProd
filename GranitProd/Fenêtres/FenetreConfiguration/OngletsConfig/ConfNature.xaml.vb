@@ -121,7 +121,7 @@ Public Class ConfNature
 
             If Not isExists Then
                 Dim result As MessageBoxResult = MessageBox.Show("Voulez-vous modifier la nature « " + nature.Label + " » ?", "Modification d'une nature",
-                                                                 MessageBoxButton.OK, MessageBoxImage.Question)
+                                                                 MessageBoxButton.YesNo, MessageBoxImage.Question)
 
                 If result = MessageBoxResult.Yes Then
                     nature.Label = TxtNomNature.Text

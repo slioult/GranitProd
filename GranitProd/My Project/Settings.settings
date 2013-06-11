@@ -26,5 +26,8 @@
     <Setting Name="Help" Type="System.String" Scope="User">
       <Value Profile="(Default)">.\Help\GProd_help.pdf</Value>
     </Setting>
+    <Setting Name="XPSPlanning" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.\ExportFile\planning.xps</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
