@@ -930,7 +930,7 @@ Public Class Commande
                             Dim parEpaisseur As MySqlParameter = connection.Create("@Epaisseur", DbType.Int32, mat.Epaisseur)
                             parameters.Add(parEpaisseur)
 
-                            query = "UPDATE Commande_Materiau SET Epaisseur=@Epaisseur"
+                            query = "UPDATE Commande_Materiau SET Epaisseur=@Epaisseur WHERE Identifier_Commande=@Identifier"
                             connection.ExecuteNonQuery(query, parameters)
 
                             parameters.Clear()
