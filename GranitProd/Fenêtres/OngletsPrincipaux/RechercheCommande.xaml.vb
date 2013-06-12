@@ -76,14 +76,6 @@ Public Class RechercheCommande
         For i = 2010 To Date.Now.Year + 2
             Me.CbxAnnee.Items.Add(i)
         Next
-
-        Dim pl As New PlanningControl(True)
-        Dim ds As New List(Of Date)
-        Dim sem As Integer = pl.GetWeekOfDate(Date.Now)
-        ds = pl.GetDaysOfWeek(sem, Date.Now.Year)
-        Dim count As Integer = ds.Count
-        Me.DpkDateDebut.SelectedDate = ds(0)
-        Me.DpkDateFin.SelectedDate = ds(count - 1)
     End Sub
 
 #End Region

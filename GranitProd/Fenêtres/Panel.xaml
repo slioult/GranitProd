@@ -62,7 +62,9 @@
             </Grid>
         </ScrollViewer>
 
-        <local:TempsFabrication x:Name="TpsFabrication" Grid.Row="1" Grid.Column="1" Margin="10, 0, 10, 10" />
+        <ScrollViewer Grid.Row="1" Grid.Column="1" Margin="10, 0, 10, 10" VerticalScrollBarVisibility="Hidden">
+            <local:TempsFabrication x:Name="TpsFabrication" />
+        </ScrollViewer>
 
         <local:SuiviQualite x:Name="SqQualite" Grid.Row="1" Grid.Column="2" Margin="10, 0, 10, 10" />
 
