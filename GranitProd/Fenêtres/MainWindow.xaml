@@ -31,6 +31,7 @@
                     </MenuItem.Header>
                     <MenuItem Header="?  |  Aide" Click="MenuItemAide_Click" />
                     <MenuItem Header="À propos de..." Click="MenuItem_Click" />
+                    <MenuItem x:Name="MIDeverrouiller"  Header="Déverrouillage" Click="MenuItemDeverrouillage_Click" Visibility="Collapsed" />
                 </MenuItem>
             </Menu>
             <Button x:Name="BtnConfig" Click="BtnConfig_Click">
@@ -62,8 +63,23 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
+                        <Button x:Name="BtnRefresh" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10" Click="BtnRefresh_Click"
+                                Height="24" Width="24" Background="#af4fa2" Focusable="False">
+                            <Button.Content>
+                                <Image>
+                                    <Image.Source>
+                                        <BitmapImage UriSource="..\Images\refresh.png" />
+                                    </Image.Source>
+                                </Image>
+                            </Button.Content>
+                            <Button.ToolTip>
+                                <ToolTip>
+                                    <TextBlock>Actualise le chiffre d'affaire</TextBlock>
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Button>
                         <Button x:Name="BtnPanel" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10" Click="BtnPanel_Click" Visibility="Collapsed"
-                                Height="50" Width="50" Background="#af4fa2">
+                                Height="50" Width="50" Background="#af4fa2" Focusable="False">
                             <Button.Content>
                                 <Image>
                                     <Image.Source>
@@ -78,7 +94,7 @@
                             </Button.ToolTip>
                         </Button>
                         
-                        <local:CA Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="10" />
+                        <local:CA x:Name="CAffaire" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="10" />
                     </Grid>
                 </TabItem>
             </TabControl>

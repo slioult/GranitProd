@@ -22,6 +22,7 @@
                     </MenuItem.Header>
                     <MenuItem Header="?  |  Aide" Click="MenuItemAide_Click" />
                     <MenuItem Header="À propos de..." Click="MenuItem_Click" />
+                    <MenuItem x:Name="MIDeverrouiller"  Header="Déverrouillage" Click="MenuItemDeverrouillage_Click" Visibility="Collapsed" />
                 </MenuItem>
             </Menu>
             <Button x:Name="BtnConfig" Click="BtnConfig_Click">

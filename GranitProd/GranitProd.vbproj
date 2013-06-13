@@ -135,6 +135,9 @@
     <Compile Include="Composants\TempsFabrication.xaml.vb">
       <DependentUpon>TempsFabrication.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Fenêtres\DeverrouilleCommande.xaml.vb">
+      <DependentUpon>DeverrouilleCommande.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Fenêtres\FenetreConfiguration\OngletsConfig\ConfEpaisseur.xaml.vb">
       <DependentUpon>ConfEpaisseur.xaml</DependentUpon>
     </Compile>
@@ -219,6 +222,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Fenêtres\ConsultCommande.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Fenêtres\DeverrouilleCommande.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

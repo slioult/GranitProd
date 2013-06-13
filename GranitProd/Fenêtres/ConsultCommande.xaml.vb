@@ -106,6 +106,10 @@ Public Class ConsultCommande
             Me.ShowType = 0
         End If
 
+        If Me.Session.Login = "Administrateur" Then
+            Me.MIDeverrouiller.Visibility = Windows.Visibility.Visible
+        End If
+
     End Sub
 
 #End Region
@@ -162,6 +166,17 @@ Public Class ConsultCommande
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error)
         End Try
+    End Sub
+
+    ''' <summary>
+    ''' Évènement se produisant lors du clique sur le menu "Déverrouillage"
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks></remarks>
+    Private Sub MenuItemDeverrouillage_Click(ByVal sender As System.Object, ByVal e As System.Windows.RoutedEventArgs)
+        Dim dev As New DeverrouilleCommande()
+        dev.ShowDialog()
     End Sub
 
 #End Region

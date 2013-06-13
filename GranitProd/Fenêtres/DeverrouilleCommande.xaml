@@ -1,0 +1,34 @@
+﻿<Window x:Class="DeverrouilleCommande"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Déverrouiller une commande" Height="300" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" >
+
+    <Grid Style="{StaticResource ResourceKey=BackgroundPrincipal}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+
+        <Image Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" >
+            <Image.Source>
+                <BitmapImage UriSource="..\Images\Version.png" />
+            </Image.Source>
+        </Image>
+
+        <TextBlock Grid.Row="2" Height="20" Width="Auto" FontSize="15" Foreground="#ffca0f" Background="Transparent"
+                   Text="GranitProd" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="center" FontWeight="Bold" />
+
+        <StackPanel Grid.Row="3" Orientation="Vertical">
+            <Label x:Name="label" FontSize="13" Foreground="#ffca0f" HorizontalAlignment="Center">Saisissez le numéro de commande :</Label>
+            <TextBox x:Name="TxtNumCmd" Height="20" FontSize="13" Foreground="#ffca0f" Background="Transparent"
+                       VerticalAlignment="center" HorizontalAlignment="Center" Margin="0,0,5,0" TextAlignment="center" Width="240" />            
+        </StackPanel>
+
+        <Button x:Name="BtnDeverrouille" Grid.Row="4" Content="Déverrouiller" Click="BtnDeverrouille_Click" Height="30" Width="200" Background="#af4fa2"
+                Foreground="#ffca0f" Focusable="False"/>
+    </Grid>
+</Window>
