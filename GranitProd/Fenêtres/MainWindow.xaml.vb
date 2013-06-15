@@ -54,6 +54,7 @@ Class MainWindow
         End If
 
         Me.NewCommande.Planning = Me.planning
+        Me.NewCommande.Session = Me.Session
         Me.planning.Session = Me.Session
 
         If Not Directory.Exists(My.Settings.ExportFile) Then

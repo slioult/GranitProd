@@ -1903,6 +1903,10 @@ Public Class NouvelleCommande
         Me.TxtTpsAutresM.Text = 0
         Me.CbxEtat.SelectedIndex = 0
         Me.DgRemarques.Items.Clear()
+        Me.DgQualites.Items.Clear()
+        Me.ExpMateriaux.IsExpanded = False
+        Me.ExpNatures.IsExpanded = False
+        Me.ExpPrestations.IsExpanded = False
     End Sub
 
 #End Region

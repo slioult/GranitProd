@@ -97,7 +97,7 @@
 
             <StackPanel x:Name="StMateriaux" Orientation="Vertical" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="10"
                      HorizontalAlignment="Center">
-                <Expander Header="Matériaux" FontFamily="Calibri" FontSize="15">
+                <Expander x:Name="ExpMateriaux" Header="Matériaux" FontFamily="Calibri" FontSize="15">
                     <StackPanel Orientation="Vertical" >
                         <toolkit:AutoCompleteBox x:Name="AutoCompLMateriaux" IsTextCompletionEnabled="False" Populating="AutoCompLMateriaux_Populating"  Height="24" MinWidth="100" MaxWidth="200" 
                                                  SelectionChanged="AutoCompLMateriaux_SelectionChanged" KeyDown="AutoCompLMateriaux_KeyDown" />
@@ -111,7 +111,7 @@
 
             <StackPanel x:Name="StNatures" Orientation="Vertical" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="10"
                      HorizontalAlignment="Center">
-                <Expander Header="Natures" FontFamily="Calibri" FontSize="15" >
+                <Expander x:Name="ExpNatures" Header="Natures" FontFamily="Calibri" FontSize="15" >
                     <ScrollViewer MaxHeight="325" VerticalScrollBarVisibility="Auto">
                         <ListBox x:Name="LbxNatures" ItemTemplate="{StaticResource ResourceKey=NatureTemplate}" MaxHeight="325" ScrollViewer.VerticalScrollBarVisibility="Auto"
                                  PreviewMouseDown="ListBox_MouseClick" PreviewMouseUp="ListBox_MouseClick" Style="{StaticResource ListBoxItemStyle}" />
@@ -138,7 +138,7 @@
 
             <StackPanel x:Name="StFinalisations" Orientation="Vertical" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="10"
                      HorizontalAlignment="Center">
-                <Expander Header="Prestations" FontFamily="Calibri" FontSize="15">
+                <Expander x:Name="ExpPrestations" Header="Prestations" FontFamily="Calibri" FontSize="15">
                     <ScrollViewer MaxHeight="325" VerticalScrollBarVisibility="Auto">
                         <ListBox x:Name="LbxFinalisations" ItemTemplate="{StaticResource ResourceKey=FinalisationTemplate}" MaxHeight="325"
                              ScrollViewer.VerticalScrollBarVisibility="Auto" PreviewMouseDown="ListBox_MouseClick" Style="{StaticResource ListBoxItemStyle}" 
