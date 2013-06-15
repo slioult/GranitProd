@@ -70,7 +70,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MGranitDALcsharp">
-      <HintPath>..\..\..\..\..\Visual Studio 2010\Projects\MGranitDALcsharp\MGranitDALcsharp\bin\Release\MGranitDALcsharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\Visual Studio 2010\Projects\GranitProd\GranitProd\bin\Release\MGranitDALcsharp.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.6.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -470,6 +470,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\search.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
