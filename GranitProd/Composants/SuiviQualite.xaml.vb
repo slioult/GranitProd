@@ -184,6 +184,7 @@ Public Class SuiviQualite
             Dim connection As New MGranitDALcsharp.MGConnection(My.Settings.DBSource)
             Dim parameters As New List(Of MySqlParameter)
             Dim Objects As New List(Of List(Of Object))
+            Dim query As String
 
             Try
                 'Ouvre la connection
@@ -196,10 +197,21 @@ Public Class SuiviQualite
                 Dim parAnnee As MySqlParameter = connection.Create("@Year", DbType.Int32, CbxAnnee.SelectedItem)
                 parameters.Add(parAnnee)
 
-                'Requête
-                Dim query As String = "SELECT DISTINCT c.NumCmd " +
-                                      "FROM Commande as c, Commande_Qualite as cq " +
-                                      "WHERE cq.Identifier_Qualite=@Identifier AND YEAR(cq.DateProbleme)=@Year AND cq.Identifier_Commande=c.Identifier"
+                If Me.CbxChoix.SelectedIndex = 0 Then
+                    Dim parMois As MySqlParameter = connection.Create("@Mois", DbType.Int32, CbxMois.SelectedIndex + 1)
+                    parameters.Add(parMois)
+
+                    'Requête
+                    query = "SELECT DISTINCT c.NumCmd " +
+                                          "FROM Commande as c, Commande_Qualite as cq " +
+                                          "WHERE cq.Identifier_Qualite=@Identifier AND MONTH(cq.DateProbleme)=@Mois AND YEAR(cq.DateProbleme)=@Year AND cq.Identifier_Commande=c.Identifier"
+                Else
+                    'Requête
+                    query = "SELECT DISTINCT c.NumCmd " +
+                                          "FROM Commande as c, Commande_Qualite as cq " +
+                                          "WHERE cq.Identifier_Qualite=@Identifier AND YEAR(cq.DateProbleme)=@Year AND cq.Identifier_Commande=c.Identifier"
+
+                End If
 
                 'Exécute la requête
                 Objects = connection.ExecuteQuery(query, parameters)

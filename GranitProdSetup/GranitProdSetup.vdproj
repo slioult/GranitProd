@@ -93,12 +93,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_7C7FCF8AA7934FEB2445E19D7F1EFBB5"
-        "OwnerKey" = "8:_C4DC5674F65A4646B0140BFB46162DD8"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_8266C601224144F89ACC9CB3C45D24C0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -153,6 +147,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_F094D9B9C3A83A72D9D7D8032FB7CAD7"
+        "OwnerKey" = "8:_C4DC5674F65A4646B0140BFB46162DD8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_F2CB766A676B4BCC874037C3B3566EAB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -166,7 +166,7 @@
         "Entry"
         {
         "MsmKey" = "8:_F54923E3B7FB89ADEF244A08874078A7"
-        "OwnerKey" = "8:_7C7FCF8AA7934FEB2445E19D7F1EFBB5"
+        "OwnerKey" = "8:_F094D9B9C3A83A72D9D7D8032FB7CAD7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -196,12 +196,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_7C7FCF8AA7934FEB2445E19D7F1EFBB5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_3D29FD416D69390BB696610A0CA59D39"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -214,7 +208,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_C4DC5674F65A4646B0140BFB46162DD8"
+        "OwnerKey" = "8:_F094D9B9C3A83A72D9D7D8032FB7CAD7"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -573,37 +567,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7C7FCF8AA7934FEB2445E19D7F1EFBB5"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:MGranitDALcsharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_7C7FCF8AA7934FEB2445E19D7F1EFBB5"
-                    {
-                    "Name" = "8:MGranitDALcsharp.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:MGranitDALcsharp.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_F1E0E8048DDF421689E47EC03C62F6D9"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8266C601224144F89ACC9CB3C45D24C0"
             {
             "SourcePath" = "8:..\\GranitProd\\bin\\Release\\ConfigFiles\\connectionString.txt"
@@ -786,6 +749,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F094D9B9C3A83A72D9D7D8032FB7CAD7"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:MGranitDALcsharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_F094D9B9C3A83A72D9D7D8032FB7CAD7"
+                    {
+                    "Name" = "8:MGranitDALcsharp.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:MGranitDALcsharp.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_F1E0E8048DDF421689E47EC03C62F6D9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F2CB766A676B4BCC874037C3B3566EAB"
             {
             "SourcePath" = "8:..\\GranitProd\\Images\\sablier.png"
@@ -946,15 +940,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:GranitProd"
-        "ProductCode" = "8:{CC3B6C6E-52D6-4046-8C99-969C74D83A72}"
-        "PackageCode" = "8:{079B8B5A-3F3B-4DC9-ACAA-71E5DD9E7D1D}"
+        "ProductCode" = "8:{B943E22A-7593-4140-960E-7FE93CD6E2D8}"
+        "PackageCode" = "8:{2BE8FEA3-7EA5-46C5-87D1-27A6369865D6}"
         "UpgradeCode" = "8:{FCC7D729-CD1D-49C0-ADC1-9F64131440F4}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:2.1.4"
+        "ProductVersion" = "8:2.1.5"
         "Manufacturer" = "8:LIOULT Samuel"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1482,7 +1476,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C4DC5674F65A4646B0140BFB46162DD8"
             {
-            "SourcePath" = "8:..\\GranitProd\\obj\\x86\\Release\\GranitProd.exe"
+            "SourcePath" = "8:..\\GranitProd\\obj\\x86\\Debug\\GranitProd.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F1E0E8048DDF421689E47EC03C62F6D9"
